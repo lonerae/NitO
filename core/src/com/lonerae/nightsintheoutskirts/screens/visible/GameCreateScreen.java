@@ -1,0 +1,204 @@
+package com.lonerae.nightsintheoutskirts.screens.visible;
+
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.lonerae.nightsintheoutskirts.game.GameData;
+import com.lonerae.nightsintheoutskirts.game.roles.Role;
+import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
+import com.lonerae.nightsintheoutskirts.network.MatchServer;
+import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
+import com.lonerae.nightsintheoutskirts.screens.UIUtil;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
+
+import java.net.UnknownHostException;
+import java.util.Formatter;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class GameCreateScreen extends BaseScreen {
+
+    private final Map<RoleName, TextField> roleCounterMap = new LinkedHashMap<>();
+    private ScrollPane scroll;
+
+    public GameCreateScreen(Game game) {
+        super(game);
+    }
+
+    public ScrollPane getScroll() {
+        return scroll;
+    }
+
+    @Override
+    public void show() {
+        super.show();
+
+        Table mainTable = new CustomTable(true);
+        Label title = UIUtil.title(new CustomLabel(getStrings().format("create"), getSkin()));
+        mainTable.add(title).padBottom(PAD_VERTICAL_BIG).row();
+
+        Table menuTable = new Table();
+        menuTable.padLeft(PAD_HORIZONTAL_BIG).left();
+        menuTable.defaults().width(DEFAULT_ACTOR_WIDTH);
+        Label townNameLabel = new CustomLabel(getStrings().format("townNameLabel"), getSkin());
+        TextField townNameTextField = new TextField("", getSkin());
+        Label numberOfPlayersLabel = new CustomLabel(getStrings().format("numberOfPlayersLabel"), getSkin());
+        TextField numberOfPlayersTextField = new TextField("", getSkin());
+        numberOfPlayersTextField.setMessageText("0");
+        numberOfPlayersTextField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
+        Label rolesLabel = new CustomLabel(getStrings().format("rolesLabel"), getSkin());
+        menuTable.add(townNameLabel).padBottom(PAD_VERTICAL_SMALL).row();
+        menuTable.add(townNameTextField).padBottom(PAD_VERTICAL_SMALL).row();
+        menuTable.add(numberOfPlayersLabel).padBottom(PAD_VERTICAL_SMALL).row();
+        menuTable.add(numberOfPlayersTextField).padBottom(PAD_VERTICAL_SMALL).row();
+        menuTable.add(rolesLabel).padBottom(PAD_VERTICAL_SMALL).row();
+
+        mainTable.add(menuTable).row();
+
+        Table rolesTable = new Table();
+        fill(rolesTable);
+
+        mainTable.add(rolesTable).padBottom(PAD_VERTICAL_SMALL).row();
+
+        TextButton createButton = new TextButton(getStrings().format("create"), getSkin());
+        createButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                checkGameConditions(townNameTextField, numberOfPlayersTextField);
+            }
+        });
+
+        mainTable.add(createButton).width(DEFAULT_ACTOR_WIDTH).height(DEFAULT_ACTOR_HEIGHT).padBottom(PAD_VERTICAL_SMALL);
+        scroll = new CustomScrollPane(mainTable, true);
+        getStage().addActor(scroll);
+    }
+
+    private Map<RoleName, Integer> createMatchRoleList() {
+        Map<RoleName, Integer> matchRoleList = new LinkedHashMap<>();
+        for (Map.Entry<RoleName, TextField> entry : roleCounterMap.entrySet()) {
+            int roleCounter;
+            roleCounter = getTextFieldNumber(entry.getValue());
+            if (roleCounter > 0) {
+                matchRoleList.put(entry.getKey(), roleCounter);
+            }
+        }
+        return matchRoleList;
+    }
+
+    private int getTextFieldNumber(TextField textField) {
+        try {
+            return Integer.parseInt(textField.getText());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private void fill(Table rolesTable) {
+        int iconCounter = 0;
+        for (Role role : GameData.getRoleList().values()) {
+            iconCounter++;
+
+            TextField numberOfRoleTextField = new TextField("", getSkin());
+            numberOfRoleTextField.setMessageText("0");
+            roleCounterMap.put(role.getName(), numberOfRoleTextField);
+            numberOfRoleTextField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
+
+            Table roleIconAndCounter = new Table();
+            Dialog dialog = new CustomDialog(role.getName().toString(), getSkin(), true);
+            Label label = new CustomLabel(role.getDescription(), getSkin());
+            dialog.getContentTable().add(label).width(DEFAULT_POPUP_SIZE);
+
+            Image icon = new Image(role.getIcon());
+            icon.addListener(new InputListener() {
+                @Override
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    dialog.show(getStage());
+                    getScroll().setFlickScroll(false);
+                    return true;
+                }
+
+                @Override
+                public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                    dialog.hide();
+                    getScroll().setFlickScroll(true);
+                }
+            });
+
+            roleIconAndCounter.add(icon).width(DEFAULT_ICON_SIZE).height(DEFAULT_ICON_SIZE).padBottom(PAD_VERTICAL_SMALL).row();
+            roleIconAndCounter.add(numberOfRoleTextField);
+            rolesTable.add(roleIconAndCounter).pad(PAD_HORIZONTAL_SMALL);
+            if (iconCounter % 3 == 0) {
+                rolesTable.row();
+            }
+        }
+    }
+
+    private void checkGameConditions(TextField townNameTextField, TextField numberOfPlayersTextField) {
+        int initialCounter = getTextFieldNumber(numberOfPlayersTextField);
+        int counter = getTextFieldNumber(numberOfPlayersTextField);
+        for (TextField roleCounter : roleCounterMap.values()) {
+            counter -= getTextFieldNumber(roleCounter);
+        }
+
+        if (!townNameTextField.getText().isEmpty() && initialCounter > 0 && counter == 0) {
+            createSuccessDialog(townNameTextField, numberOfPlayersTextField).show(getStage());
+        } else {
+            createErrorDialog().show(getStage());
+        }
+    }
+
+    private Dialog createSuccessDialog(TextField townNameTextField, TextField numberOfPlayersTextField) {
+        Dialog successDialog = new CustomDialog(getStrings().format("gameInfo"), getSkin()) {
+            public void result(Object obj) {
+                if ((boolean) obj) {
+                    GameData match = new GameData(townNameTextField.getText(), getTextFieldNumber(numberOfPlayersTextField),createMatchRoleList());
+                    try {
+                        MatchServer.createServer(match);
+                    } catch (UnknownHostException e) {
+                        Gdx.app.log("SERVER CREATION ERROR: ", e.getMessage());
+                    }
+                    getGame().setScreen(new GameLobbyScreen(getGame()));
+                } else {
+                    this.hide();
+                }
+            }
+        };
+        successDialog.button("CANCEL", false);
+        successDialog.button("OKAY", true);
+        Label successMessage = new CustomLabel(createSuccessMessage(townNameTextField, numberOfPlayersTextField), getSkin());
+        successDialog.getContentTable().add(successMessage);
+        return successDialog;
+    }
+
+    private StringBuilder createSuccessMessage(TextField townNameTextField, TextField numberOfPlayersTextField) {
+        StringBuilder gameInfo = new StringBuilder();
+        Formatter format = new Formatter(gameInfo);
+        format.format(getStrings().format("createGameMessage"), townNameTextField.getText(), getTextFieldNumber(numberOfPlayersTextField));
+        for (Map.Entry<RoleName, TextField> roleCounterMapEntry : roleCounterMap.entrySet()) {
+            if (getTextFieldNumber(roleCounterMapEntry.getValue()) > 0) {
+                gameInfo.append("\n").append(roleCounterMapEntry.getKey()).append(": ").append(roleCounterMapEntry.getValue().getText());
+            }
+        }
+        gameInfo.append("\n");
+        return gameInfo;
+    }
+
+    private Dialog createErrorDialog() {
+        Dialog errorDialog = new CustomDialog(getStrings().format("errorInfo"), getSkin(), true);
+        Label errorMessage = new CustomLabel(getStrings().format("createGameError"), getSkin());
+        errorDialog.getContentTable().add(errorMessage);
+        return errorDialog;
+    }
+}
