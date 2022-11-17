@@ -14,7 +14,6 @@ public class LogoScreen extends BaseScreen {
 
     public LogoScreen(Game game) {
         super(game);
-        Gdx.app.log("HERE", "EHER");
     }
 
     @Override

@@ -26,9 +26,9 @@ public class MenuScreen extends BaseScreen {
         mainTable.defaults().width(DEFAULT_ACTOR_WIDTH).height(DEFAULT_ACTOR_HEIGHT);
         mainTable.center();
 
-        Label title = UIUtil.title(new CustomLabel(getStrings().format("gameTitle"), getSkin()));
+        Label title = UIUtil.title(new CustomLabel(getStrings().get("gameTitle"), getSkin()));
 
-        TextButton createButton = new TextButton(getStrings().format("create"), getSkin());
+        TextButton createButton = new TextButton(getStrings().get("create"), getSkin());
         createButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -36,7 +36,7 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
-        TextButton joinButton = new TextButton(getStrings().format("join"), getSkin());
+        TextButton joinButton = new TextButton(getStrings().get("join"), getSkin());
         joinButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -44,8 +44,8 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
-        TextButton settingsButton = new TextButton(getStrings().format("settings"), getSkin());
-        TextButton rulesButton = new TextButton(getStrings().format("rules"), getSkin());
+        TextButton settingsButton = new TextButton(getStrings().get("settings"), getSkin());
+        TextButton rulesButton = new TextButton(getStrings().get("rules"), getSkin());
 
         mainTable.add(title).padBottom(PAD_VERTICAL_BIG).row();
         mainTable.add(createButton).padBottom(PAD_VERTICAL_SMALL).row();
