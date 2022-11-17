@@ -11,9 +11,9 @@ import com.badlogic.gdx.utils.I18NBundle;
 public class UIUtil {
 
     private static UIUtil instance;
-    private TextureAtlas atlas = new TextureAtlas("skin/plain-james-ui.atlas");
-    private Skin skin = new Skin(Gdx.files.internal("skin/plain-james-ui.json"), atlas);
-    private I18NBundle strings = I18NBundle.createBundle(Gdx.files.internal("strings/strings"));
+    private final TextureAtlas atlas = new TextureAtlas("skin/plain-james-ui.atlas");
+    private final Skin skin = new Skin(Gdx.files.internal("skin/plain-james-ui.json"), atlas);
+    private final I18NBundle strings = I18NBundle.createBundle(Gdx.files.internal("strings/strings"));
 
     public static UIUtil getInstance() {
         if (instance == null) {

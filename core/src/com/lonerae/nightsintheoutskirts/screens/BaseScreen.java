@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.esotericsoftware.kryonet.Client;
 import com.lonerae.nightsintheoutskirts.screens.visible.MenuScreen;
 
 public class BaseScreen implements Screen {
@@ -92,13 +93,13 @@ public class BaseScreen implements Screen {
         viewport = new FitViewport(WIDTH, HEIGHT, camera);
         viewport.apply();
 
-        camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2, 0);
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
         stage = new Stage(viewport, batch);
         //HIDE KEYBOARD WHEN CLICKING OUTSIDE OF TEXT FIELD
         stage.getRoot().addCaptureListener(new InputListener() {
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 if (!(event.getTarget() instanceof TextField)) {
                     stage.setKeyboardFocus(null);
                     Gdx.input.setOnscreenKeyboardVisible(false);
@@ -122,7 +123,7 @@ public class BaseScreen implements Screen {
         stage.act();
         stage.draw();
 
-        if (isTraceable && Gdx.input.isKeyJustPressed(Input.Keys.BACK)){
+        if (isTraceable && Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
             this.game.setScreen(ScreenStack.goToPrevious());
         }
     }
@@ -130,7 +131,7 @@ public class BaseScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
-        camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2, 0);
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
     }
 

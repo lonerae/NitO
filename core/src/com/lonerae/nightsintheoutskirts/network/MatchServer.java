@@ -6,17 +6,32 @@ import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 import com.lonerae.nightsintheoutskirts.game.GameData;
 import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
+import com.lonerae.nightsintheoutskirts.network.requests.AssignRoleRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.ConnectionRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.GreetingRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
+import com.lonerae.nightsintheoutskirts.network.responses.AssignRoleResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.ConnectionResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MatchServer {
 
     private static Server server;
     private static GameData match;
+
+    private static Map<String, RoleName> connectedPlayersMap = new HashMap<>();
+    private static List<RoleName> shuffledDeck;
+    private static int connectedPlayersNumber = 0;
+    private static int assignedPlayerNumber = 0;
 
     public static void createServer(GameData data) throws UnknownHostException {
         if (server == null) {
@@ -32,6 +47,7 @@ public class MatchServer {
             NetworkUtil.register(server);
             createListener();
             match = data;
+            shuffleDeck();
         }
     }
 
@@ -39,8 +55,15 @@ public class MatchServer {
         return server;
     }
 
-    public static Map<RoleName, Integer> getMatchRoleList() {
-        return match.getMatchRoleList();
+    private static void shuffleDeck() {
+        List<RoleName> deck = new ArrayList<>();
+        for (RoleName roleName : match.getMatchRoleList().keySet()) {
+            for (int i = 0; i < match.getMatchRoleList().get(roleName); i ++) {
+                deck.add(roleName);
+            }
+        }
+        Collections.shuffle(deck);
+        shuffledDeck = deck;
     }
 
     private static void createListener() {
@@ -51,6 +74,26 @@ public class MatchServer {
                     response.townName = match.getTownName();
                     response.numberOfPlayers = match.getNumberOfPlayers();
                     connection.sendTCP(response);
+                } else if (object instanceof ConnectionRequest) {
+                    ConnectionResponse response = new ConnectionResponse();
+                    if (connectedPlayersNumber < match.getNumberOfPlayers()) {
+                        connectedPlayersNumber++;
+                    }
+                    response.connectionAccepted = connectedPlayersNumber < match.getNumberOfPlayers();
+                    connection.sendTCP(response);
+                } else if (object instanceof LobbyRequest) {
+                    LobbyResponse response = new LobbyResponse();
+                    response.matchRoleList = new ArrayList<>(match.getMatchRoleList().keySet());
+                    connection.sendTCP(response);
+                } else if (object instanceof AssignRoleRequest) {
+                    AssignRoleRequest request = (AssignRoleRequest) object;
+                    if (!connectedPlayersMap.containsKey(request.playerName)) {
+                        AssignRoleResponse response = new AssignRoleResponse();
+                        response.assignedRole = shuffledDeck.get(assignedPlayerNumber);
+                        connection.sendTCP(response);
+                        connectedPlayersMap.put(request.playerName, response.assignedRole);
+                        assignedPlayerNumber++;
+                    }
                 }
             }
         });
