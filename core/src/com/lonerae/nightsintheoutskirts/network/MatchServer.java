@@ -28,7 +28,7 @@ public class MatchServer {
     private static Server server;
     private static GameData match;
 
-    private static Map<String, RoleName> connectedPlayersMap = new HashMap<>();
+    private static final Map<String, RoleName> connectedPlayersMap = new HashMap<>();
     private static List<RoleName> shuffledDeck;
     private static int connectedPlayersNumber = 0;
     private static int assignedPlayerNumber = 0;

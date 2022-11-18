@@ -16,6 +16,7 @@ public class MenuScreen extends BaseScreen {
 
     public MenuScreen(Game game) {
         super(game);
+        setTraceable();
     }
 
     @Override

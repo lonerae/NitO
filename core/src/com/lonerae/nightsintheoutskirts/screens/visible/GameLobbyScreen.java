@@ -29,6 +29,7 @@ public class GameLobbyScreen extends BaseScreen {
     private Client client;
     public GameLobbyScreen(Game game) {
         super(game);
+        setTraceable();
     }
 
     @Override

@@ -33,6 +33,7 @@ public class GameJoinScreen extends BaseScreen {
 
     public GameJoinScreen(Game game) {
         super(game);
+        setTraceable();
     }
 
     @Override
