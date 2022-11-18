@@ -4,7 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -17,8 +16,6 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.esotericsoftware.kryonet.Client;
-import com.lonerae.nightsintheoutskirts.screens.visible.MenuScreen;
 
 public class BaseScreen implements Screen {
 
@@ -31,8 +28,6 @@ public class BaseScreen implements Screen {
     private final TextureAtlas atlas;
     private final Skin skin;
     private static I18NBundle strings;
-
-    private boolean isTraceable;
 
     //PUBLIC CONSTANTS
     public final static float WIDTH = (float) Gdx.graphics.getWidth();
@@ -50,10 +45,6 @@ public class BaseScreen implements Screen {
     public final static float DIALOG_VERTICAL_PAD = 80;
 
     public BaseScreen(Game game) {
-        this(game, true);
-    }
-
-    public BaseScreen(Game game, boolean isTraceable) {
         this.game = game;
 
         UIUtil uiUtilInstance = UIUtil.getInstance();
@@ -63,7 +54,6 @@ public class BaseScreen implements Screen {
         skin.getPatch("window").scale(1.5f, 1.5f);
 
         strings = uiUtilInstance.getStrings();
-        this.isTraceable = isTraceable;
     }
 
     public Game getGame() {
@@ -82,8 +72,9 @@ public class BaseScreen implements Screen {
         return strings;
     }
 
-    public void setTraceable(boolean traceable) {
-        isTraceable = traceable;
+    public void setTraceable() {
+        Gdx.input.setCatchKey(Input.Keys.BACK, true);
+        ScreenStack.getScreenStack().add(this);
     }
 
     @Override
@@ -108,11 +99,6 @@ public class BaseScreen implements Screen {
             }
         });
 
-        Gdx.input.setCatchKey(Input.Keys.BACK, true);
-        if (isTraceable) {
-            ScreenStack.getScreenStack().add(this);
-        }
-
         Gdx.input.setInputProcessor(stage);
     }
 
@@ -123,8 +109,9 @@ public class BaseScreen implements Screen {
         stage.act();
         stage.draw();
 
-        if (isTraceable && Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
-            this.game.setScreen(ScreenStack.goToPrevious());
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
+            this.game.setScreen(ScreenStack.findPrevious());
+            this.dispose();
         }
     }
 
@@ -150,7 +137,6 @@ public class BaseScreen implements Screen {
 
     @Override
     public void dispose() {
-        skin.dispose();
-        atlas.dispose();
+
     }
 }

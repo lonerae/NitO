@@ -40,6 +40,7 @@ public class GameCreateScreen extends BaseScreen {
 
     public GameCreateScreen(Game game) {
         super(game);
+        setTraceable();
     }
 
     public ScrollPane getScroll() {
