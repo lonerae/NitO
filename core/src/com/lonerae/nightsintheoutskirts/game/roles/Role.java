@@ -1,11 +1,9 @@
 package com.lonerae.nightsintheoutskirts.game.roles;
 
-import com.badlogic.gdx.graphics.Texture;
-
 public abstract class Role {
 
     private String description;
-    private Texture icon;
+    private String iconPath;
     private RoleName name;
 
     public String getDescription() {
@@ -16,12 +14,12 @@ public abstract class Role {
         this.description = description;
     }
 
-    public Texture getIcon() {
-        return icon;
+    public String getIconPath() {
+        return iconPath;
     }
 
-    public void setIcon(Texture icon) {
-        this.icon = icon;
+    public void setIconPath(String iconPath) {
+        this.iconPath = iconPath;
     }
 
     public RoleName getName() {

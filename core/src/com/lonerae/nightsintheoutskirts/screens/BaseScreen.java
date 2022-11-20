@@ -29,6 +29,8 @@ public class BaseScreen implements Screen {
     private final Skin skin;
     private static I18NBundle strings;
 
+    private boolean isTraceable = false;
+
     //PUBLIC CONSTANTS
     public final static float WIDTH = (float) Gdx.graphics.getWidth();
     public final static float HEIGHT = (float) Gdx.graphics.getHeight();
@@ -75,6 +77,7 @@ public class BaseScreen implements Screen {
     public void setTraceable() {
         Gdx.input.setCatchKey(Input.Keys.BACK, true);
         ScreenStack.getScreenStack().add(this);
+        isTraceable = true;
     }
 
     @Override
@@ -88,7 +91,6 @@ public class BaseScreen implements Screen {
         camera.update();
 
         stage = new Stage(viewport, batch);
-        //HIDE KEYBOARD WHEN CLICKING OUTSIDE OF TEXT FIELD
         stage.getRoot().addCaptureListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 if (!(event.getTarget() instanceof TextField)) {
@@ -109,7 +111,7 @@ public class BaseScreen implements Screen {
         stage.act();
         stage.draw();
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
+        if (isTraceable && Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
             this.game.setScreen(ScreenStack.findPrevious());
             this.dispose();
         }

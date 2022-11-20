@@ -7,7 +7,7 @@ public class Witch extends Role {
 
     public Witch() {
         setDescription(GameData.getRoleStrings().format("witchDescription"));
-        setIcon(new Texture("data/roles/witch.png"));
+        setIconPath("data/roles/witch.png");
         setName(RoleName.WITCH);
     }
 }

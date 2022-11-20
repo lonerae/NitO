@@ -1,7 +1,7 @@
 package com.lonerae.nightsintheoutskirts.screens.visible;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.esotericsoftware.kryonet.Client;
+import com.lonerae.nightsintheoutskirts.game.Player;
 import com.lonerae.nightsintheoutskirts.game.roles.Role;
 import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
@@ -62,7 +63,9 @@ public class GameLobbyScreen extends BaseScreen {
                     boolean flag = true;
                     while (flag) {
                         try {
-                            Gdx.app.log("ROLE:", MatchClient.getAssignedRole().getName().toString());
+                            Player.getPlayer().setRole(MatchClient.getAssignedRole());
+                            Player.getPlayer().setName(playerNameTextField.getText());
+                            getGame().setScreen(new RoleRevealScreen(getGame()));
                             flag = false;
                         } catch (NullPointerException ignored) {}
                     }
@@ -88,7 +91,7 @@ public class GameLobbyScreen extends BaseScreen {
         try {
             for (RoleName roleName : MatchClient.getMatchRoleList()) {
                 counter++;
-                rolesTable.add(new Image(Role.getRole(roleName).getIcon())).width(DEFAULT_ICON_SIZE).height(DEFAULT_ICON_SIZE).pad(PAD_HORIZONTAL_SMALL);
+                rolesTable.add(new Image(new Texture(Role.getRole(roleName).getIconPath()))).width(DEFAULT_ICON_SIZE).height(DEFAULT_ICON_SIZE).pad(PAD_HORIZONTAL_SMALL);
 
                 if (counter % 3 == 0) {
                     rolesTable.row();

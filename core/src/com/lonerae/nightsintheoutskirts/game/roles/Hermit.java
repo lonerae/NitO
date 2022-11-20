@@ -7,7 +7,7 @@ public class Hermit extends Role {
 
     public Hermit() {
         setDescription(GameData.getRoleStrings().format("hermitDescription"));
-        setIcon(new Texture("data/roles/hermit.png"));
+        setIconPath("data/roles/hermit.png");
         setName(RoleName.HERMIT);
     }
 }

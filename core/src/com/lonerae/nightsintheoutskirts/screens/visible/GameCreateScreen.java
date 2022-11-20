@@ -2,6 +2,7 @@ package com.lonerae.nightsintheoutskirts.screens.visible;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -12,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.esotericsoftware.kryonet.Client;
 import com.lonerae.nightsintheoutskirts.game.GameData;
 import com.lonerae.nightsintheoutskirts.game.roles.Role;
 import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
@@ -126,7 +126,7 @@ public class GameCreateScreen extends BaseScreen {
             Label label = new CustomLabel(role.getDescription(), getSkin());
             dialog.getContentTable().add(label).width(DEFAULT_POPUP_SIZE);
 
-            Image icon = new Image(role.getIcon());
+            Image icon = new Image(new Texture(role.getIconPath()));
             icon.addListener(new InputListener() {
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
