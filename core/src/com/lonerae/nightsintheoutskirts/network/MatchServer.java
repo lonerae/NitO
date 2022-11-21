@@ -30,11 +30,15 @@ public class MatchServer {
     private static Server server;
     private static GameData match;
 
-    private static final Map<String, RoleName> connectedPlayersMap = new HashMap<>();
+    private static final HashMap<String, RoleName> connectedPlayersMap = new HashMap<>();
     private static List<RoleName> shuffledDeck;
+
     private static int connectedPlayersNumber = 0;
     private static int assignedPlayerNumber = 0;
     private static int readyPlayerNumber = 0;
+
+    private static int nightCounter;
+    private static int dayCounter;
 
     public static void createServer(GameData data) throws UnknownHostException {
         if (server == null) {
@@ -110,6 +114,7 @@ public class MatchServer {
                     if (readyPlayerNumber == match.getNumberOfPlayers()) {
                         ProceedResponse response = new ProceedResponse();
                         response.permit = true;
+                        response.playerMap = connectedPlayersMap;
                         server.sendToAllTCP(response);
                         readyPlayerNumber = 0;
                     }

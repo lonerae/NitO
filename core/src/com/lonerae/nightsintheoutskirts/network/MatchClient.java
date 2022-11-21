@@ -27,6 +27,8 @@ public class MatchClient {
     private static Role assignedRole;
     private static Boolean permitted = null;
 
+    private static HashMap<String, RoleName> connectedPlayersMap;
+
     public static void createClient() {
         if (client == null) {
             client = new Client();
@@ -72,6 +74,10 @@ public class MatchClient {
         MatchClient.permitted = permitted;
     }
 
+    public static HashMap<String, RoleName> getConnectedPlayersMap() {
+        return connectedPlayersMap;
+    }
+
     private static void createListener() {
         client.addListener(new Listener() {
             public void received (Connection connection, Object object) {
@@ -88,7 +94,9 @@ public class MatchClient {
                     AssignRoleResponse response = (AssignRoleResponse) object;
                     assignedRole = Role.getRole(response.assignedRole);
                 } else if (object instanceof ProceedResponse) {
-                    permitted = true;
+                    ProceedResponse response = (ProceedResponse) object;
+                    permitted = response.permit;
+                    connectedPlayersMap = response.playerMap;
                 }
             }
         });

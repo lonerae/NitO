@@ -115,6 +115,8 @@ public class GameJoinScreen extends BaseScreen {
     @Override
     public void dispose() {
         super.dispose();
-        MatchClient.terminate();
+        try {
+            MatchClient.terminate();
+        } catch (NullPointerException ignored) {}
     }
 }
