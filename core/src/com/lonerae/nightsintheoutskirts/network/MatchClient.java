@@ -3,13 +3,13 @@ package com.lonerae.nightsintheoutskirts.network;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.minlog.Log;
 import com.lonerae.nightsintheoutskirts.game.roles.Role;
 import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
 import com.lonerae.nightsintheoutskirts.network.responses.AssignRoleResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ConnectionResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +24,7 @@ public class MatchClient {
     private static List<RoleName> matchRoleList;
     private static boolean connectionAccepted;
     private static Role assignedRole;
+    private static Boolean permitted = null;
 
     public static void createClient() {
         if (client == null) {
@@ -54,6 +55,14 @@ public class MatchClient {
         return assignedRole;
     }
 
+    public static Boolean isPermitted() {
+        return permitted;
+    }
+
+    public static void setPermitted(Boolean permitted) {
+        MatchClient.permitted = permitted;
+    }
+
     private static void createListener() {
         client.addListener(new Listener() {
             public void received (Connection connection, Object object) {
@@ -69,6 +78,8 @@ public class MatchClient {
                 } else if (object instanceof AssignRoleResponse) {
                     AssignRoleResponse response = (AssignRoleResponse) object;
                     assignedRole = Role.getRole(response.assignedRole);
+                } else if (object instanceof ProceedResponse) {
+                    permitted = true;
                 }
             }
         });
