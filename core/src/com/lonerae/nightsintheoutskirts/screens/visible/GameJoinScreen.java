@@ -8,12 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.esotericsoftware.kryonet.Client;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.requests.ConnectionRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.GreetingRequest;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
@@ -29,7 +29,6 @@ public class GameJoinScreen extends BaseScreen {
     private InetAddress server;
     private boolean hasSearched = false;
     private Table matchTable;
-    private Client client;
 
     public GameJoinScreen(Game game) {
         super(game);
@@ -57,14 +56,13 @@ public class GameJoinScreen extends BaseScreen {
         getStage().addActor(scroll);
 
         MatchClient.createClient();
-        client = MatchClient.getClient();
 
         searchGamesButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                server = client.discoverHost(54777, 1000);
+                server = MatchClient.getClient().discoverHost(54777, 1000);
                 try {
-                    client.connect(1000, server, 54555, 54777);
+                    MatchClient.getClient().connect(1000, server, 54555, 54777);
                     GreetingRequest request = new GreetingRequest();
                     MatchClient.getClient().sendTCP(request);
                     boolean flag = true;
@@ -94,16 +92,17 @@ public class GameJoinScreen extends BaseScreen {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         ConnectionRequest connectionRequest = new ConnectionRequest();
-                        client.sendTCP(connectionRequest);
-                        boolean flag = true;
-                        while (flag) {
+                        MatchClient.getClient().sendTCP(connectionRequest);
+                        while(true) {
                             try {
                                 if (MatchClient.isConnectionAccepted()) {
                                     getGame().setScreen(new GameLobbyScreen(getGame()));
-                                    flag = false;
                                 } else {
-                                    //error dialog
+                                    CustomDialog errorDialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("lobbyFullError"),getSkin());
+                                    errorDialog.isHideable();
+                                    errorDialog.show(getStage());
                                 }
+                                break;
                             } catch (NullPointerException ignored) {}
                         }
                     }
@@ -111,5 +110,13 @@ public class GameJoinScreen extends BaseScreen {
                 matchTable.add(matchButton).width(DEFAULT_ACTOR_WIDTH).height(DEFAULT_ACTOR_HEIGHT).padBottom(PAD_VERTICAL_SMALL).row();
             }
         }
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        try {
+            MatchClient.terminate();
+        } catch (NullPointerException ignored) {}
     }
 }

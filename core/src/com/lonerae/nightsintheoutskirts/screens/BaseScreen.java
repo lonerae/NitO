@@ -6,7 +6,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -25,9 +24,9 @@ public class BaseScreen implements Screen {
     private Viewport viewport;
     private Stage stage;
 
-    private final TextureAtlas atlas;
     private final Skin skin;
     private static I18NBundle strings;
+    private static I18NBundle gameStrings;
 
     private boolean isTraceable = false;
 
@@ -50,12 +49,12 @@ public class BaseScreen implements Screen {
         this.game = game;
 
         UIUtil uiUtilInstance = UIUtil.getInstance();
-        atlas = uiUtilInstance.getAtlas();
         skin = uiUtilInstance.getSkin();
         skin.getFont("font").getData().setScale(2f);
         skin.getPatch("window").scale(1.5f, 1.5f);
 
         strings = uiUtilInstance.getStrings();
+        gameStrings = uiUtilInstance.getGameStrings();
     }
 
     public Game getGame() {
@@ -72,6 +71,10 @@ public class BaseScreen implements Screen {
 
     public static I18NBundle getStrings() {
         return strings;
+    }
+
+    public static I18NBundle getGameStrings() {
+        return gameStrings;
     }
 
     public void setTraceable() {

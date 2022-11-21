@@ -16,6 +16,7 @@ import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -29,12 +30,13 @@ public class NetworkUtil {
         kryo.register(ConnectionResponse.class);
         kryo.register(GreetingRequest.class);
         kryo.register(GreetingResponse.class);
-        kryo.register(ArrayList.class);
-        kryo.register(RoleName.class);
         kryo.register(LobbyRequest.class);
         kryo.register(LobbyResponse.class);
         kryo.register(ProceedRequest.class);
         kryo.register(ProceedResponse.class);
+        kryo.register(ArrayList.class);
+        kryo.register(HashMap.class);
+        kryo.register(RoleName.class);
     }
 
     public static void register(Client client) {
@@ -45,11 +47,12 @@ public class NetworkUtil {
         kryo.register(ConnectionResponse.class);
         kryo.register(GreetingRequest.class);
         kryo.register(GreetingResponse.class);
-        kryo.register(ArrayList.class);
-        kryo.register(RoleName.class);
         kryo.register(LobbyRequest.class);
         kryo.register(LobbyResponse.class);
         kryo.register(ProceedRequest.class);
         kryo.register(ProceedResponse.class);
+        kryo.register(ArrayList.class);
+        kryo.register(HashMap.class);
+        kryo.register(RoleName.class);
     }
 }

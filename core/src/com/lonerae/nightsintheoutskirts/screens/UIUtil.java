@@ -1,6 +1,7 @@
 package com.lonerae.nightsintheoutskirts.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -14,6 +15,7 @@ public class UIUtil {
     private final TextureAtlas atlas = new TextureAtlas("skin/plain-james-ui.atlas");
     private final Skin skin = new Skin(Gdx.files.internal("skin/plain-james-ui.json"), atlas);
     private final I18NBundle strings = I18NBundle.createBundle(Gdx.files.internal("strings/strings"));
+    private final I18NBundle gameStrings = I18NBundle.createBundle(Gdx.files.internal("strings/gameStrings"));
 
     public static UIUtil getInstance() {
         if (instance == null) {
@@ -22,16 +24,16 @@ public class UIUtil {
         return instance;
     }
 
-    public TextureAtlas getAtlas() {
-        return atlas;
-    }
-
     public Skin getSkin() {
         return skin;
     }
 
     public I18NBundle getStrings() {
         return strings;
+    }
+
+    public I18NBundle getGameStrings() {
+        return gameStrings;
     }
 
     public static void center(Actor actor) {
