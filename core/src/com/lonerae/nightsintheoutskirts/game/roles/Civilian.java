@@ -7,7 +7,7 @@ public class Civilian extends Role {
 
     public Civilian() {
         setDescription(GameData.getRoleStrings().format("civilianDescription"));
-        setIcon(new Texture("data/roles/civilian.png"));
+        setIconPath("data/roles/civilian.png");
         setName(RoleName.CIVILIAN);
     }
 }

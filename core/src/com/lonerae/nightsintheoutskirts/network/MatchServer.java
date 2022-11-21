@@ -10,10 +10,12 @@ import com.lonerae.nightsintheoutskirts.network.requests.AssignRoleRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ConnectionRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.GreetingRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
 import com.lonerae.nightsintheoutskirts.network.responses.AssignRoleResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ConnectionResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -32,6 +34,7 @@ public class MatchServer {
     private static List<RoleName> shuffledDeck;
     private static int connectedPlayersNumber = 0;
     private static int assignedPlayerNumber = 0;
+    private static int readyPlayerNumber = 0;
 
     public static void createServer(GameData data) throws UnknownHostException {
         if (server == null) {
@@ -93,6 +96,14 @@ public class MatchServer {
                         connection.sendTCP(response);
                         connectedPlayersMap.put(request.playerName, response.assignedRole);
                         assignedPlayerNumber++;
+                    }
+                } else if (object instanceof ProceedRequest) {
+                    readyPlayerNumber++;
+                    if (readyPlayerNumber == match.getNumberOfPlayers()) {
+                        ProceedResponse response = new ProceedResponse();
+                        response.permit = true;
+                        server.sendToAllTCP(response);
+                        readyPlayerNumber = 0;
                     }
                 }
             }
