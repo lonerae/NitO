@@ -54,6 +54,14 @@ public class MatchServer {
         }
     }
 
+    public static void terminate() {
+        try {
+            server.dispose();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static Server getServer() {
         return server;
     }

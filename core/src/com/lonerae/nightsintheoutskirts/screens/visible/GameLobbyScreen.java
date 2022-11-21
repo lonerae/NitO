@@ -21,6 +21,7 @@ import com.lonerae.nightsintheoutskirts.network.requests.AssignRoleRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
@@ -70,7 +71,9 @@ public class GameLobbyScreen extends BaseScreen {
                         } catch (NullPointerException ignored) {}
                     }
                 } else {
-                    //error dialog
+                    CustomDialog errorDialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("emptyNameError"), getSkin());
+                    errorDialog.isHideable();
+                    errorDialog.show(getStage());
                 }
             }
         });

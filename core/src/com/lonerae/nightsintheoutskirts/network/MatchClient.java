@@ -11,6 +11,7 @@ import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ public class MatchClient {
     private static final Map<String, Integer> availableMatches = new HashMap<>();
 
     private static List<RoleName> matchRoleList;
-    private static boolean connectionAccepted;
+    private static Boolean connectionAccepted = null;
     private static Role assignedRole;
     private static Boolean permitted = null;
 
@@ -32,6 +33,14 @@ public class MatchClient {
             client.start();
             NetworkUtil.register(client);
             createListener();
+        }
+    }
+
+    public static void terminate() {
+        try {
+            client.dispose();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -47,7 +56,7 @@ public class MatchClient {
         return matchRoleList;
     }
 
-    public static boolean isConnectionAccepted() {
+    public static Boolean isConnectionAccepted() {
         return connectionAccepted;
     }
 

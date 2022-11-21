@@ -122,9 +122,8 @@ public class GameCreateScreen extends BaseScreen {
             numberOfRoleTextField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
 
             Table roleIconAndCounter = new Table();
-            Dialog dialog = new CustomDialog(role.getName().toString(), getSkin(), true);
-            Label label = new CustomLabel(role.getDescription(), getSkin());
-            dialog.getContentTable().add(label).width(DEFAULT_POPUP_SIZE);
+            CustomDialog dialog = new CustomDialog(role.getName().toString(), role.getDescription(), getSkin());
+            dialog.isHideable();
 
             Image icon = new Image(new Texture(role.getIconPath()));
             icon.addListener(new InputListener() {
@@ -166,7 +165,7 @@ public class GameCreateScreen extends BaseScreen {
     }
 
     private Dialog createSuccessDialog(TextField townNameTextField, TextField numberOfPlayersTextField) {
-        Dialog successDialog = new CustomDialog(getStrings().get("gameInfo"), getSkin()) {
+        Dialog successDialog = new CustomDialog(getStrings().get("gameInfo"), createSuccessMessage(townNameTextField, numberOfPlayersTextField), getSkin()) {
             public void result(Object obj) {
                 if ((boolean) obj) {
                     GameData match = new GameData(townNameTextField.getText(), getTextFieldNumber(numberOfPlayersTextField), createMatchRoleList());
@@ -190,12 +189,10 @@ public class GameCreateScreen extends BaseScreen {
         };
         successDialog.button("CANCEL", false);
         successDialog.button("OKAY", true);
-        Label successMessage = new CustomLabel(createSuccessMessage(townNameTextField, numberOfPlayersTextField), getSkin());
-        successDialog.getContentTable().add(successMessage);
         return successDialog;
     }
 
-    private StringBuilder createSuccessMessage(TextField townNameTextField, TextField numberOfPlayersTextField) {
+    private String createSuccessMessage(TextField townNameTextField, TextField numberOfPlayersTextField) {
         StringBuilder gameInfo = new StringBuilder();
         Formatter format = new Formatter(gameInfo);
         format.format(getStrings().get("createGameMessage"), townNameTextField.getText(), getTextFieldNumber(numberOfPlayersTextField));
@@ -205,13 +202,19 @@ public class GameCreateScreen extends BaseScreen {
             }
         }
         gameInfo.append("\n");
-        return gameInfo;
+        return gameInfo.toString();
     }
 
     private Dialog createErrorDialog() {
-        Dialog errorDialog = new CustomDialog(getStrings().get("errorInfo"), getSkin(), true);
-        Label errorMessage = new CustomLabel(getStrings().get("createGameError"), getSkin());
-        errorDialog.getContentTable().add(errorMessage);
+        CustomDialog errorDialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("createGameError"), getSkin());
+        errorDialog.isHideable();
         return errorDialog;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        MatchClient.terminate();
+        MatchServer.terminate();
     }
 }
