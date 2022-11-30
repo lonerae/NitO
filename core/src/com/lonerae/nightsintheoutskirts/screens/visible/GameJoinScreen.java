@@ -17,6 +17,7 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -41,9 +42,9 @@ public class GameJoinScreen extends BaseScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label title = new CustomLabel(getStrings().get("join"), getSkin());
+        Label title = new CustomLabel(getStrings().get("join"), getTitleStyle());
         UIUtil.title(title);
-        TextButton searchGamesButton = new TextButton(getStrings().get("searchGames"), getSkin());
+        TextButton searchGamesButton = new CustomTextButton(getStrings().get("searchGames"), getSkin(), getBlackStyle());
         searchGamesButton.getLabel().setWrap(true);
 
         mainTable.add(title).padBottom(PAD_VERTICAL_SMALL).row();
@@ -87,7 +88,8 @@ public class GameJoinScreen extends BaseScreen {
         if (!availableMatches.isEmpty() && hasSearched) {
             hasSearched = false;
             for (String matchTitle : availableMatches.keySet()) {
-                TextButton matchButton = new TextButton(matchTitle + "\n\n" + availableMatches.get(matchTitle), getSkin());
+                TextButton matchButton = new CustomTextButton(matchTitle + "\n\n" +
+                        availableMatches.get(matchTitle), getSkin(), getBlackStyle());
                 matchButton.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
@@ -98,7 +100,7 @@ public class GameJoinScreen extends BaseScreen {
                                 if (MatchClient.isConnectionAccepted()) {
                                     getGame().setScreen(new GameLobbyScreen(getGame()));
                                 } else {
-                                    CustomDialog errorDialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("lobbyFullError"),getSkin());
+                                    CustomDialog errorDialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("lobbyFullError"),getSkin(), getBlackStyle());
                                     errorDialog.isHideable();
                                     errorDialog.show(getStage());
                                 }

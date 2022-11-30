@@ -25,6 +25,7 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
 
 public class GameLobbyScreen extends BaseScreen {
 
@@ -43,17 +44,17 @@ public class GameLobbyScreen extends BaseScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label title = new CustomLabel(getStrings().get("lobbyTitle"), getSkin());
+        Label title = new CustomLabel(getStrings().get("lobbyTitle"), getTitleStyle());
         UIUtil.title(title);
-        TextField playerNameTextField = new TextField("",getSkin());
+        TextField playerNameTextField = new TextField("",getTextFieldStyle());
         playerNameTextField.setMessageText(getStrings().get("playerNamePlaceholder"));
-        Label rolesLabel = new CustomLabel(getStrings().get("rolesLobbyLabel"), getSkin());
+        Label rolesLabel = new CustomLabel(getStrings().get("rolesLobbyLabel"), getBlackStyle());
         rolesLabel.setAlignment(Align.center);
 
         Table rolesTable = new Table();
         fill(rolesTable);
 
-        TextButton assignRoleButton = new TextButton(getStrings().get("assignRoleButton"), getSkin());
+        TextButton assignRoleButton = new CustomTextButton(getStrings().get("assignRoleButton"), getSkin(), getBlackStyle());
         assignRoleButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -71,7 +72,7 @@ public class GameLobbyScreen extends BaseScreen {
                         } catch (NullPointerException ignored) {}
                     }
                 } else {
-                    CustomDialog errorDialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("emptyNameError"), getSkin());
+                    CustomDialog errorDialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("emptyNameError"), getSkin(), getBlackStyle());
                     errorDialog.isHideable();
                     errorDialog.show(getStage());
                 }
