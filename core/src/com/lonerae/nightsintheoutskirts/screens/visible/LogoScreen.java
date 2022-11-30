@@ -21,6 +21,7 @@ public class LogoScreen extends BaseScreen {
         super.show();
 
         Image logo = new Image(new Texture("data/placeholder.png"));
+        logo.setSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE);
         UIUtil.center(logo);
 
         getStage().addActor(logo);

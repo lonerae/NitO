@@ -11,8 +11,9 @@ public class CustomLabel extends Label {
         this.setWrap(true);
     }
 
-    public CustomLabel(CharSequence text, Skin skin, String fontName, Color color) {
-        super(text, skin, fontName, color);
+    public CustomLabel(CharSequence text, LabelStyle style) {
+        super(text, style);
         this.setWrap(true);
     }
+
 }

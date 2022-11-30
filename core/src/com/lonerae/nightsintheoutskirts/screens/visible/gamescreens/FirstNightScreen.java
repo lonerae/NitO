@@ -1,10 +1,10 @@
 package com.lonerae.nightsintheoutskirts.screens.visible.gamescreens;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Align;
 import com.lonerae.nightsintheoutskirts.game.Player;
 import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
@@ -26,20 +26,21 @@ public class FirstNightScreen extends BaseScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label title = new CustomLabel("Night", getSkin());
+        Label title = new CustomLabel("Night", getTitleStyle());
         UIUtil.title(title);
 
-        Label description = new CustomLabel(getGameStrings().get("firstNight"), getSkin());
+        Label description = new CustomLabel(getGameStrings().get("firstNight"), getBlackStyle());
 
         Table playerTable = new Table();
         int counter = 0;
         for (String player : MatchClient.getConnectedPlayersMap().keySet()) {
-            Label playerLabel = new CustomLabel(player, getSkin());
+            Label playerLabel = new CustomLabel(player, getBlackStyle());
             if (MatchClient.getConnectedPlayersMap().get(player).equals(RoleName.ASSASSIN)) {
                 if (Player.getPlayer().getRole().getName().equals(RoleName.ASSASSIN)) {
-                    playerLabel = new CustomLabel(player, getSkin(), "font", Color.RED);
+                    playerLabel = new CustomLabel(player, getRedStyle());
                 }
             }
+            playerLabel.setAlignment(Align.center);
             playerTable.add(playerLabel).width(WIDTH / 3);
             counter++;
             if (counter % 3 == 0) {

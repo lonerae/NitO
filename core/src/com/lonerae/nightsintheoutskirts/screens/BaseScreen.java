@@ -9,11 +9,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class BaseScreen implements Screen {
@@ -28,20 +30,26 @@ public class BaseScreen implements Screen {
     private static I18NBundle strings;
     private static I18NBundle gameStrings;
 
+    private final Label.LabelStyle titleStyle;
+    private final Label.LabelStyle redStyle;
+    private final Label.LabelStyle blackStyle;
+    private final TextField.TextFieldStyle textFieldStyle;
+
     private boolean isTraceable = false;
 
     //PUBLIC CONSTANTS
+    public final static float ASPECT_RATIO = (float) Gdx.graphics.getHeight() / (float) Gdx.graphics.getWidth();
     public final static float WIDTH = (float) Gdx.graphics.getWidth();
     public final static float HEIGHT = (float) Gdx.graphics.getHeight();
 
     public final static float DEFAULT_ACTOR_WIDTH = (WIDTH * 3) / 4;
-    public final static float DEFAULT_ACTOR_HEIGHT = 200;
-    public final static float DEFAULT_ICON_SIZE = 250;
+    public final static float DEFAULT_ACTOR_HEIGHT = HEIGHT / 10;
+    public final static float DEFAULT_ICON_SIZE = WIDTH / 5;
     public final static float DEFAULT_POPUP_SIZE = (WIDTH * 4) / 5;
 
     public final static float PAD_VERTICAL_BIG = HEIGHT / 10;
     public final static float PAD_VERTICAL_SMALL = HEIGHT / 20;
-    public final static float PAD_HORIZONTAL_BIG = 80;
+    public final static float PAD_HORIZONTAL_BIG = WIDTH / 15;
     public final static float PAD_HORIZONTAL_SMALL = 40;
     public final static float DIALOG_VERTICAL_PAD = 80;
 
@@ -50,9 +58,11 @@ public class BaseScreen implements Screen {
 
         UIUtil uiUtilInstance = UIUtil.getInstance();
         skin = uiUtilInstance.getSkin();
-        skin.getFont("font").getData().setScale(2f);
-        skin.getPatch("window").scale(1.5f, 1.5f);
 
+        titleStyle = uiUtilInstance.getTitleStyle();
+        redStyle = uiUtilInstance.getRedStyle();
+        blackStyle = uiUtilInstance.getBlackStyle();
+        textFieldStyle = uiUtilInstance.getTextFieldStyle();
         strings = uiUtilInstance.getStrings();
         gameStrings = uiUtilInstance.getGameStrings();
     }
@@ -83,15 +93,30 @@ public class BaseScreen implements Screen {
         isTraceable = true;
     }
 
+    public Label.LabelStyle getTitleStyle() {
+        return titleStyle;
+    }
+
+    public Label.LabelStyle getRedStyle() {
+        return redStyle;
+    }
+
+    public Label.LabelStyle getBlackStyle() {
+        return blackStyle;
+    }
+
+    public TextField.TextFieldStyle getTextFieldStyle() {
+        return textFieldStyle;
+    }
+
     @Override
     public void show() {
         SpriteBatch batch = new SpriteBatch();
         camera = new OrthographicCamera();
-        viewport = new FitViewport(WIDTH, HEIGHT, camera);
+        viewport = new StretchViewport(WIDTH, WIDTH * ASPECT_RATIO, camera);
         viewport.apply();
 
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
-        camera.update();
 
         stage = new Stage(viewport, batch);
         stage.getRoot().addCaptureListener(new InputListener() {
@@ -129,7 +154,6 @@ public class BaseScreen implements Screen {
 
     @Override
     public void pause() {
-
     }
 
     @Override

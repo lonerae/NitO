@@ -21,6 +21,7 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.FirstNightScreen;
 
 public class RoleRevealScreen extends BaseScreen {
@@ -35,15 +36,15 @@ public class RoleRevealScreen extends BaseScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label roleName = new CustomLabel(Player.getPlayer().getRole().getName().toString(), getSkin());
+        Label roleName = new CustomLabel(Player.getPlayer().getRole().getName().toString(), getTitleStyle());
         UIUtil.title(roleName);
         Image roleIcon = new Image(new Texture(Player.getPlayer().getRole().getIconPath()));
-        Label roleDescription = new CustomLabel(Player.getPlayer().getRole().getDescription(), getSkin());
-        Button startButton = new TextButton(getStrings().get("startGameButton"), getSkin());
+        Label roleDescription = new CustomLabel(Player.getPlayer().getRole().getDescription(), getBlackStyle());
+        Button startButton = new CustomTextButton(getStrings().get("startGameButton"), getSkin(), getBlackStyle());
         startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("waitMessage"), getSkin());
+                Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("waitMessage"), getSkin(), getBlackStyle());
                 dialog.show(getStage());
                 ProceedRequest request = new ProceedRequest();
                 MatchClient.getClient().sendTCP(request);

@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.lonerae.nightsintheoutskirts.game.GameData;
 import com.lonerae.nightsintheoutskirts.game.roles.Role;
 import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
@@ -25,6 +26,8 @@ import com.lonerae.nightsintheoutskirts.screens.UIUtil;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextField;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -52,19 +55,21 @@ public class GameCreateScreen extends BaseScreen {
         super.show();
 
         Table mainTable = new CustomTable(true);
-        Label title = UIUtil.title(new CustomLabel(getStrings().get("create"), getSkin()));
+        Label title = UIUtil.title(new CustomLabel(getStrings().get("create"), getTitleStyle()));
         mainTable.add(title).padBottom(PAD_VERTICAL_BIG).row();
+        mainTable.center();
 
         Table menuTable = new Table();
-        menuTable.padLeft(PAD_HORIZONTAL_BIG).left();
         menuTable.defaults().width(DEFAULT_ACTOR_WIDTH);
-        Label townNameLabel = new CustomLabel(getStrings().get("townNameLabel"), getSkin());
-        TextField townNameTextField = new TextField("", getSkin());
-        Label numberOfPlayersLabel = new CustomLabel(getStrings().get("numberOfPlayersLabel"), getSkin());
-        TextField numberOfPlayersTextField = new TextField("", getSkin());
+        Label townNameLabel = new CustomLabel(getStrings().get("townNameLabel"), getBlackStyle());
+        townNameLabel.setAlignment(Align.center);
+        TextField townNameTextField = new CustomTextField("", getTextFieldStyle());
+        Label numberOfPlayersLabel = new CustomLabel(getStrings().get("numberOfPlayersLabel"), getBlackStyle());
+        numberOfPlayersLabel.setAlignment(Align.center);
+        TextField numberOfPlayersTextField = new CustomTextField("", getTextFieldStyle());
         numberOfPlayersTextField.setMessageText("0");
         numberOfPlayersTextField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
-        Label rolesLabel = new CustomLabel(getStrings().get("rolesLabel"), getSkin());
+        Label rolesLabel = new CustomLabel(getStrings().get("rolesLabel"), getBlackStyle());
         menuTable.add(townNameLabel).padBottom(PAD_VERTICAL_SMALL).row();
         menuTable.add(townNameTextField).padBottom(PAD_VERTICAL_SMALL).row();
         menuTable.add(numberOfPlayersLabel).padBottom(PAD_VERTICAL_SMALL).row();
@@ -78,7 +83,7 @@ public class GameCreateScreen extends BaseScreen {
 
         mainTable.add(rolesTable).padBottom(PAD_VERTICAL_SMALL).row();
 
-        TextButton createButton = new TextButton(getStrings().get("create"), getSkin());
+        TextButton createButton = new CustomTextButton(getStrings().get("create"), getSkin(), getBlackStyle());
         createButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -116,13 +121,13 @@ public class GameCreateScreen extends BaseScreen {
         for (Role role : GameData.getRoleList().values()) {
             iconCounter++;
 
-            TextField numberOfRoleTextField = new TextField("", getSkin());
+            TextField numberOfRoleTextField = new CustomTextField("", getTextFieldStyle());
             numberOfRoleTextField.setMessageText("0");
             roleCounterMap.put(role.getName(), numberOfRoleTextField);
             numberOfRoleTextField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
 
             Table roleIconAndCounter = new Table();
-            CustomDialog dialog = new CustomDialog(role.getName().toString(), role.getDescription(), getSkin());
+            CustomDialog dialog = new CustomDialog(role.getName().toString(), role.getDescription(), getSkin(), getBlackStyle());
             dialog.isHideable();
 
             Image icon = new Image(new Texture(role.getIconPath()));
@@ -142,8 +147,8 @@ public class GameCreateScreen extends BaseScreen {
             });
 
             roleIconAndCounter.add(icon).width(DEFAULT_ICON_SIZE).height(DEFAULT_ICON_SIZE).padBottom(PAD_VERTICAL_SMALL).row();
-            roleIconAndCounter.add(numberOfRoleTextField);
-            rolesTable.add(roleIconAndCounter).pad(PAD_HORIZONTAL_SMALL);
+            roleIconAndCounter.add(numberOfRoleTextField).width(DEFAULT_ICON_SIZE);
+            rolesTable.add(roleIconAndCounter).pad(PAD_HORIZONTAL_BIG);
             if (iconCounter % 3 == 0) {
                 rolesTable.row();
             }
@@ -165,7 +170,7 @@ public class GameCreateScreen extends BaseScreen {
     }
 
     private Dialog createSuccessDialog(TextField townNameTextField, TextField numberOfPlayersTextField) {
-        Dialog successDialog = new CustomDialog(getStrings().get("gameInfo"), createSuccessMessage(townNameTextField, numberOfPlayersTextField), getSkin()) {
+        Dialog successDialog = new CustomDialog(getStrings().get("gameInfo"), createSuccessMessage(townNameTextField, numberOfPlayersTextField), getSkin(), getBlackStyle()) {
             public void result(Object obj) {
                 if ((boolean) obj) {
                     GameData match = new GameData(townNameTextField.getText(), getTextFieldNumber(numberOfPlayersTextField), createMatchRoleList());
@@ -187,8 +192,8 @@ public class GameCreateScreen extends BaseScreen {
                 }
             }
         };
-        successDialog.button("CANCEL", false);
-        successDialog.button("OKAY", true);
+        successDialog.button(new CustomTextButton("CANCEL", getSkin(), getBlackStyle()), false);
+        successDialog.button(new CustomTextButton("OKAY", getSkin(), getBlackStyle()), true);
         return successDialog;
     }
 
@@ -206,7 +211,7 @@ public class GameCreateScreen extends BaseScreen {
     }
 
     private Dialog createErrorDialog() {
-        CustomDialog errorDialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("createGameError"), getSkin());
+        CustomDialog errorDialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("createGameError"), getSkin(), getBlackStyle());
         errorDialog.isHideable();
         return errorDialog;
     }

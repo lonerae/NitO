@@ -41,6 +41,10 @@ task dist(type: Jar) {
     with jar
 }
 
+dependencies {
+    implementation files('build/libs/runnable-hiero.jar')
+}
+
 
 dist.dependsOn classes
 
