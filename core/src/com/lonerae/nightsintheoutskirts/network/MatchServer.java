@@ -31,6 +31,7 @@ public class MatchServer {
     private static GameData match;
 
     private static final HashMap<String, RoleName> connectedPlayersMap = new HashMap<>();
+    private static final HashMap<String, RoleName> alivePlayersMap = new HashMap<>();
     private static List<RoleName> shuffledDeck;
 
     private static int connectedPlayersNumber = 0;
@@ -107,6 +108,7 @@ public class MatchServer {
                         response.assignedRole = shuffledDeck.get(assignedPlayerNumber);
                         connection.sendTCP(response);
                         connectedPlayersMap.put(request.playerName, response.assignedRole);
+                        alivePlayersMap.put(request.playerName, response.assignedRole);
                         assignedPlayerNumber++;
                     }
                 } else if (object instanceof ProceedRequest) {
@@ -114,7 +116,7 @@ public class MatchServer {
                     if (readyPlayerNumber == match.getNumberOfPlayers()) {
                         ProceedResponse response = new ProceedResponse();
                         response.permit = true;
-                        response.playerMap = connectedPlayersMap;
+                        response.playerMap = alivePlayersMap;
                         server.sendToAllTCP(response);
                         readyPlayerNumber = 0;
                     }

@@ -8,6 +8,7 @@ public class Player {
 
     private String name;
     private Role role;
+    private boolean isAlive = true;
 
     public static Player getPlayer() {
         if (player == null) {
@@ -30,5 +31,13 @@ public class Player {
 
     public void setRole(Role role) {
         player.role = role;
+    }
+
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public void setAlive(boolean alive) {
+        isAlive = alive;
     }
 }
