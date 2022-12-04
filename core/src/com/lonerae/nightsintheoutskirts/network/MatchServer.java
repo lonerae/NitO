@@ -11,6 +11,7 @@ import com.lonerae.nightsintheoutskirts.network.requests.ConnectionRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.GreetingRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.VoteRequest;
 import com.lonerae.nightsintheoutskirts.network.responses.AssignRoleResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ConnectionResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,8 @@ public class MatchServer {
 
     private static final HashMap<String, RoleName> connectedPlayersMap = new HashMap<>();
     private static final HashMap<String, RoleName> alivePlayersMap = new HashMap<>();
+    private static final HashMap<String, RoleName> deadPlayersMap = new HashMap<>();
+    private static final HashMap<String, Integer> votingMap = new HashMap<>();
     private static List<RoleName> shuffledDeck;
 
     private static int connectedPlayersNumber = 0;
@@ -112,6 +116,7 @@ public class MatchServer {
                         assignedPlayerNumber++;
                     }
                 } else if (object instanceof ProceedRequest) {
+                    ProceedRequest request = (ProceedRequest) object;
                     readyPlayerNumber++;
                     if (readyPlayerNumber == match.getNumberOfPlayers()) {
                         ProceedResponse response = new ProceedResponse();
@@ -119,9 +124,33 @@ public class MatchServer {
                         response.playerMap = alivePlayersMap;
                         server.sendToAllTCP(response);
                         readyPlayerNumber = 0;
+                        switch (request.type) {
+                            case NORMAL:
+                                break;
+                            case VOTING:
+                                getHanged();
+                                break;
+                        }
+                    }
+                } else if (object instanceof VoteRequest) {
+                    VoteRequest request = (VoteRequest) object;
+                    String votedPlayerName = request.votedPlayerName;
+                    int newVote = request.vote;
+                    if (!votingMap.containsKey(votedPlayerName)) {
+                        votingMap.put(votedPlayerName, newVote);
+                    } else {
+                        int oldVote = votingMap.get(votedPlayerName);
+                        votingMap.put(votedPlayerName, oldVote + newVote);
                     }
                 }
             }
         });
+    }
+
+    private static String getHanged() {
+        String hangedName = Collections.max(votingMap.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
+        deadPlayersMap.put(hangedName, alivePlayersMap.remove(hangedName));
+        System.out.println(hangedName);
+        return hangedName;
     }
 }
