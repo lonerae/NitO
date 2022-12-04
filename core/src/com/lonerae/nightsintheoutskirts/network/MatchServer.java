@@ -119,19 +119,38 @@ public class MatchServer {
                 } else if (object instanceof ProceedRequest) {
                     ProceedRequest request = (ProceedRequest) object;
                     readyPlayerNumber++;
-                    if (readyPlayerNumber == match.getNumberOfPlayers()) {
-                        ProceedResponse response = new ProceedResponse();
-                        switch (request.type) {
-                            case NORMAL:
-                                break;
-                            case VOTING:
+                    switch (request.type) {
+                        case FIRST:
+                            if (readyPlayerNumber == match.getNumberOfPlayers()) {
+                                ProceedResponse response = new ProceedResponse();
+
+                                response.permit = true;
+                                response.playerMap = alivePlayersMap;
+                                server.sendToAllTCP(response);
+                                readyPlayerNumber = 0;
+                            }
+                            break;
+                        case NORMAL:
+                            if (readyPlayerNumber == alivePlayersMap.size()) {
+                                ProceedResponse response = new ProceedResponse();
+
+                                response.permit = true;
+                                response.playerMap = alivePlayersMap;
+                                server.sendToAllTCP(response);
+                                readyPlayerNumber = 0;
+                            }
+                            break;
+                        case VOTING:
+                            if (readyPlayerNumber == alivePlayersMap.size()) {
+                                ProceedResponse response = new ProceedResponse();
+
+                                response.permit = true;
+                                response.playerMap = alivePlayersMap;
                                 response.hangedList = getHanged();
-                                break;
-                        }
-                        response.permit = true;
-                        response.playerMap = alivePlayersMap;
-                        server.sendToAllTCP(response);
-                        readyPlayerNumber = 0;
+                                server.sendToAllTCP(response);
+                                readyPlayerNumber = 0;
+                            }
+                            break;
                     }
                 } else if (object instanceof VoteRequest) {
                     VoteRequest request = (VoteRequest) object;

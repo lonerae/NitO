@@ -35,8 +35,8 @@ import java.util.HashMap;
 
 public class DayScreen extends BaseScreen {
 
-    private static HashMap<String, TextField> votingMap = new HashMap<>();
-    private ButtonGroup<CheckBox> voteCheckGroup = new ButtonGroup<>();
+    private static final HashMap<String, TextField> votingMap = new HashMap<>();
+    private final ButtonGroup<CheckBox> voteCheckGroup = new ButtonGroup<>();
 
     public DayScreen(Game game) {
         super(game);
@@ -57,57 +57,65 @@ public class DayScreen extends BaseScreen {
         mainTable.add(description).width(DEFAULT_ACTOR_WIDTH).padBottom(PAD_VERTICAL_BIG).row();
 
         Table votingTable = new Table(getSkin());
+
+        int i = 0;
+        Table voteTable;
         if (Player.getPlayer().isAlive()) {
-            int i = 0;
-            for (String player : MatchClient.getAlivePlayersMap().keySet()) {
-//                if (!player.equals(Player.getPlayer().getName())) {
-                    i++;
-                    Table voteTable = getTable(player);
+            i = 1;
+            voteTable = getTable(Player.getPlayer().getName());
+            votingTable.add(voteTable).width(WIDTH / 5).pad(PAD_HORIZONTAL_BIG);
+        }
 
-                    votingTable.add(voteTable).width(WIDTH / 5).pad(PAD_HORIZONTAL_BIG);
+        for (String player : MatchClient.getAlivePlayersMap().keySet()) {
+            if (!player.equals(Player.getPlayer().getName())) {
+                i++;
+                voteTable = getTable(player);
 
-                    if (i % 3 == 0) {
-                        votingTable.row();
-                    }
-//                }
+                votingTable.add(voteTable).width(WIDTH / 5).pad(PAD_HORIZONTAL_BIG);
+
+                if (i % 3 == 0) {
+                    votingTable.row();
+                }
             }
         }
 
-        TextButton lockButton = new CustomTextButton(getStrings().get("lockChoice"), getSkin(), getBlackStyle());
-        lockButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (voteCheckGroup.getAllChecked().size == 1) {
-                    Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("waitMessage"), getSkin(), getBlackStyle());
-                    dialog.show(getStage());
-                    ProceedRequest request = new ProceedRequest();
-                    request.type = ProceedType.VOTING;
-                    MatchClient.getClient().sendTCP(request);
-                    new Thread(() -> {
-                        while (true) {
-                            try {
-                                if (MatchClient.isPermitted()) {
-                                    Gdx.app.postRunnable(() -> {
-                                        dialog.hide();
-                                        getGame().setScreen(new DayResolutionScreen(getGame()));
-                                    });
-                                    MatchClient.setPermitted(false);
-                                    break;
-                                }
-                            } catch (NullPointerException ignored) {
-                            }
-                        }
-                    }).start();
-                } else {
-                    CustomDialog dialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("noVoteError"), getSkin(), getBlackStyle());
-                    dialog.isHideable();
-                    dialog.show(getStage());
-                }
-            }
-        });
-
         mainTable.add(votingTable).padBottom(PAD_VERTICAL_BIG).row();
-        mainTable.add(lockButton).width(DEFAULT_ACTOR_WIDTH);
+
+        if (Player.getPlayer().isAlive()) {
+            TextButton lockButton = new CustomTextButton(getStrings().get("lockChoice"), getSkin(), getBlackStyle());
+            lockButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (voteCheckGroup.getAllChecked().size == 1) {
+                        Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("waitMessage"), getSkin(), getBlackStyle());
+                        dialog.show(getStage());
+                        ProceedRequest request = new ProceedRequest();
+                        request.type = ProceedType.VOTING;
+                        MatchClient.getClient().sendTCP(request);
+                        new Thread(() -> {
+                            while (true) {
+                                try {
+                                    if (MatchClient.isPermitted()) {
+                                        Gdx.app.postRunnable(() -> {
+                                            dialog.hide();
+                                            getGame().setScreen(new DayResolutionScreen(getGame()));
+                                        });
+                                        MatchClient.setPermitted(false);
+                                        break;
+                                    }
+                                } catch (NullPointerException ignored) {
+                                }
+                            }
+                        }).start();
+                    } else {
+                        CustomDialog dialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("noVoteError"), getSkin(), getBlackStyle());
+                        dialog.isHideable();
+                        dialog.show(getStage());
+                    }
+                }
+            });
+            mainTable.add(lockButton).width(DEFAULT_ACTOR_WIDTH);
+        }
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
@@ -126,30 +134,31 @@ public class DayScreen extends BaseScreen {
 
         votingMap.put(player, voteCount);
 
-        CheckBox voteCheck = new CheckBox(null, getSkin());
-        voteCheck.getImage().setScaling(Scaling.fill);
-        voteCheck.getImageCell().size(WIDTH/15);
-        voteCheck.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (voteCheck.isChecked()) {
-                    VoteRequest request = new VoteRequest();
-                    request.votedPlayerName = player;
-                    request.vote = 1;
-                    MatchClient.getClient().sendTCP(request);
-                } else {
-                    VoteRequest request = new VoteRequest();
-                    request.votedPlayerName = player;
-                    request.vote = -1;
-                    MatchClient.getClient().sendTCP(request);
-                }
-            }
-        });
-
-        voteCheckGroup.add(voteCheck);
-
         voteInfo.add(voteCount).width(WIDTH/11).pad(20);
-        voteInfo.add(voteCheck);
+
+        if (Player.getPlayer().isAlive() && !player.equals(Player.getPlayer().getName())) {
+            CheckBox voteCheck = new CheckBox(null, getSkin());
+            voteCheck.getImage().setScaling(Scaling.fill);
+            voteCheck.getImageCell().size(WIDTH / 15);
+            voteCheck.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (voteCheck.isChecked()) {
+                        VoteRequest request = new VoteRequest();
+                        request.votedPlayerName = player;
+                        request.vote = 1;
+                        MatchClient.getClient().sendTCP(request);
+                    } else {
+                        VoteRequest request = new VoteRequest();
+                        request.votedPlayerName = player;
+                        request.vote = -1;
+                        MatchClient.getClient().sendTCP(request);
+                    }
+                }
+            });
+            voteCheckGroup.add(voteCheck);
+            voteInfo.add(voteCheck);
+        }
 
         voteTable.add(voteInfo);
         return voteTable;
@@ -162,6 +171,9 @@ public class DayScreen extends BaseScreen {
     @Override
     public void hide() {
         super.hide();
+        for (TextField voteCount : votingMap.values()) {
+            voteCount.setText("0");
+        }
         votingMap.clear();
     }
 }
