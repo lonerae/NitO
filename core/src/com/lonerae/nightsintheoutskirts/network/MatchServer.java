@@ -17,6 +17,7 @@ import com.lonerae.nightsintheoutskirts.network.responses.ConnectionResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.VoteResponse;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -120,17 +121,17 @@ public class MatchServer {
                     readyPlayerNumber++;
                     if (readyPlayerNumber == match.getNumberOfPlayers()) {
                         ProceedResponse response = new ProceedResponse();
-                        response.permit = true;
-                        response.playerMap = alivePlayersMap;
-                        server.sendToAllTCP(response);
-                        readyPlayerNumber = 0;
                         switch (request.type) {
                             case NORMAL:
                                 break;
                             case VOTING:
-                                getHanged();
+                                response.hangedList = getHanged();
                                 break;
                         }
+                        response.permit = true;
+                        response.playerMap = alivePlayersMap;
+                        server.sendToAllTCP(response);
+                        readyPlayerNumber = 0;
                     }
                 } else if (object instanceof VoteRequest) {
                     VoteRequest request = (VoteRequest) object;
@@ -142,15 +143,25 @@ public class MatchServer {
                         int oldVote = votingMap.get(votedPlayerName);
                         votingMap.put(votedPlayerName, oldVote + newVote);
                     }
+
+                    VoteResponse response = new VoteResponse();
+                    response.votedPlayerName = votedPlayerName;
+                    response.vote = votingMap.get(votedPlayerName);
+                    server.sendToAllTCP(response);
                 }
             }
         });
     }
 
-    private static String getHanged() {
-        String hangedName = Collections.max(votingMap.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
-        deadPlayersMap.put(hangedName, alivePlayersMap.remove(hangedName));
-        System.out.println(hangedName);
-        return hangedName;
+    private static List<String> getHanged() {
+        int maxVotes = Collections.max(votingMap.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getValue();
+        List<String> hangedList = new ArrayList<>();
+        for (String playerName : votingMap.keySet()) {
+            if (votingMap.get(playerName) == maxVotes) {
+                hangedList.add(playerName);
+                deadPlayersMap.put(playerName, alivePlayersMap.remove(playerName));
+            }
+        }
+        return hangedList;
     }
 }

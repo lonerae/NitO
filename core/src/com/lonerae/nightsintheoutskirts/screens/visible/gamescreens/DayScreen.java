@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -30,10 +31,16 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextField;
 
+import java.util.HashMap;
+
 public class DayScreen extends BaseScreen {
+
+    private static HashMap<String, TextField> votingMap = new HashMap<>();
+    private ButtonGroup<CheckBox> voteCheckGroup = new ButtonGroup<>();
 
     public DayScreen(Game game) {
         super(game);
+        voteCheckGroup.setMinCheckCount(0);
     }
 
     @Override
@@ -70,31 +77,37 @@ public class DayScreen extends BaseScreen {
         lockButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("waitMessage"), getSkin(), getBlackStyle());
-                dialog.show(getStage());
-                ProceedRequest request = new ProceedRequest();
-                request.type = ProceedType.VOTING;
-                MatchClient.getClient().sendTCP(request);
-                new Thread(() -> {
-                    while (true) {
-                        try {
-                            if (MatchClient.isPermitted()) {
-                                Gdx.app.postRunnable(() -> {
-                                    dialog.hide();
-                                    getGame().setScreen(new DayResolutionScreen(getGame()));
-                                });
-                                MatchClient.setPermitted(false);
-                                break;
+                if (voteCheckGroup.getAllChecked().size == 1) {
+                    Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("waitMessage"), getSkin(), getBlackStyle());
+                    dialog.show(getStage());
+                    ProceedRequest request = new ProceedRequest();
+                    request.type = ProceedType.VOTING;
+                    MatchClient.getClient().sendTCP(request);
+                    new Thread(() -> {
+                        while (true) {
+                            try {
+                                if (MatchClient.isPermitted()) {
+                                    Gdx.app.postRunnable(() -> {
+                                        dialog.hide();
+                                        getGame().setScreen(new DayResolutionScreen(getGame()));
+                                    });
+                                    MatchClient.setPermitted(false);
+                                    break;
+                                }
+                            } catch (NullPointerException ignored) {
                             }
-                        } catch (NullPointerException ignored) {
                         }
-                    }
-                }).start();
+                    }).start();
+                } else {
+                    CustomDialog dialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("noVoteError"), getSkin(), getBlackStyle());
+                    dialog.isHideable();
+                    dialog.show(getStage());
+                }
             }
         });
 
         mainTable.add(votingTable).padBottom(PAD_VERTICAL_BIG).row();
-        mainTable.add(lockButton);
+        mainTable.add(lockButton).width(DEFAULT_ACTOR_WIDTH);
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
@@ -108,9 +121,11 @@ public class DayScreen extends BaseScreen {
         voteTable.add(playerName).width(WIDTH/5).row();
 
         Table voteInfo = new Table(getSkin());
-        TextField voteCount = new CustomTextField("", getTextFieldStyle());
+        TextField voteCount = new CustomTextField("0", getTextFieldStyle());
         voteCount.setTouchable(Touchable.disabled);
-        voteCount.setMessageText("0");
+
+        votingMap.put(player, voteCount);
+
         CheckBox voteCheck = new CheckBox(null, getSkin());
         voteCheck.getImage().setScaling(Scaling.fill);
         voteCheck.getImageCell().size(WIDTH/15);
@@ -130,10 +145,23 @@ public class DayScreen extends BaseScreen {
                 }
             }
         });
+
+        voteCheckGroup.add(voteCheck);
+
         voteInfo.add(voteCount).width(WIDTH/11).pad(20);
         voteInfo.add(voteCheck);
 
         voteTable.add(voteInfo);
         return voteTable;
+    }
+
+    public static void update(String playerName, int votes) {
+        votingMap.get(playerName).setText(String.valueOf(votes));
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+        votingMap.clear();
     }
 }
