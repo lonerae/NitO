@@ -9,15 +9,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.lonerae.nightsintheoutskirts.network.MatchClient;
+import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 
 public class BaseScreen implements Screen {
 
@@ -133,6 +136,7 @@ public class BaseScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
     }
 
+
     @Override
     public void render(float delta) {
         ScreenUtils.clear(1, 1, 1, 1);
@@ -168,5 +172,51 @@ public class BaseScreen implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    /**
+     * Shows a "wait" message and moves to the target {@code Screen} after all players have confirmed.
+     *
+     * @param request a normal {@code ProceedRequest}
+     * @param screen  the target {@code Screen}
+     */
+    protected void waitForOtherPlayers(ProceedRequest request, Screen screen) {
+        Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("waitMessage"), getSkin(), getBlackStyle());
+        dialog.show(getStage());
+        MatchClient.getClient().sendTCP(request);
+        new Thread(() -> {
+            while (true) {
+                try {
+                    if (MatchClient.isPermitted()) {
+                        Gdx.app.postRunnable(() -> {
+                            dialog.hide();
+                            getGame().setScreen(screen);
+                        });
+                        MatchClient.setPermitted(false);
+                        break;
+                    }
+                } catch (NullPointerException ignored) {
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * Shows a "wait" message and moves to the target {@code Screen} after all players have confirmed.
+     * Used for a {@code ProceedRequest} with code != {@code ProccedType.NORMAL}
+     *
+     * @param request a proceed request
+     * @param type    the request's {@code ProceedType}
+     * @param screen  the target {@code Screen}
+     */
+    protected void waitForOtherPlayers(ProceedRequest request, ProceedType type, Screen screen) {
+        request.type = type;
+        waitForOtherPlayers(request, screen);
+    }
+
+    protected void showErrorDialog(String errorMessage) {
+        CustomDialog dialog = new CustomDialog(getStrings().get("errorInfo"), errorMessage, getSkin(), getBlackStyle());
+        dialog.isHideable();
+        dialog.show(getStage());
     }
 }

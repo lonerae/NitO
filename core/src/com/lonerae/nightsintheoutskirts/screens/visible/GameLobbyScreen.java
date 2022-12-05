@@ -21,7 +21,6 @@ import com.lonerae.nightsintheoutskirts.network.requests.AssignRoleRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
-import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
@@ -30,6 +29,7 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
 public class GameLobbyScreen extends BaseScreen {
 
     private Client client;
+
     public GameLobbyScreen(Game game) {
         super(game);
         setTraceable();
@@ -46,7 +46,7 @@ public class GameLobbyScreen extends BaseScreen {
 
         Label title = new CustomLabel(getStrings().get("lobbyTitle"), getTitleStyle());
         UIUtil.title(title);
-        TextField playerNameTextField = new TextField("",getTextFieldStyle());
+        TextField playerNameTextField = new TextField("", getTextFieldStyle());
         playerNameTextField.setMessageText(getStrings().get("playerNamePlaceholder"));
         Label rolesLabel = new CustomLabel(getStrings().get("rolesLobbyLabel"), getBlackStyle());
         rolesLabel.setAlignment(Align.center);
@@ -58,24 +58,7 @@ public class GameLobbyScreen extends BaseScreen {
         assignRoleButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!playerNameTextField.getText().trim().isEmpty()) {
-                    AssignRoleRequest assignRoleRequest = new AssignRoleRequest();
-                    assignRoleRequest.playerName = playerNameTextField.getText();
-                    client.sendTCP(assignRoleRequest);
-                    boolean flag = true;
-                    while (flag) {
-                        try {
-                            Player.getPlayer().setRole(MatchClient.getAssignedRole());
-                            Player.getPlayer().setName(playerNameTextField.getText());
-                            getGame().setScreen(new RoleRevealScreen(getGame()));
-                            flag = false;
-                        } catch (NullPointerException ignored) {}
-                    }
-                } else {
-                    CustomDialog errorDialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("emptyNameError"), getSkin(), getBlackStyle());
-                    errorDialog.isHideable();
-                    errorDialog.show(getStage());
-                }
+                assignRoleOrError(playerNameTextField);
             }
         });
 
@@ -90,19 +73,44 @@ public class GameLobbyScreen extends BaseScreen {
 
     }
 
+    private void assignRoleOrError(TextField playerNameTextField) {
+        if (!playerNameTextField.getText().trim().isEmpty()) {
+            assignRole(playerNameTextField);
+        } else {
+            showErrorDialog(getStrings().get("emptyNameError"));
+        }
+    }
+
+    private void assignRole(TextField playerNameTextField) {
+        AssignRoleRequest assignRoleRequest = new AssignRoleRequest();
+        assignRoleRequest.playerName = playerNameTextField.getText();
+        client.sendTCP(assignRoleRequest);
+        while (true) {
+            try {
+                Player.getPlayer().setRole(MatchClient.getAssignedRole());
+                Player.getPlayer().setName(playerNameTextField.getText());
+                getGame().setScreen(new RoleRevealScreen(getGame()));
+                break;
+            } catch (NullPointerException ignored) {
+            }
+        }
+    }
+
     private void fill(Table rolesTable) {
         int counter = 0;
-        try {
-            for (RoleName roleName : MatchClient.getMatchRoleList()) {
-                counter++;
-                rolesTable.add(new Image(new Texture(Role.getRole(roleName).getIconPath()))).width(DEFAULT_ICON_SIZE).height(DEFAULT_ICON_SIZE).pad(PAD_HORIZONTAL_SMALL);
-
-                if (counter % 3 == 0) {
-                    rolesTable.row();
+        while (true) {
+            try {
+                for (RoleName roleName : MatchClient.getMatchRoleList()) {
+                    counter++;
+                    Image lobbyIcon = new Image(new Texture(Role.getRole(roleName).getIconPath()));
+                    rolesTable.add(lobbyIcon).width(DEFAULT_ICON_SIZE).height(DEFAULT_ICON_SIZE).pad(PAD_HORIZONTAL_SMALL);
+                    if (counter % 3 == 0) {
+                        rolesTable.row();
+                    }
                 }
+                break;
+            } catch (NullPointerException ignored) {
             }
-        } catch (NullPointerException e) {
-            fill(rolesTable);
         }
     }
 

@@ -32,15 +32,6 @@ public class MatchClient {
     private static HashMap<String, RoleName> alivePlayersMap;
     private static List<String> hangedList;
 
-    public static void createClient() {
-        if (client == null) {
-            client = new Client();
-            client.start();
-            NetworkUtil.register(client);
-            createListener();
-        }
-    }
-
     public static void terminate() {
         try {
             client.dispose();
@@ -50,6 +41,12 @@ public class MatchClient {
     }
 
     public static Client getClient() {
+        if (client == null) {
+            client = new Client();
+            client.start();
+            NetworkUtil.register(client);
+            createListener();
+        }
         return client;
     }
 
@@ -109,7 +106,7 @@ public class MatchClient {
                     }
                 } else if (object instanceof VoteResponse) {
                     VoteResponse response = (VoteResponse) object;
-                    DayScreen.update(response.votedPlayerName, response.vote);
+                    DayScreen.updateVote(response.votedPlayerName, response.vote);
                 }
             }
         });

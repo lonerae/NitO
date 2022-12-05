@@ -1,9 +1,7 @@
 package com.lonerae.nightsintheoutskirts.screens.visible.gamescreens;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -16,7 +14,6 @@ import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
-import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
@@ -40,45 +37,13 @@ public class FirstNightScreen extends BaseScreen {
         Label description = new CustomLabel(getGameStrings().get("firstNight"), getBlackStyle());
 
         Table playerTable = new Table();
-        int counter = 0;
-        for (String player : MatchClient.getAlivePlayersMap().keySet()) {
-            Label playerLabel = new CustomLabel(player, getBlackStyle());
-            if (MatchClient.getAlivePlayersMap().get(player).equals(RoleName.ASSASSIN)) {
-                if (Player.getPlayer().getRole().getName().equals(RoleName.ASSASSIN)) {
-                    playerLabel = new CustomLabel(player, getRedStyle());
-                }
-            }
-            playerLabel.setAlignment(Align.center);
-            playerTable.add(playerLabel).width(WIDTH / 3);
-            counter++;
-            if (counter % 3 == 0) {
-                playerTable.row();
-            }
-        }
+        fillPlayerTable(playerTable);
 
         TextButton startButton = new CustomTextButton(getStrings().get("startFirstDay"), getSkin(), getBlackStyle());
         startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("waitMessage"), getSkin(), getBlackStyle());
-                dialog.show(getStage());
-                ProceedRequest request = new ProceedRequest();
-                MatchClient.getClient().sendTCP(request);
-                new Thread(() -> {
-                    while (true) {
-                        try {
-                            if (MatchClient.isPermitted()) {
-                                Gdx.app.postRunnable(() -> {
-                                    dialog.hide();
-                                    getGame().setScreen(new DayScreen(getGame()));
-                                });
-                                MatchClient.setPermitted(false);
-                                break;
-                            }
-                        } catch (NullPointerException ignored) {
-                        }
-                    }
-                }).start();
+                continueToDay();
             }
         });
 
@@ -89,6 +54,32 @@ public class FirstNightScreen extends BaseScreen {
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
+    }
 
+    private void continueToDay() {
+        ProceedRequest request = new ProceedRequest();
+        waitForOtherPlayers(request, new DayScreen(getGame()));
+    }
+
+    private void fillPlayerTable(Table playerTable) {
+        int counter = 0;
+        for (String player : MatchClient.getAlivePlayersMap().keySet()) {
+            Label playerLabel = makePlayerLabel(player);
+            playerTable.add(playerLabel).width(WIDTH / 3);
+            counter++;
+            if (counter % 3 == 0) {
+                playerTable.row();
+            }
+        }
+    }
+
+    private Label makePlayerLabel(String player) {
+        Label playerLabel = new CustomLabel(player, getBlackStyle());
+        if (MatchClient.getAlivePlayersMap().get(player).equals(RoleName.ASSASSIN) &&
+                Player.getPlayer().getRole().getName().equals(RoleName.ASSASSIN)) {
+            playerLabel = new CustomLabel(player, getRedStyle());
+        }
+        playerLabel.setAlignment(Align.center);
+        return playerLabel;
     }
 }
