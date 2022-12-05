@@ -1,6 +1,7 @@
 package com.lonerae.nightsintheoutskirts.screens.visible.gamescreens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -27,6 +28,7 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextField;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.DeadNightScreen;
 
 import java.util.HashMap;
 
@@ -60,6 +62,8 @@ public class DayScreen extends BaseScreen {
 
         if (Player.getPlayer().isAlive()) {
             addLockButton(mainTable);
+        } else {
+            waitForAlivePlayers();
         }
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
@@ -79,6 +83,21 @@ public class DayScreen extends BaseScreen {
             }
         });
         mainTable.add(lockButton).width(DEFAULT_ACTOR_WIDTH);
+    }
+
+    private void waitForAlivePlayers() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    if (MatchClient.isPermitted()) {
+                        Gdx.app.postRunnable(() -> getGame().setScreen(new DayResolutionScreen(getGame())));
+                        MatchClient.setPermitted(false);
+                        break;
+                    }
+                } catch (NullPointerException ignored) {
+                }
+            }
+        }).start();
     }
 
     private void continueToResolution() {

@@ -13,6 +13,7 @@ import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.VoteRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.abilities.KillRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.abilities.MurderRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.abilities.SaveRequest;
 import com.lonerae.nightsintheoutskirts.network.responses.AssignRoleResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ConnectionResponse;
@@ -20,6 +21,7 @@ import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.VoteResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.abilities.MurderResponse;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -43,6 +45,12 @@ public class MatchServer {
     private static final List<String> protectedPlayersList = new ArrayList<>();
     private static final List<String> murderedPlayersList = new ArrayList<>();
     private static List<RoleName> shuffledDeck;
+
+    private static int assassinNumber;
+    private static int assassinSent = 0;
+    private static int assassinPass = 0;
+    private static String assassinTarget;
+    private static boolean assassinsAgree;
 
     private static int connectedPlayersNumber = 0;
     private static int assignedPlayerNumber = 0;
@@ -134,8 +142,14 @@ public class MatchServer {
                             break;
                         case NORMAL:
                             if (readyPlayerNumber == alivePlayersMap.size()) {
-                                ProceedResponse response = new ProceedResponse();
+                                assassinNumber = 0;
+                                for (String player : alivePlayersMap.keySet()) {
+                                    if (alivePlayersMap.get(player).equals(RoleName.ASSASSIN)) {
+                                        assassinNumber++;
+                                    }
+                                }
 
+                                ProceedResponse response = new ProceedResponse();
                                 response.permit = true;
                                 response.alivePlayerMap = alivePlayersMap;
                                 server.sendToAllTCP(response);
@@ -184,7 +198,6 @@ public class MatchServer {
                         int oldVote = votingMap.get(votedPlayerName);
                         votingMap.put(votedPlayerName, oldVote + newVote);
                     }
-
                     VoteResponse response = new VoteResponse();
                     response.votedPlayerName = votedPlayerName;
                     response.vote = votingMap.get(votedPlayerName);
@@ -202,6 +215,45 @@ public class MatchServer {
                         protectedPlayersList.add(protectedPlayer);
                     }
                     murderedPlayersList.remove(protectedPlayer);
+                } else if (object instanceof MurderRequest) {
+                    MurderRequest request = (MurderRequest) object;
+
+                    if (request.willKill) {
+                        if (assassinTarget == null) {
+                            assassinsAgree = true;
+                            assassinTarget = request.target;
+                        } else {
+                            if (!request.target.equals(assassinTarget)) {
+                                assassinsAgree = false;
+                            }
+                        }
+                    } else {
+                        assassinPass++;
+                    }
+
+                    assassinSent++;
+                    if (assassinSent == assassinNumber) {
+                        MurderResponse response = new MurderResponse();
+
+                        if (assassinPass < assassinNumber || !assassinsAgree) {
+                            response.permit = false;
+                        }
+                        if (assassinPass == assassinNumber) {
+                            response.permit = true;
+                        }
+                        if (assassinsAgree) {
+                            response.permit = true;
+                            if (!murderedPlayersList.contains(assassinTarget)) {
+                                murderedPlayersList.add(assassinTarget);
+                            }
+                        }
+
+                        server.sendToAllTCP(response);
+                        assassinSent = 0;
+                        assassinTarget = null;
+                        assassinsAgree = false;
+                        assassinPass = 0;
+                    }
                 }
             }
         });
