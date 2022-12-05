@@ -11,16 +11,19 @@ import com.lonerae.nightsintheoutskirts.network.requests.ConnectionRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.GreetingRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.VoteRequest;
 import com.lonerae.nightsintheoutskirts.network.responses.AssignRoleResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ConnectionResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.VoteResponse;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +34,9 @@ public class MatchServer {
     private static GameData match;
 
     private static final HashMap<String, RoleName> connectedPlayersMap = new HashMap<>();
+    private static final HashMap<String, RoleName> alivePlayersMap = new HashMap<>();
+    private static final HashMap<String, RoleName> deadPlayersMap = new HashMap<>();
+    private static final HashMap<String, Integer> votingMap = new HashMap<>();
     private static List<RoleName> shuffledDeck;
 
     private static int connectedPlayersNumber = 0;
@@ -107,19 +113,74 @@ public class MatchServer {
                         response.assignedRole = shuffledDeck.get(assignedPlayerNumber);
                         connection.sendTCP(response);
                         connectedPlayersMap.put(request.playerName, response.assignedRole);
+                        alivePlayersMap.put(request.playerName, response.assignedRole);
                         assignedPlayerNumber++;
                     }
                 } else if (object instanceof ProceedRequest) {
+                    ProceedRequest request = (ProceedRequest) object;
                     readyPlayerNumber++;
-                    if (readyPlayerNumber == match.getNumberOfPlayers()) {
-                        ProceedResponse response = new ProceedResponse();
-                        response.permit = true;
-                        response.playerMap = connectedPlayersMap;
-                        server.sendToAllTCP(response);
-                        readyPlayerNumber = 0;
+                    switch (request.type) {
+                        case FIRST:
+                            if (readyPlayerNumber == match.getNumberOfPlayers()) {
+                                ProceedResponse response = new ProceedResponse();
+
+                                response.permit = true;
+                                response.playerMap = alivePlayersMap;
+                                server.sendToAllTCP(response);
+                                readyPlayerNumber = 0;
+                            }
+                            break;
+                        case NORMAL:
+                            if (readyPlayerNumber == alivePlayersMap.size()) {
+                                ProceedResponse response = new ProceedResponse();
+
+                                response.permit = true;
+                                response.playerMap = alivePlayersMap;
+                                server.sendToAllTCP(response);
+                                readyPlayerNumber = 0;
+                            }
+                            break;
+                        case VOTING:
+                            if (readyPlayerNumber == alivePlayersMap.size()) {
+                                ProceedResponse response = new ProceedResponse();
+
+                                response.permit = true;
+                                response.playerMap = alivePlayersMap;
+                                response.hangedList = getHanged();
+                                server.sendToAllTCP(response);
+                                readyPlayerNumber = 0;
+                            }
+                            break;
                     }
+                } else if (object instanceof VoteRequest) {
+                    VoteRequest request = (VoteRequest) object;
+                    String votedPlayerName = request.votedPlayerName;
+                    int newVote = request.vote;
+                    if (!votingMap.containsKey(votedPlayerName)) {
+                        votingMap.put(votedPlayerName, newVote);
+                    } else {
+                        int oldVote = votingMap.get(votedPlayerName);
+                        votingMap.put(votedPlayerName, oldVote + newVote);
+                    }
+
+                    VoteResponse response = new VoteResponse();
+                    response.votedPlayerName = votedPlayerName;
+                    response.vote = votingMap.get(votedPlayerName);
+                    server.sendToAllTCP(response);
                 }
             }
         });
+    }
+
+    private static List<String> getHanged() {
+        int maxVotes = Collections.max(votingMap.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getValue();
+        List<String> hangedList = new ArrayList<>();
+        for (String playerName : votingMap.keySet()) {
+            if (votingMap.get(playerName) == maxVotes) {
+                hangedList.add(playerName);
+                deadPlayersMap.put(playerName, alivePlayersMap.remove(playerName));
+            }
+        }
+        return hangedList;
     }
 }

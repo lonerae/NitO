@@ -99,8 +99,7 @@ public class GameCreateScreen extends BaseScreen {
     private Map<RoleName, Integer> createMatchRoleList() {
         Map<RoleName, Integer> matchRoleList = new LinkedHashMap<>();
         for (Map.Entry<RoleName, TextField> entry : roleCounterMap.entrySet()) {
-            int roleCounter;
-            roleCounter = getTextFieldNumber(entry.getValue());
+            int roleCounter = getTextFieldNumber(entry.getValue());
             if (roleCounter > 0) {
                 matchRoleList.put(entry.getKey(), roleCounter);
             }
@@ -120,39 +119,48 @@ public class GameCreateScreen extends BaseScreen {
         int iconCounter = 0;
         for (Role role : GameData.getRoleList().values()) {
             iconCounter++;
-
-            TextField numberOfRoleTextField = new CustomTextField("", getTextFieldStyle());
-            numberOfRoleTextField.setMessageText("0");
-            roleCounterMap.put(role.getName(), numberOfRoleTextField);
-            numberOfRoleTextField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
-
-            Table roleIconAndCounter = new Table();
-            CustomDialog dialog = new CustomDialog(role.getName().toString(), role.getDescription(), getSkin(), getBlackStyle());
-            dialog.isHideable();
-
-            Image icon = new Image(new Texture(role.getIconPath()));
-            icon.addListener(new InputListener() {
-                @Override
-                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    dialog.show(getStage());
-                    getScroll().setFlickScroll(false);
-                    return true;
-                }
-
-                @Override
-                public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                    dialog.hide();
-                    getScroll().setFlickScroll(true);
-                }
-            });
-
-            roleIconAndCounter.add(icon).width(DEFAULT_ICON_SIZE).height(DEFAULT_ICON_SIZE).padBottom(PAD_VERTICAL_SMALL).row();
-            roleIconAndCounter.add(numberOfRoleTextField).width(DEFAULT_ICON_SIZE);
+            Table roleIconAndCounter = createRoleIconAndCounter(role);
             rolesTable.add(roleIconAndCounter).pad(PAD_HORIZONTAL_BIG);
             if (iconCounter % 3 == 0) {
                 rolesTable.row();
             }
         }
+    }
+
+    private Table createRoleIconAndCounter(Role role) {
+        TextField numberOfRoleTextField = new CustomTextField("", getTextFieldStyle());
+        numberOfRoleTextField.setMessageText("0");
+
+        roleCounterMap.put(role.getName(), numberOfRoleTextField);
+        numberOfRoleTextField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
+
+        Table roleIconAndCounter = new Table();
+        CustomDialog dialog = new CustomDialog(role.getName().toString(), role.getDescription(), getSkin(), getBlackStyle());
+        dialog.isHideable();
+
+        Image icon = new Image(new Texture(role.getIconPath()));
+        addResponsiveTextToIcon(dialog, icon);
+
+        roleIconAndCounter.add(icon).width(DEFAULT_ICON_SIZE).height(DEFAULT_ICON_SIZE).padBottom(PAD_VERTICAL_SMALL).row();
+        roleIconAndCounter.add(numberOfRoleTextField).width(DEFAULT_ICON_SIZE);
+        return roleIconAndCounter;
+    }
+
+    private void addResponsiveTextToIcon(CustomDialog dialog, Image icon) {
+        icon.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                dialog.show(getStage());
+                getScroll().setFlickScroll(false);
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                dialog.hide();
+                getScroll().setFlickScroll(true);
+            }
+        });
     }
 
     private void checkGameConditions(TextField townNameTextField, TextField numberOfPlayersTextField) {
@@ -165,7 +173,7 @@ public class GameCreateScreen extends BaseScreen {
         if (!townNameTextField.getText().isEmpty() && initialCounter > 0 && counter == 0) {
             createSuccessDialog(townNameTextField, numberOfPlayersTextField).show(getStage());
         } else {
-            createErrorDialog().show(getStage());
+            showErrorDialog(getStrings().get("createGameError"));
         }
     }
 
@@ -176,7 +184,6 @@ public class GameCreateScreen extends BaseScreen {
                     GameData match = new GameData(townNameTextField.getText(), getTextFieldNumber(numberOfPlayersTextField), createMatchRoleList());
                     try {
                         MatchServer.createServer(match);
-                        MatchClient.createClient();
 
                         MatchClient.getClient().connect(5000, InetAddress.getLocalHost().getHostAddress(), 54555, 54777);
                         GreetingRequest request = new GreetingRequest();
@@ -208,12 +215,6 @@ public class GameCreateScreen extends BaseScreen {
         }
         gameInfo.append("\n");
         return gameInfo.toString();
-    }
-
-    private Dialog createErrorDialog() {
-        CustomDialog errorDialog = new CustomDialog(getStrings().get("errorInfo"), getStrings().get("createGameError"), getSkin(), getBlackStyle());
-        errorDialog.isHideable();
-        return errorDialog;
     }
 
     @Override

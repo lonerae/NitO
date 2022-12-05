@@ -10,6 +10,8 @@ import com.lonerae.nightsintheoutskirts.network.responses.ConnectionResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.VoteResponse;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.DayScreen;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,16 +29,8 @@ public class MatchClient {
     private static Role assignedRole;
     private static Boolean permitted = null;
 
-    private static HashMap<String, RoleName> connectedPlayersMap;
-
-    public static void createClient() {
-        if (client == null) {
-            client = new Client();
-            client.start();
-            NetworkUtil.register(client);
-            createListener();
-        }
-    }
+    private static HashMap<String, RoleName> alivePlayersMap;
+    private static List<String> hangedList;
 
     public static void terminate() {
         try {
@@ -47,6 +41,12 @@ public class MatchClient {
     }
 
     public static Client getClient() {
+        if (client == null) {
+            client = new Client();
+            client.start();
+            NetworkUtil.register(client);
+            createListener();
+        }
         return client;
     }
 
@@ -74,13 +74,17 @@ public class MatchClient {
         MatchClient.permitted = permitted;
     }
 
-    public static HashMap<String, RoleName> getConnectedPlayersMap() {
-        return connectedPlayersMap;
+    public static HashMap<String, RoleName> getAlivePlayersMap() {
+        return alivePlayersMap;
+    }
+
+    public static List<String> getHangedList() {
+        return hangedList;
     }
 
     private static void createListener() {
         client.addListener(new Listener() {
-            public void received (Connection connection, Object object) {
+            public void received(Connection connection, Object object) {
                 if (object instanceof GreetingResponse) {
                     GreetingResponse response = (GreetingResponse) object;
                     availableMatches.put(response.townName, response.numberOfPlayers);
@@ -96,7 +100,13 @@ public class MatchClient {
                 } else if (object instanceof ProceedResponse) {
                     ProceedResponse response = (ProceedResponse) object;
                     permitted = response.permit;
-                    connectedPlayersMap = response.playerMap;
+                    alivePlayersMap = response.playerMap;
+                    if (response.hangedList != null) {
+                        hangedList = response.hangedList;
+                    }
+                } else if (object instanceof VoteResponse) {
+                    VoteResponse response = (VoteResponse) object;
+                    DayScreen.updateVote(response.votedPlayerName, response.vote);
                 }
             }
         });

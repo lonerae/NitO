@@ -9,11 +9,14 @@ import com.lonerae.nightsintheoutskirts.network.requests.ConnectionRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.GreetingRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
+import com.lonerae.nightsintheoutskirts.network.requests.VoteRequest;
 import com.lonerae.nightsintheoutskirts.network.responses.AssignRoleResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ConnectionResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.VoteResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +37,9 @@ public class NetworkUtil {
         kryo.register(LobbyResponse.class);
         kryo.register(ProceedRequest.class);
         kryo.register(ProceedResponse.class);
+        kryo.register(ProceedType.class);
+        kryo.register(VoteRequest.class);
+        kryo.register(VoteResponse.class);
         kryo.register(ArrayList.class);
         kryo.register(HashMap.class);
         kryo.register(RoleName.class);
@@ -51,6 +57,9 @@ public class NetworkUtil {
         kryo.register(LobbyResponse.class);
         kryo.register(ProceedRequest.class);
         kryo.register(ProceedResponse.class);
+        kryo.register(ProceedType.class);
+        kryo.register(VoteRequest.class);
+        kryo.register(VoteResponse.class);
         kryo.register(ArrayList.class);
         kryo.register(HashMap.class);
         kryo.register(RoleName.class);

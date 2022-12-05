@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.lonerae.nightsintheoutskirts.game.Player;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
@@ -47,6 +48,7 @@ public class RoleRevealScreen extends BaseScreen {
                 Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("waitMessage"), getSkin(), getBlackStyle());
                 dialog.show(getStage());
                 ProceedRequest request = new ProceedRequest();
+                request.type = ProceedType.FIRST;
                 MatchClient.getClient().sendTCP(request);
                 new Thread(() -> {
                     while (true) {

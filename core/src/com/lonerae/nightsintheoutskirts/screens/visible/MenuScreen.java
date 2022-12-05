@@ -30,6 +30,7 @@ public class MenuScreen extends BaseScreen {
         mainTable.center();
 
         Label title = UIUtil.title(new CustomLabel(getStrings().get("gameTitle"), getTitleStyle()));
+
         TextButton createButton = new CustomTextButton(getStrings().get("create"), getSkin(), getBlackStyle());
         createButton.addListener(new ClickListener() {
             @Override
