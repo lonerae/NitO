@@ -17,6 +17,7 @@ import com.lonerae.nightsintheoutskirts.game.Player;
 import com.lonerae.nightsintheoutskirts.game.roles.Role;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
@@ -24,6 +25,7 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextField;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.DayScreen;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.NightResolutionScreen;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,22 +55,7 @@ public class HermitNightScreen extends NightScreen {
         mainTable.add(description).width(DEFAULT_ACTOR_WIDTH).padBottom(PAD_VERTICAL_BIG).row();
 
         Table alivePlayerTable = new Table(getSkin());
-        for (String playerName : MatchClient.getAlivePlayersMap().keySet()) {
-            CheckBox voteCheck = new CheckBox(playerName, getSkin());
-            voteCheck.getLabel().setStyle(getBlackStyle());
-            voteCheck.getImage().setScaling(Scaling.fill);
-            voteCheck.getImageCell().size(WIDTH / 15);
-            voteCheck.getLabelCell().padLeft(PAD_HORIZONTAL_SMALL);
-            voteCheckGroup.add(voteCheck);
-
-            TextField allianceTextField = new CustomTextField("", getTextFieldStyle());
-            allianceTextField.setTouchable(Touchable.disabled);
-
-            choiceMap.put(voteCheck, allianceTextField);
-
-            alivePlayerTable.add(voteCheck).pad(PAD_HORIZONTAL_SMALL);
-            alivePlayerTable.add(allianceTextField).width(WIDTH/3).pad(PAD_HORIZONTAL_SMALL).row();
-        }
+        fillAlivePlayerTable(alivePlayerTable);
 
         mainTable.add(alivePlayerTable).row();
 
@@ -77,36 +64,14 @@ public class HermitNightScreen extends NightScreen {
         TextButton continueButton = new CustomTextButton(getStrings().get("endNight"), getSkin(), getBlackStyle());
 
         if (Player.getPlayer().isAbleToUseAbility()) {
-            activateButton.setText(getStrings().get("abilityReady"));
-            activateButton.setTouchable(Touchable.enabled);
-            continueButton.setText(getStrings().get("skipChoise"));
-            activateButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    if (voteCheckGroup.getAllChecked().size == 1) {
-                        choiceMap.get(voteCheckGroup.getChecked())
-                                .setText(
-                                        Role.getRole(MatchClient.getAlivePlayersMap()
-                                                        .get(voteCheckGroup.getChecked().getLabel().getText().toString()))
-                                                .getAlliance()
-                                                .toString()
-                                );
-                        activateButton.setTouchable(Touchable.disabled);
-                        activateButton.setText(getStrings().get("abilityUsed"));
-                        continueButton.setText(getStrings().get("endNight"));
-                        Player.getPlayer().setAbleToUseAbility(false);
-                    } else {
-                        showErrorDialog(getStrings().get("noChoiceError"));
-                    }
-                }
-            });
+            updateButtons(activateButton, continueButton);
         }
 
         continueButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 ProceedRequest request = new ProceedRequest();
-                waitForOtherPlayers(request, new DayScreen(getGame()));
+                waitForOtherPlayers(request, ProceedType.ABILITY, new NightResolutionScreen(getGame()));
             }
         });
 
@@ -118,5 +83,63 @@ public class HermitNightScreen extends NightScreen {
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
+    }
+
+    private void updateButtons(TextButton activateButton, TextButton continueButton) {
+        activateButton.setText(getStrings().get("abilityReady"));
+        activateButton.setTouchable(Touchable.enabled);
+        continueButton.setText(getStrings().get("skipChoice"));
+        activateButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                activateAbilityOrError(activateButton, continueButton);
+            }
+        });
+    }
+
+    private void activateAbilityOrError(TextButton activateButton, TextButton continueButton) {
+        if (voteCheckGroup.getAllChecked().size == 1) {
+            activateAbility(activateButton, continueButton);
+        } else {
+            showErrorDialog(getStrings().get("noChoiceError"));
+        }
+    }
+
+    private void activateAbility(TextButton activateButton, TextButton continueButton) {
+        choiceMap.get(voteCheckGroup.getChecked())
+                .setText(
+                        Role.getRole(MatchClient.getAlivePlayersMap()
+                                        .get(voteCheckGroup.getChecked().getLabel().getText().toString()))
+                                .getAlliance()
+                                .toString()
+                );
+        activateButton.setTouchable(Touchable.disabled);
+        activateButton.setText(getStrings().get("abilityUsed"));
+        continueButton.setText(getStrings().get("endNight"));
+        Player.getPlayer().setAbleToUseAbility(false);
+    }
+
+    private void fillAlivePlayerTable(Table alivePlayerTable) {
+        for (String playerName : MatchClient.getAlivePlayersMap().keySet()) {
+            CheckBox voteCheck = createCheckBox(playerName);
+
+            TextField allianceTextField = new CustomTextField("", getTextFieldStyle());
+            allianceTextField.setTouchable(Touchable.disabled);
+
+            choiceMap.put(voteCheck, allianceTextField);
+
+            alivePlayerTable.add(voteCheck).pad(PAD_HORIZONTAL_SMALL);
+            alivePlayerTable.add(allianceTextField).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL).row();
+        }
+    }
+
+    private CheckBox createCheckBox(String playerName) {
+        CheckBox voteCheck = new CheckBox(playerName, getSkin());
+        voteCheck.getLabel().setStyle(getBlackStyle());
+        voteCheck.getImage().setScaling(Scaling.fill);
+        voteCheck.getImageCell().size(WIDTH / 15);
+        voteCheck.getLabelCell().padLeft(PAD_HORIZONTAL_SMALL);
+        voteCheckGroup.add(voteCheck);
+        return voteCheck;
     }
 }

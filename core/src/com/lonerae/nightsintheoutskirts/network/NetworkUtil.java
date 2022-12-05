@@ -11,6 +11,8 @@ import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
 import com.lonerae.nightsintheoutskirts.network.requests.VoteRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.abilities.KillRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.abilities.SaveRequest;
 import com.lonerae.nightsintheoutskirts.network.responses.AssignRoleResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ConnectionResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
@@ -27,26 +29,15 @@ public class NetworkUtil {
 
     public static void register(Server server) {
         Kryo kryo = server.getKryo();
-        kryo.register(AssignRoleRequest.class);
-        kryo.register(AssignRoleResponse.class);
-        kryo.register(ConnectionRequest.class);
-        kryo.register(ConnectionResponse.class);
-        kryo.register(GreetingRequest.class);
-        kryo.register(GreetingResponse.class);
-        kryo.register(LobbyRequest.class);
-        kryo.register(LobbyResponse.class);
-        kryo.register(ProceedRequest.class);
-        kryo.register(ProceedResponse.class);
-        kryo.register(ProceedType.class);
-        kryo.register(VoteRequest.class);
-        kryo.register(VoteResponse.class);
-        kryo.register(ArrayList.class);
-        kryo.register(HashMap.class);
-        kryo.register(RoleName.class);
+        register(kryo);
     }
 
     public static void register(Client client) {
         Kryo kryo = client.getKryo();
+        register(kryo);
+    }
+
+    private static void register(Kryo kryo) {
         kryo.register(AssignRoleRequest.class);
         kryo.register(AssignRoleResponse.class);
         kryo.register(ConnectionRequest.class);
@@ -60,6 +51,8 @@ public class NetworkUtil {
         kryo.register(ProceedType.class);
         kryo.register(VoteRequest.class);
         kryo.register(VoteResponse.class);
+        kryo.register(KillRequest.class);
+        kryo.register(SaveRequest.class);
         kryo.register(ArrayList.class);
         kryo.register(HashMap.class);
         kryo.register(RoleName.class);

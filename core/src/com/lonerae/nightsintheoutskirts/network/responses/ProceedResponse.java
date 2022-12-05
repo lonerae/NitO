@@ -11,4 +11,5 @@ public class ProceedResponse {
     public HashMap<String, RoleName> deadPlayerMap;
 
     public List<String> hangedList;
+    public List<String> murderedList;
 }

@@ -12,6 +12,8 @@ import com.lonerae.nightsintheoutskirts.network.requests.GreetingRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.VoteRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.abilities.KillRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.abilities.SaveRequest;
 import com.lonerae.nightsintheoutskirts.network.responses.AssignRoleResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ConnectionResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
@@ -38,6 +40,8 @@ public class MatchServer {
     private static final HashMap<String, RoleName> alivePlayersMap = new HashMap<>();
     private static final HashMap<String, RoleName> deadPlayersMap = new HashMap<>();
     private static final HashMap<String, Integer> votingMap = new HashMap<>();
+    private static final List<String> protectedPlayersList = new ArrayList<>();
+    private static final List<String> murderedPlayersList = new ArrayList<>();
     private static List<RoleName> shuffledDeck;
 
     private static int connectedPlayersNumber = 0;
@@ -77,7 +81,7 @@ public class MatchServer {
     private static void shuffleDeck() {
         List<RoleName> deck = new ArrayList<>();
         for (RoleName roleName : match.getMatchRoleList().keySet()) {
-            for (int i = 0; i < match.getMatchRoleList().get(roleName); i ++) {
+            for (int i = 0; i < match.getMatchRoleList().get(roleName); i++) {
                 deck.add(roleName);
             }
         }
@@ -87,7 +91,7 @@ public class MatchServer {
 
     private static void createListener() {
         server.addListener(new Listener() {
-            public void received (Connection connection, Object object) {
+            public void received(Connection connection, Object object) {
                 if (object instanceof GreetingRequest) {
                     GreetingResponse response = new GreetingResponse();
                     response.townName = match.getTownName();
@@ -148,6 +152,25 @@ public class MatchServer {
                                 response.hangedList = getHanged();
                                 server.sendToAllTCP(response);
                                 readyPlayerNumber = 0;
+                                protectedPlayersList.clear();
+                            }
+                            break;
+                        case ABILITY:
+                            if (readyPlayerNumber == alivePlayersMap.size()) {
+
+                                for (String player : murderedPlayersList) {
+                                    deadPlayersMap.put(player, alivePlayersMap.remove(player));
+                                }
+                                ProceedResponse response = new ProceedResponse();
+
+                                response.permit = true;
+                                response.alivePlayerMap = alivePlayersMap;
+                                response.deadPlayerMap = deadPlayersMap;
+                                response.murderedList = murderedPlayersList;
+                                server.sendToAllTCP(response);
+                                readyPlayerNumber = 0;
+                                protectedPlayersList.clear();
+                                murderedPlayersList.clear();
                             }
                             break;
                     }
@@ -166,6 +189,19 @@ public class MatchServer {
                     response.votedPlayerName = votedPlayerName;
                     response.vote = votingMap.get(votedPlayerName);
                     server.sendToAllTCP(response);
+                } else if (object instanceof KillRequest) {
+                    KillRequest request = (KillRequest) object;
+                    String deadPlayer = request.playerName;
+                    if (!protectedPlayersList.contains(deadPlayer) && !murderedPlayersList.contains(deadPlayer)) {
+                        murderedPlayersList.add(deadPlayer);
+                    }
+                } else if (object instanceof SaveRequest) {
+                    SaveRequest request = (SaveRequest) object;
+                    String protectedPlayer = request.playerName;
+                    if (!protectedPlayersList.contains(protectedPlayer)) {
+                        protectedPlayersList.add(protectedPlayer);
+                    }
+                    murderedPlayersList.remove(protectedPlayer);
                 }
             }
         });
@@ -181,7 +217,8 @@ public class MatchServer {
                     deadPlayersMap.put(playerName, alivePlayersMap.remove(playerName));
                 }
             }
-        } catch (NoSuchElementException ignored) {}
+        } catch (NoSuchElementException ignored) {
+        }
         return hangedList;
     }
 }

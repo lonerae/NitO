@@ -9,12 +9,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.lonerae.nightsintheoutskirts.game.GameData;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.DayScreen;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.NightResolutionScreen;
 
 public class CivilianNightScreen extends NightScreen{
 
@@ -40,7 +42,7 @@ public class CivilianNightScreen extends NightScreen{
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 ProceedRequest request = new ProceedRequest();
-                waitForOtherPlayers(request, new DayScreen(getGame()));
+                waitForOtherPlayers(request, ProceedType.ABILITY, new NightResolutionScreen(getGame()));
             }
         });
 

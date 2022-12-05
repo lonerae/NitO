@@ -32,6 +32,7 @@ public class MatchClient {
     private static HashMap<String, RoleName> alivePlayersMap;
     private static HashMap<String, RoleName> deadPlayersMap;
     private static List<String> hangedList;
+    private static List<String> murderedList;
 
     public static void terminate() {
         try {
@@ -87,6 +88,10 @@ public class MatchClient {
         return hangedList;
     }
 
+    public static List<String> getMurderedList() {
+        return murderedList;
+    }
+
     private static void createListener() {
         client.addListener(new Listener() {
             public void received(Connection connection, Object object) {
@@ -109,6 +114,9 @@ public class MatchClient {
                     deadPlayersMap = response.deadPlayerMap;
                     if (response.hangedList != null) {
                         hangedList = response.hangedList;
+                    }
+                    if (response.murderedList != null) {
+                        murderedList = response.murderedList;
                     }
                 } else if (object instanceof VoteResponse) {
                     VoteResponse response = (VoteResponse) object;

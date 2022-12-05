@@ -90,6 +90,10 @@ public class DayScreen extends BaseScreen {
         int i = 0;
         Table voteTable;
 
+        if (!MatchClient.getAlivePlayersMap().keySet().contains(Player.getPlayer().getName())) {
+            Player.getPlayer().setAlive(false);
+        }
+
         if (Player.getPlayer().isAlive()) {
             i++;
             voteTable = getTable(Player.getPlayer().getName());
