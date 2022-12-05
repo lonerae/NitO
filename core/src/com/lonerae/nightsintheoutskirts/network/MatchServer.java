@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class MatchServer {
 
@@ -42,9 +43,6 @@ public class MatchServer {
     private static int connectedPlayersNumber = 0;
     private static int assignedPlayerNumber = 0;
     private static int readyPlayerNumber = 0;
-
-    private static int nightCounter;
-    private static int dayCounter;
 
     public static void createServer(GameData data) throws UnknownHostException {
         if (server == null) {
@@ -125,7 +123,7 @@ public class MatchServer {
                                 ProceedResponse response = new ProceedResponse();
 
                                 response.permit = true;
-                                response.playerMap = alivePlayersMap;
+                                response.alivePlayerMap = alivePlayersMap;
                                 server.sendToAllTCP(response);
                                 readyPlayerNumber = 0;
                             }
@@ -135,7 +133,7 @@ public class MatchServer {
                                 ProceedResponse response = new ProceedResponse();
 
                                 response.permit = true;
-                                response.playerMap = alivePlayersMap;
+                                response.alivePlayerMap = alivePlayersMap;
                                 server.sendToAllTCP(response);
                                 readyPlayerNumber = 0;
                             }
@@ -145,7 +143,8 @@ public class MatchServer {
                                 ProceedResponse response = new ProceedResponse();
 
                                 response.permit = true;
-                                response.playerMap = alivePlayersMap;
+                                response.alivePlayerMap = alivePlayersMap;
+                                response.deadPlayerMap = deadPlayersMap;
                                 response.hangedList = getHanged();
                                 server.sendToAllTCP(response);
                                 readyPlayerNumber = 0;
@@ -173,14 +172,16 @@ public class MatchServer {
     }
 
     private static List<String> getHanged() {
-        int maxVotes = Collections.max(votingMap.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getValue();
         List<String> hangedList = new ArrayList<>();
-        for (String playerName : votingMap.keySet()) {
-            if (votingMap.get(playerName) == maxVotes) {
-                hangedList.add(playerName);
-                deadPlayersMap.put(playerName, alivePlayersMap.remove(playerName));
+        try {
+            int maxVotes = Collections.max(votingMap.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getValue();
+            for (String playerName : votingMap.keySet()) {
+                if (votingMap.get(playerName) == maxVotes) {
+                    hangedList.add(playerName);
+                    deadPlayersMap.put(playerName, alivePlayersMap.remove(playerName));
+                }
             }
-        }
+        } catch (NoSuchElementException ignored) {}
         return hangedList;
     }
 }

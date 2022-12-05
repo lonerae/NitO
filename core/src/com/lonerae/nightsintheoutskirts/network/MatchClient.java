@@ -30,6 +30,7 @@ public class MatchClient {
     private static Boolean permitted = null;
 
     private static HashMap<String, RoleName> alivePlayersMap;
+    private static HashMap<String, RoleName> deadPlayersMap;
     private static List<String> hangedList;
 
     public static void terminate() {
@@ -78,6 +79,10 @@ public class MatchClient {
         return alivePlayersMap;
     }
 
+    public static HashMap<String, RoleName> getDeadPlayersMap() {
+        return deadPlayersMap;
+    }
+
     public static List<String> getHangedList() {
         return hangedList;
     }
@@ -100,7 +105,8 @@ public class MatchClient {
                 } else if (object instanceof ProceedResponse) {
                     ProceedResponse response = (ProceedResponse) object;
                     permitted = response.permit;
-                    alivePlayersMap = response.playerMap;
+                    alivePlayersMap = response.alivePlayerMap;
+                    deadPlayersMap = response.deadPlayerMap;
                     if (response.hangedList != null) {
                         hangedList = response.hangedList;
                     }

@@ -16,6 +16,7 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.DeadNightScreen;
 
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class DayResolutionScreen extends BaseScreen {
             while (true) {
                 try {
                     if (MatchClient.isPermitted()) {
-                        Gdx.app.postRunnable(() -> getGame().setScreen(new NightScreen(getGame())));
+                        Gdx.app.postRunnable(() -> getGame().setScreen(new DeadNightScreen(getGame())));
                         MatchClient.setPermitted(false);
                         break;
                     }
@@ -76,7 +77,7 @@ public class DayResolutionScreen extends BaseScreen {
 
     private void continueToNight() {
         ProceedRequest request = new ProceedRequest();
-        waitForOtherPlayers(request, new NightScreen(getGame()));
+        waitForOtherPlayers(request, Player.getPlayer().getNight(getGame()));
     }
 
     private void waitToFillHangedTable(Table hangedTable) {

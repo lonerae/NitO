@@ -8,5 +8,6 @@ public class Assassin extends Role {
         setDescription(GameData.getRoleStrings().format("assassinDescription"));
         setIconPath("data/roles/assassin.png");
         setName(RoleName.ASSASSIN);
+        setAlliance(AllianceName.CHAOS);
     }
 }

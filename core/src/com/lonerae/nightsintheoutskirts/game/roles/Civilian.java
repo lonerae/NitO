@@ -9,5 +9,6 @@ public class Civilian extends Role {
         setDescription(GameData.getRoleStrings().format("civilianDescription"));
         setIconPath("data/roles/civilian.png");
         setName(RoleName.CIVILIAN);
+        setAlliance(AllianceName.ORDER);
     }
 }

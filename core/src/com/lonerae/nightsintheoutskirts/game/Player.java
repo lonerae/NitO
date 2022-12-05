@@ -1,6 +1,8 @@
 package com.lonerae.nightsintheoutskirts.game;
 
+import com.badlogic.gdx.Game;
 import com.lonerae.nightsintheoutskirts.game.roles.Role;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.NightScreen;
 
 public class Player {
 
@@ -9,6 +11,7 @@ public class Player {
     private String name;
     private Role role;
     private boolean isAlive = true;
+    private boolean isAbleToUseAbility = true;
 
     public static Player getPlayer() {
         if (player == null) {
@@ -39,5 +42,17 @@ public class Player {
 
     public void setAlive(boolean alive) {
         isAlive = alive;
+    }
+
+    public boolean isAbleToUseAbility() {
+        return isAbleToUseAbility;
+    }
+
+    public void setAbleToUseAbility(boolean ableToUseAbility) {
+        this.isAbleToUseAbility = ableToUseAbility;
+    }
+
+    public NightScreen getNight(Game game) {
+        return role.getNight(role.getName(), game);
     }
 }

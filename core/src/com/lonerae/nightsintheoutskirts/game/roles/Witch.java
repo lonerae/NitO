@@ -9,5 +9,6 @@ public class Witch extends Role {
         setDescription(GameData.getRoleStrings().format("witchDescription"));
         setIconPath("data/roles/witch.png");
         setName(RoleName.WITCH);
+        setAlliance(AllianceName.ORDER);
     }
 }

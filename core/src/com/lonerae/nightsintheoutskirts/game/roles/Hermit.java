@@ -9,5 +9,6 @@ public class Hermit extends Role {
         setDescription(GameData.getRoleStrings().format("hermitDescription"));
         setIconPath("data/roles/hermit.png");
         setName(RoleName.HERMIT);
+        setAlliance(AllianceName.ORDER);
     }
 }
