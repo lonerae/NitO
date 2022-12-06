@@ -3,7 +3,6 @@ package com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -11,11 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.lonerae.nightsintheoutskirts.game.GameData;
-import com.lonerae.nightsintheoutskirts.game.Player;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
@@ -61,76 +58,14 @@ public class AssassinNightScreen extends NightScreen {
         activateButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (voteCheckGroup.getAllChecked().size == 1) {
-                    Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("assassinWaitMessage"), getSkin(), getBlackStyle());
-                    dialog.show(getStage());
-
-                    MurderRequest request = new MurderRequest();
-                    request.willKill = true;
-                    request.target = voteCheckGroup.getChecked().getLabel().getText().toString();
-                    MatchClient.getClient().sendTCP(request);
-                    new Thread(() -> {
-                        while (true) {
-                            try {
-                                if (MatchClient.getAssassinPermitted()) {
-                                    Gdx.app.postRunnable(() -> {
-                                        ProceedRequest proceedRequest = new ProceedRequest();
-                                        dialog.hide();
-                                        waitForOtherPlayers(proceedRequest, ProceedType.ABILITY, new NightResolutionScreen(getGame()));
-                                    });
-                                    MatchClient.setAssassinPermitted(null);
-                                    break;
-                                } else {
-                                    Gdx.app.postRunnable(() -> {
-                                        dialog.hide();
-                                        MatchClient.setAssassinPermitted(null);
-                                        showErrorDialog(getStrings().get("noDecisionError"));
-                                    });
-                                    break;
-                                }
-                            } catch (NullPointerException ignored) {
-                            }
-                        }
-                    }).start();
-                } else {
-                    showErrorDialog(getStrings().get("noChoiceError"));
-                }
-
+                murderOrError();
             }
         });
 
         continueButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("assassinWaitMessage"), getSkin(), getBlackStyle());
-                dialog.show(getStage());
-
-                MurderRequest request = new MurderRequest();
-                request.willKill = false;
-                MatchClient.getClient().sendTCP(request);
-                new Thread(() -> {
-                    while (true) {
-                        try {
-                            if (MatchClient.getAssassinPermitted()) {
-                                Gdx.app.postRunnable(() -> {
-                                    ProceedRequest proceedRequest = new ProceedRequest();
-                                    dialog.hide();
-                                    waitForOtherPlayers(proceedRequest, ProceedType.ABILITY, new NightResolutionScreen(getGame()));
-                                });
-                                MatchClient.setAssassinPermitted(null);
-                                break;
-                            } else {
-                                Gdx.app.postRunnable(() -> {
-                                    dialog.hide();
-                                    MatchClient.setAssassinPermitted(null);
-                                    showErrorDialog(getStrings().get("noDecisionError"));
-                                });
-                                break;
-                            }
-                        } catch (NullPointerException ignored) {
-                        }
-                    }
-                }).start();
+                skipAbility();
             }
         });
 
@@ -142,6 +77,79 @@ public class AssassinNightScreen extends NightScreen {
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
+    }
+
+    private void skipAbility() {
+        Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("assassinWaitMessage"), getSkin(), getBlackStyle());
+        dialog.show(getStage());
+
+        waitForOtherAssassinsToSkip(dialog);
+    }
+
+    private void murderOrError() {
+        if (voteCheckGroup.getAllChecked().size == 1) {
+            Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("assassinWaitMessage"), getSkin(), getBlackStyle());
+            dialog.show(getStage());
+            waitForOtherAssassinsToKill(dialog);
+        } else {
+            showErrorDialog(getStrings().get("noChoiceError"));
+        }
+    }
+
+    private void waitForOtherAssassinsToSkip(Dialog dialog) {
+        MurderRequest request = new MurderRequest();
+        request.willKill = false;
+        MatchClient.getClient().sendTCP(request);
+        new Thread(() -> {
+            while (true) {
+                try {
+                    if (MatchClient.getAssassinPermitted()) {
+                        proceed(dialog);
+                    } else {
+                        showNoDecision(dialog);
+                    }
+                    break;
+                } catch (NullPointerException ignored) {
+                }
+            }
+        }).start();
+    }
+
+    private void showNoDecision(Dialog dialog) {
+        Gdx.app.postRunnable(() -> {
+            dialog.hide();
+            MatchClient.setAssassinPermitted(null);
+            showErrorDialog(getStrings().get("noDecisionError"));
+        });
+    }
+
+    private void proceed(Dialog dialog) {
+        Gdx.app.postRunnable(() -> {
+            ProceedRequest proceedRequest = new ProceedRequest();
+            dialog.hide();
+            waitForOtherPlayers(proceedRequest, ProceedType.ABILITY, new NightResolutionScreen(getGame()));
+        });
+        MatchClient.setAssassinPermitted(null);
+    }
+
+    private void waitForOtherAssassinsToKill(Dialog dialog) {
+        MurderRequest request = new MurderRequest();
+        request.willKill = true;
+        request.target = voteCheckGroup.getChecked().getLabel().getText().toString();
+        MatchClient.getClient().sendTCP(request);
+        new Thread(() -> {
+            while (true) {
+                try {
+                    if (MatchClient.getAssassinPermitted()) {
+                        proceed(dialog);
+                    } else {
+                        showNoDecision(dialog);
+                    }
+                    break;
+                } catch (NullPointerException ignored) {
+                }
+            }
+        }).start();
     }
 
     private void fillAlivePlayerTable(Table alivePlayerTable) {
