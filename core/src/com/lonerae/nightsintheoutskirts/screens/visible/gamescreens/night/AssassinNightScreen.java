@@ -78,7 +78,14 @@ public class AssassinNightScreen extends NightScreen {
                                         dialog.hide();
                                         waitForOtherPlayers(proceedRequest, ProceedType.ABILITY, new NightResolutionScreen(getGame()));
                                     });
-                                    MatchClient.setAssassinPermitted(false);
+                                    MatchClient.setAssassinPermitted(null);
+                                    break;
+                                } else {
+                                    Gdx.app.postRunnable(() -> {
+                                        dialog.hide();
+                                        MatchClient.setAssassinPermitted(null);
+                                        showErrorDialog(getStrings().get("noDecisionError"));
+                                    });
                                     break;
                                 }
                             } catch (NullPointerException ignored) {
@@ -110,7 +117,14 @@ public class AssassinNightScreen extends NightScreen {
                                     dialog.hide();
                                     waitForOtherPlayers(proceedRequest, ProceedType.ABILITY, new NightResolutionScreen(getGame()));
                                 });
-                                MatchClient.setAssassinPermitted(false);
+                                MatchClient.setAssassinPermitted(null);
+                                break;
+                            } else {
+                                Gdx.app.postRunnable(() -> {
+                                    dialog.hide();
+                                    MatchClient.setAssassinPermitted(null);
+                                    showErrorDialog(getStrings().get("noDecisionError"));
+                                });
                                 break;
                             }
                         } catch (NullPointerException ignored) {

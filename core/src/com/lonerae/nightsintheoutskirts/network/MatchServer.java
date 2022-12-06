@@ -49,8 +49,8 @@ public class MatchServer {
     private static int assassinNumber;
     private static int assassinSent = 0;
     private static int assassinPass = 0;
-    private static String assassinTarget;
-    private static boolean assassinsAgree;
+    private static String assassinTarget = null;
+    private static int assassinsAgree = 0;
 
     private static int connectedPlayersNumber = 0;
     private static int assignedPlayerNumber = 0;
@@ -219,13 +219,9 @@ public class MatchServer {
                     MurderRequest request = (MurderRequest) object;
 
                     if (request.willKill) {
-                        if (assassinTarget == null) {
-                            assassinsAgree = true;
+                        if (assassinTarget == null || request.target.equals(assassinTarget)) {
+                            assassinsAgree++;
                             assassinTarget = request.target;
-                        } else {
-                            if (!request.target.equals(assassinTarget)) {
-                                assassinsAgree = false;
-                            }
                         }
                     } else {
                         assassinPass++;
@@ -235,13 +231,13 @@ public class MatchServer {
                     if (assassinSent == assassinNumber) {
                         MurderResponse response = new MurderResponse();
 
-                        if (assassinPass < assassinNumber || !assassinsAgree) {
+                        if (assassinPass < assassinNumber || assassinsAgree < assassinNumber) {
                             response.permit = false;
                         }
                         if (assassinPass == assassinNumber) {
                             response.permit = true;
                         }
-                        if (assassinsAgree) {
+                        if (assassinsAgree == assassinNumber) {
                             response.permit = true;
                             if (!murderedPlayersList.contains(assassinTarget)) {
                                 murderedPlayersList.add(assassinTarget);
@@ -251,7 +247,7 @@ public class MatchServer {
                         server.sendToAllTCP(response);
                         assassinSent = 0;
                         assassinTarget = null;
-                        assassinsAgree = false;
+                        assassinsAgree = 0;
                         assassinPass = 0;
                     }
                 }
