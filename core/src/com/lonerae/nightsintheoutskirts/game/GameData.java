@@ -13,15 +13,15 @@ public class GameData {
     private static final I18NBundle roleStrings = I18NBundle.createBundle(Gdx.files.internal("strings/roleStrings"));
     private static final Map<RoleName, Role> roleList = new LinkedHashMap<>();
 
-    private final String townName;
-    private final int numberOfPlayers;
-    private final Map<RoleName, Integer> matchRoleList;
-
     static {
         for (RoleName roleName : RoleName.values()) {
             roleList.put(roleName, Role.getRole(roleName));
         }
     }
+
+    private final String townName;
+    private final int numberOfPlayers;
+    private final Map<RoleName, Integer> matchRoleList;
 
     public GameData(String townName, int numberOfPlayers, Map<RoleName, Integer> matchRoleList) {
         this.townName = townName;

@@ -36,17 +36,39 @@ import java.util.HashMap;
 
 public class DayScreen extends BaseScreen {
 
-    private ScrollPane scroll;
     private static final HashMap<String, TextField> votingMap = new HashMap<>();
-
     private static final HashMap<String, Dialog> votersMap = new HashMap<>();
     private static final HashMap<String, StringBuilder> votedByMessageMap = new HashMap<>();
-
     private final ButtonGroup<CheckBox> voteCheckGroup = new ButtonGroup<>();
+    private ScrollPane scroll;
 
     public DayScreen(Game game) {
         super(game);
         voteCheckGroup.setMinCheckCount(0);
+    }
+
+    public static void updateVote(String voterName, String votedPlayerName, int votes) {
+        if (votes > Integer.parseInt(votingMap.get(votedPlayerName).getText())) {
+            addVoter(voterName, votedPlayerName);
+        } else {
+            removeVoter(voterName, votedPlayerName);
+        }
+        votingMap.get(votedPlayerName).setText(String.valueOf(votes));
+    }
+
+    private static void removeVoter(String voterName, String votedPlayerName) {
+        int index = votedByMessageMap.get(votedPlayerName).indexOf(voterName);
+        StringBuilder newVoters = votedByMessageMap.get(votedPlayerName).delete(index - 1, index + voterName.length());
+        votersMap.get(votedPlayerName).getContentTable().clearChildren();
+        votersMap.get(votedPlayerName).getContentTable().add(new CustomLabel(newVoters, getBlackStyle())).width(DEFAULT_POPUP_SIZE);
+    }
+
+    private static void addVoter(String voterName, String votedPlayerName) {
+        if (votedByMessageMap.get(votedPlayerName).indexOf(voterName) == -1) {
+            StringBuilder newVoters = votedByMessageMap.get(votedPlayerName).append("\n").append(voterName);
+            votersMap.get(votedPlayerName).getContentTable().clearChildren();
+            votersMap.get(votedPlayerName).getContentTable().add(new CustomLabel(newVoters, getBlackStyle())).width(DEFAULT_POPUP_SIZE);
+        }
     }
 
     public ScrollPane getScroll() {
@@ -87,7 +109,7 @@ public class DayScreen extends BaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
 //                if (voteCheckGroup.getAllChecked().size == 1) { FOR TESTING PURPOSE
-                    continueToResolution();
+                continueToResolution();
 //                } else {
 //                    showErrorDialog(getStrings().get("noVoteError"));
 //                }
@@ -148,14 +170,14 @@ public class DayScreen extends BaseScreen {
 
         Label playerName = new CustomLabel(player, getBlackStyle());
         playerName.setAlignment(Align.center);
-        voteTable.add(playerName).width(WIDTH/5).row();
+        voteTable.add(playerName).width(WIDTH / 5).row();
 
         Table voteInfo = new Table(getSkin());
         TextField voteCount = new CustomTextField("0", getTextFieldStyle());
         voteCount.setTouchable(Touchable.disabled);
 
         votingMap.put(player, voteCount);
-        voteInfo.add(voteCount).width(WIDTH/11).pad(20);
+        voteInfo.add(voteCount).width(WIDTH / 11).pad(20);
 
         if (Player.getPlayer().isAlive() && !player.equals(Player.getPlayer().getName())) {
             addVotingBox(player, voteInfo);
@@ -164,16 +186,16 @@ public class DayScreen extends BaseScreen {
         TextButton votedByButton = addVotedByButton(player, voteTable);
 
         voteTable.add(voteInfo).row();
-        voteTable.add(votedByButton).width(WIDTH/4);
+        voteTable.add(votedByButton).width(WIDTH / 4);
         return voteTable;
     }
 
     private TextButton addVotedByButton(String player, Table voteTable) {
         voteTable.row();
-        TextButton votedByButton = new CustomTextButton(getStrings().get("votersButtonTitle"),getSkin(),getBlackStyle());
-        Dialog votedByDialog = new CustomDialog(getSkin(),getBlackStyle());
+        TextButton votedByButton = new CustomTextButton(getStrings().get("votersButtonTitle"), getSkin(), getBlackStyle());
+        Dialog votedByDialog = new CustomDialog(getSkin(), getBlackStyle());
         votersMap.put(player, votedByDialog);
-        votedByMessageMap.put(player,new StringBuilder());
+        votedByMessageMap.put(player, new StringBuilder());
 
         votedByButton.addListener(new InputListener() {
             @Override
@@ -216,29 +238,5 @@ public class DayScreen extends BaseScreen {
         request.votedPlayerName = player;
         request.vote = vote;
         MatchClient.getClient().sendTCP(request);
-    }
-
-    public static void updateVote(String voterName, String votedPlayerName, int votes) {
-        if (votes > Integer.parseInt(votingMap.get(votedPlayerName).getText())) {
-            addVoter(voterName, votedPlayerName);
-        } else {
-            removeVoter(voterName, votedPlayerName);
-        }
-        votingMap.get(votedPlayerName).setText(String.valueOf(votes));
-    }
-
-    private static void removeVoter(String voterName, String votedPlayerName) {
-        int index = votedByMessageMap.get(votedPlayerName).indexOf(voterName);
-        StringBuilder newVoters = votedByMessageMap.get(votedPlayerName).delete(index - 1, index + voterName.length());
-        votersMap.get(votedPlayerName).getContentTable().clearChildren();
-        votersMap.get(votedPlayerName).getContentTable().add(new CustomLabel(newVoters, getBlackStyle())).width(DEFAULT_POPUP_SIZE);
-    }
-
-    private static void addVoter(String voterName, String votedPlayerName) {
-        if (votedByMessageMap.get(votedPlayerName).indexOf(voterName) == -1) {
-            StringBuilder newVoters = votedByMessageMap.get(votedPlayerName).append("\n").append(voterName);
-            votersMap.get(votedPlayerName).getContentTable().clearChildren();
-            votersMap.get(votedPlayerName).getContentTable().add(new CustomLabel(newVoters, getBlackStyle())).width(DEFAULT_POPUP_SIZE);
-        }
     }
 }

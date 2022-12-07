@@ -85,14 +85,15 @@ public class NightResolutionScreen extends BaseScreen {
                 List<String> murderedList = MatchClient.getMurderedList();
                 fillMurderedList(murderedTable, murderedList);
                 break;
-            } catch (NullPointerException ignored) {}
+            } catch (NullPointerException ignored) {
+            }
         }
     }
 
     private void fillMurderedList(Table murderedTable, List<String> murderedList) {
         for (String player : murderedList) {
             Label murderedLabel = new CustomLabel(player, getBlackStyle());
-            murderedTable.add(murderedLabel).width(WIDTH/5).row();
+            murderedTable.add(murderedLabel).width(WIDTH / 5).row();
             if (Player.getPlayer().getName().equals(player)) {
                 Player.getPlayer().setAlive(false);
             }

@@ -21,8 +21,8 @@ import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.MatchServer;
 import com.lonerae.nightsintheoutskirts.network.requests.GreetingRequest;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
-import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
+import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
@@ -223,6 +223,7 @@ public class GameCreateScreen extends BaseScreen {
         try {
             MatchClient.terminate();
             MatchServer.terminate();
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException ignored) {
+        }
     }
 }

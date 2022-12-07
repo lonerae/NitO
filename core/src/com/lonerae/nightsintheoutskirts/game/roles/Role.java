@@ -14,6 +14,29 @@ public abstract class Role {
     private RoleName name;
     private AllianceName alliance;
 
+    public static Role getRole(RoleName roleName) {
+        Role role;
+        switch (roleName) {
+            case CIVILIAN:
+                role = new Civilian();
+                break;
+            case ASSASSIN:
+                role = new Assassin();
+                break;
+            case WITCH:
+                role = new Witch();
+                break;
+            case HERMIT:
+                role = new Hermit();
+                break;
+            default:
+                role = null;
+                break;
+        }
+
+        return role;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -44,29 +67,6 @@ public abstract class Role {
 
     public void setAlliance(AllianceName alliance) {
         this.alliance = alliance;
-    }
-
-    public static Role getRole(RoleName roleName) {
-        Role role;
-        switch (roleName) {
-            case CIVILIAN:
-                role = new Civilian();
-                break;
-            case ASSASSIN:
-                role = new Assassin();
-                break;
-            case WITCH:
-                role = new Witch();
-                break;
-            case HERMIT:
-                role = new Hermit();
-                break;
-            default:
-                role = null;
-                break;
-        }
-
-        return role;
     }
 
     public NightScreen getNight(RoleName roleName, Game game) {

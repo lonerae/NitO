@@ -25,9 +25,8 @@ import java.util.Map;
 
 public class MatchClient {
 
-    private static Client client;
     private static final Map<String, Integer> availableMatches = new HashMap<>();
-
+    private static Client client;
     private static List<RoleName> matchRoleList;
     private static Boolean connectionAccepted = null;
     private static Role assignedRole;

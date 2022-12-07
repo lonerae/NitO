@@ -24,7 +24,6 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextField;
-import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.DayScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.NightResolutionScreen;
 
 import java.util.HashMap;

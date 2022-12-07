@@ -15,10 +15,9 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
-import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.DayScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.NightResolutionScreen;
 
-public class CivilianNightScreen extends NightScreen{
+public class CivilianNightScreen extends NightScreen {
 
     public CivilianNightScreen(Game game) {
         super(game);

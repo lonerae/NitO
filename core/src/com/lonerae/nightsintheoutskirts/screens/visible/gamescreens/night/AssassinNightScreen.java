@@ -29,15 +29,27 @@ import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.NightResolut
 
 public class AssassinNightScreen extends NightScreen {
 
-    private ScrollPane scroll;
     private static Dialog overviewDialog;
     private static StringBuilder overviewMessage;
     private static StringBuilder defaultOverviewMessage;
     private final ButtonGroup<CheckBox> voteCheckGroup = new ButtonGroup<>();
+    private ScrollPane scroll;
 
     public AssassinNightScreen(Game game) {
         super(game);
         voteCheckGroup.setMinCheckCount(0);
+    }
+
+    public static void updateOverview(String killer, String target, boolean skip) {
+        if (skip) {
+            int index = overviewMessage.indexOf("skip: ");
+            overviewMessage.insert(index + 6, killer + " ");
+        } else {
+            int index = overviewMessage.indexOf(target);
+            overviewMessage.insert(index + target.length() + 2, killer + " ");
+        }
+        overviewDialog.getContentTable().clearChildren();
+        overviewDialog.getContentTable().add(new CustomLabel(overviewMessage, getBlackStyle())).width(DEFAULT_POPUP_SIZE);
     }
 
     public ScrollPane getScroll() {
@@ -64,7 +76,6 @@ public class AssassinNightScreen extends NightScreen {
 
         TextButton activateButton = new CustomTextButton(getStrings().get("abilityReady"), getSkin(), getBlackStyle());
         TextButton continueButton = new CustomTextButton(getStrings().get("skipChoice"), getSkin(), getBlackStyle());
-        TextButton overviewButton = new CustomTextButton(getStrings().get("assassinOverview"), getSkin(), getBlackStyle());
 
         activateButton.addListener(new ClickListener() {
             @Override
@@ -80,13 +91,23 @@ public class AssassinNightScreen extends NightScreen {
             }
         });
 
-        overviewMessage = new StringBuilder();
-        for (String player : MatchClient.getAlivePlayersMap().keySet()) {
-            overviewMessage.append(player).append(": \n");
-        }
-        overviewMessage.append("skip: ");
-        defaultOverviewMessage = new StringBuilder(overviewMessage);
-        overviewDialog = new CustomDialog("", overviewMessage.toString(), getSkin(), getBlackStyle());
+        TextButton overviewButton = addOverviewButton();
+
+        Table buttonTable = new Table(getSkin());
+        buttonTable.add(activateButton).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL).row();
+        buttonTable.add(continueButton).width(WIDTH / 3).colspan(2).pad(PAD_HORIZONTAL_SMALL).row();
+        buttonTable.add(overviewButton).width(WIDTH / 3).colspan(2).pad(PAD_HORIZONTAL_SMALL);
+
+        mainTable.add(buttonTable);
+
+        scroll = new CustomScrollPane(mainTable, true);
+        getStage().addActor(scroll);
+    }
+
+    private TextButton addOverviewButton() {
+        TextButton overviewButton = new CustomTextButton(getStrings().get("assassinOverview"), getSkin(), getBlackStyle());
+        createDefaultOverviewMessage();
+        overviewDialog = new CustomDialog("KILL LIST", overviewMessage.toString(), getSkin(), getBlackStyle());
         overviewButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -101,16 +122,16 @@ public class AssassinNightScreen extends NightScreen {
                 getScroll().setFlickScroll(true);
             }
         });
+        return overviewButton;
+    }
 
-        Table buttonTable = new Table(getSkin());
-        buttonTable.add(activateButton).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL).row();
-        buttonTable.add(continueButton).width(WIDTH / 3).colspan(2).pad(PAD_HORIZONTAL_SMALL).row();
-        buttonTable.add(overviewButton).width(WIDTH / 3).colspan(2).pad(PAD_HORIZONTAL_SMALL);
-
-        mainTable.add(buttonTable);
-
-        scroll = new CustomScrollPane(mainTable, true);
-        getStage().addActor(scroll);
+    private void createDefaultOverviewMessage() {
+        overviewMessage = new StringBuilder();
+        for (String player : MatchClient.getAlivePlayersMap().keySet()) {
+            overviewMessage.append(player).append(": \n");
+        }
+        overviewMessage.append("skip: ");
+        defaultOverviewMessage = new StringBuilder(overviewMessage);
     }
 
     private void skipAbility() {
@@ -142,15 +163,19 @@ public class AssassinNightScreen extends NightScreen {
                         proceed(dialog);
                     } else {
                         showNoDecision(dialog);
-                        overviewMessage = new StringBuilder(defaultOverviewMessage);
-                        overviewDialog.getContentTable().clearChildren();
-                        overviewDialog.getContentTable().add(new CustomLabel(overviewMessage, getBlackStyle())).width(DEFAULT_POPUP_SIZE);
+                        resetOverview();
                     }
                     break;
                 } catch (NullPointerException ignored) {
                 }
             }
         }).start();
+    }
+
+    private void resetOverview() {
+        overviewMessage = new StringBuilder(defaultOverviewMessage);
+        overviewDialog.getContentTable().clearChildren();
+        overviewDialog.getContentTable().add(new CustomLabel(overviewMessage, getBlackStyle())).width(DEFAULT_POPUP_SIZE);
     }
 
     private void showNoDecision(Dialog dialog) {
@@ -183,9 +208,7 @@ public class AssassinNightScreen extends NightScreen {
                         proceed(dialog);
                     } else {
                         showNoDecision(dialog);
-                        overviewMessage = new StringBuilder(defaultOverviewMessage);
-                        overviewDialog.getContentTable().clearChildren();
-                        overviewDialog.getContentTable().add(new CustomLabel(overviewMessage, getBlackStyle())).width(DEFAULT_POPUP_SIZE);
+                        resetOverview();
                     }
 
                     break;
@@ -210,17 +233,5 @@ public class AssassinNightScreen extends NightScreen {
         voteCheck.getLabelCell().padLeft(PAD_HORIZONTAL_SMALL);
         voteCheckGroup.add(voteCheck);
         return voteCheck;
-    }
-
-    public static void updateOverview(String killer, String target, boolean skip) {
-        if (skip) {
-            int index = overviewMessage.indexOf("skip: ");
-            overviewMessage.insert(index + 6, killer + " ");
-        } else {
-            int index = overviewMessage.indexOf(target);
-            overviewMessage.insert(index + target.length() + 2, killer + " ");
-        }
-        overviewDialog.getContentTable().clearChildren();
-        overviewDialog.getContentTable().add(new CustomLabel(overviewMessage, getBlackStyle())).width(DEFAULT_POPUP_SIZE);
     }
 }

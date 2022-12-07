@@ -12,7 +12,6 @@ import com.lonerae.nightsintheoutskirts.screens.UIUtil;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
-import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.DayScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.NightResolutionScreen;
 
 public class DeadNightScreen extends BaseScreen {

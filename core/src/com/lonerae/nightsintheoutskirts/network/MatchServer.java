@@ -36,15 +36,14 @@ import java.util.NoSuchElementException;
 
 public class MatchServer {
 
-    private static Server server;
-    private static GameData match;
-
     private static final HashMap<String, RoleName> connectedPlayersMap = new HashMap<>();
     private static final HashMap<String, RoleName> alivePlayersMap = new HashMap<>();
     private static final HashMap<String, RoleName> deadPlayersMap = new HashMap<>();
     private static final HashMap<String, Integer> votingMap = new HashMap<>();
     private static final List<String> protectedPlayersList = new ArrayList<>();
     private static final List<String> murderedPlayersList = new ArrayList<>();
+    private static Server server;
+    private static GameData match;
     private static List<RoleName> shuffledDeck;
 
     private static int assassinNumber;

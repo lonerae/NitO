@@ -86,14 +86,15 @@ public class DayResolutionScreen extends BaseScreen {
                 List<String> hangedList = MatchClient.getHangedList();
                 fillHangedTable(hangedTable, hangedList);
                 break;
-            } catch (NullPointerException ignored) {}
+            } catch (NullPointerException ignored) {
+            }
         }
     }
 
     private void fillHangedTable(Table hangedTable, List<String> hangedList) {
         for (String player : hangedList) {
             Label hangedLabel = new CustomLabel(player, getBlackStyle());
-            hangedTable.add(hangedLabel).width(WIDTH/5).row();
+            hangedTable.add(hangedLabel).width(WIDTH / 5).row();
             if (Player.getPlayer().getName().equals(player)) {
                 Player.getPlayer().setAlive(false);
             }
