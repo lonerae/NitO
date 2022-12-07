@@ -12,8 +12,10 @@ import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.VoteResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.abilities.AssassinInfoResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.abilities.MurderResponse;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.DayScreen;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.AssassinNightScreen;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -132,6 +134,11 @@ public class MatchClient {
                 } else if (object instanceof VoteResponse) {
                     VoteResponse response = (VoteResponse) object;
                     DayScreen.updateVote(response.voterName, response.votedPlayerName, response.vote);
+                } else if (object instanceof AssassinInfoResponse) {
+                    if (Player.getPlayer().getRole().getName().equals(RoleName.ASSASSIN)) {
+                        AssassinInfoResponse response = (AssassinInfoResponse) object;
+                        AssassinNightScreen.updateOverview(response.killer, response.target, response.skip);
+                    }
                 } else if (object instanceof MurderResponse) {
                     if (Player.getPlayer().getRole().getName().equals(RoleName.ASSASSIN)) {
                         MurderResponse response = (MurderResponse) object;

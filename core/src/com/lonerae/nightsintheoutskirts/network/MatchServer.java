@@ -21,6 +21,7 @@ import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.VoteResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.abilities.AssassinInfoResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.abilities.MurderResponse;
 
 import java.io.IOException;
@@ -219,16 +220,23 @@ public class MatchServer {
                     murderedPlayersList.remove(protectedPlayer);
                 } else if (object instanceof MurderRequest) {
                     MurderRequest request = (MurderRequest) object;
+                    AssassinInfoResponse info = new AssassinInfoResponse();
 
                     if (request.willKill) {
+                        info.skip = false;
+                        info.killer = request.killer;
+                        info.target = request.target;
                         if (assassinTarget == null || request.target.equals(assassinTarget)) {
                             assassinsAgree++;
                             assassinTarget = request.target;
                         }
                     } else {
+                        info.skip = true;
+                        info.killer = request.killer;
                         assassinPass++;
                     }
 
+                    server.sendToAllTCP(info);
                     assassinSent++;
                     if (assassinSent == assassinNumber) {
                         MurderResponse response = new MurderResponse();

@@ -3,6 +3,7 @@ package com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.lonerae.nightsintheoutskirts.game.GameData;
+import com.lonerae.nightsintheoutskirts.game.Player;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
@@ -27,11 +29,19 @@ import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.NightResolut
 
 public class AssassinNightScreen extends NightScreen {
 
+    private ScrollPane scroll;
+    private static Dialog overviewDialog;
+    private static StringBuilder overviewMessage;
+    private static StringBuilder defaultOverviewMessage;
     private final ButtonGroup<CheckBox> voteCheckGroup = new ButtonGroup<>();
 
     public AssassinNightScreen(Game game) {
         super(game);
         voteCheckGroup.setMinCheckCount(0);
+    }
+
+    public ScrollPane getScroll() {
+        return scroll;
     }
 
     @Override
@@ -54,6 +64,7 @@ public class AssassinNightScreen extends NightScreen {
 
         TextButton activateButton = new CustomTextButton(getStrings().get("abilityReady"), getSkin(), getBlackStyle());
         TextButton continueButton = new CustomTextButton(getStrings().get("skipChoice"), getSkin(), getBlackStyle());
+        TextButton overviewButton = new CustomTextButton(getStrings().get("assassinOverview"), getSkin(), getBlackStyle());
 
         activateButton.addListener(new ClickListener() {
             @Override
@@ -69,13 +80,36 @@ public class AssassinNightScreen extends NightScreen {
             }
         });
 
+        overviewMessage = new StringBuilder();
+        for (String player : MatchClient.getAlivePlayersMap().keySet()) {
+            overviewMessage.append(player).append(": \n");
+        }
+        overviewMessage.append("skip: ");
+        defaultOverviewMessage = new StringBuilder(overviewMessage);
+        overviewDialog = new CustomDialog("", overviewMessage.toString(), getSkin(), getBlackStyle());
+        overviewButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                overviewDialog.show(getStage());
+                getScroll().setFlickScroll(false);
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                overviewDialog.hide();
+                getScroll().setFlickScroll(true);
+            }
+        });
+
         Table buttonTable = new Table(getSkin());
         buttonTable.add(activateButton).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL).row();
-        buttonTable.add(continueButton).width(WIDTH / 3).colspan(2).pad(PAD_HORIZONTAL_SMALL);
+        buttonTable.add(continueButton).width(WIDTH / 3).colspan(2).pad(PAD_HORIZONTAL_SMALL).row();
+        buttonTable.add(overviewButton).width(WIDTH / 3).colspan(2).pad(PAD_HORIZONTAL_SMALL);
 
         mainTable.add(buttonTable);
 
-        ScrollPane scroll = new CustomScrollPane(mainTable, true);
+        scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
     }
 
@@ -99,6 +133,7 @@ public class AssassinNightScreen extends NightScreen {
     private void waitForOtherAssassinsToSkip(Dialog dialog) {
         MurderRequest request = new MurderRequest();
         request.willKill = false;
+        request.killer = Player.getPlayer().getName();
         MatchClient.getClient().sendTCP(request);
         new Thread(() -> {
             while (true) {
@@ -107,6 +142,9 @@ public class AssassinNightScreen extends NightScreen {
                         proceed(dialog);
                     } else {
                         showNoDecision(dialog);
+                        overviewMessage = new StringBuilder(defaultOverviewMessage);
+                        overviewDialog.getContentTable().clearChildren();
+                        overviewDialog.getContentTable().add(new CustomLabel(overviewMessage, getBlackStyle())).width(DEFAULT_POPUP_SIZE);
                     }
                     break;
                 } catch (NullPointerException ignored) {
@@ -135,6 +173,7 @@ public class AssassinNightScreen extends NightScreen {
     private void waitForOtherAssassinsToKill(Dialog dialog) {
         MurderRequest request = new MurderRequest();
         request.willKill = true;
+        request.killer = Player.getPlayer().getName();
         request.target = voteCheckGroup.getChecked().getLabel().getText().toString();
         MatchClient.getClient().sendTCP(request);
         new Thread(() -> {
@@ -144,7 +183,11 @@ public class AssassinNightScreen extends NightScreen {
                         proceed(dialog);
                     } else {
                         showNoDecision(dialog);
+                        overviewMessage = new StringBuilder(defaultOverviewMessage);
+                        overviewDialog.getContentTable().clearChildren();
+                        overviewDialog.getContentTable().add(new CustomLabel(overviewMessage, getBlackStyle())).width(DEFAULT_POPUP_SIZE);
                     }
+
                     break;
                 } catch (NullPointerException ignored) {
                 }
@@ -167,5 +210,17 @@ public class AssassinNightScreen extends NightScreen {
         voteCheck.getLabelCell().padLeft(PAD_HORIZONTAL_SMALL);
         voteCheckGroup.add(voteCheck);
         return voteCheck;
+    }
+
+    public static void updateOverview(String killer, String target, boolean skip) {
+        if (skip) {
+            int index = overviewMessage.indexOf("skip: ");
+            overviewMessage.insert(index + 6, killer + " ");
+        } else {
+            int index = overviewMessage.indexOf(target);
+            overviewMessage.insert(index + target.length() + 2, killer + " ");
+        }
+        overviewDialog.getContentTable().clearChildren();
+        overviewDialog.getContentTable().add(new CustomLabel(overviewMessage, getBlackStyle())).width(DEFAULT_POPUP_SIZE);
     }
 }

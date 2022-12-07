@@ -20,6 +20,7 @@ import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.VoteResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.abilities.AssassinInfoResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.abilities.MurderResponse;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class NetworkUtil {
         kryo.register(SaveRequest.class);
         kryo.register(MurderRequest.class);
         kryo.register(MurderResponse.class);
+        kryo.register(AssassinInfoResponse.class);
         kryo.register(ArrayList.class);
         kryo.register(HashMap.class);
         kryo.register(RoleName.class);

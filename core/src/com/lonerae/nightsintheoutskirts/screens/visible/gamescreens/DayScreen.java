@@ -164,7 +164,7 @@ public class DayScreen extends BaseScreen {
         TextButton votedByButton = addVotedByButton(player, voteTable);
 
         voteTable.add(voteInfo).row();
-        voteTable.add(votedByButton).width(WIDTH/5);
+        voteTable.add(votedByButton).width(WIDTH/4);
         return voteTable;
     }
 
