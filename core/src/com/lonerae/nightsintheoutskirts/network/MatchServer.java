@@ -190,6 +190,7 @@ public class MatchServer {
                     }
                 } else if (object instanceof VoteRequest) {
                     VoteRequest request = (VoteRequest) object;
+                    String voterName = request.voterName;
                     String votedPlayerName = request.votedPlayerName;
                     int newVote = request.vote;
                     if (!votingMap.containsKey(votedPlayerName)) {
@@ -199,6 +200,7 @@ public class MatchServer {
                         votingMap.put(votedPlayerName, oldVote + newVote);
                     }
                     VoteResponse response = new VoteResponse();
+                    response.voterName = voterName;
                     response.votedPlayerName = votedPlayerName;
                     response.vote = votingMap.get(votedPlayerName);
                     server.sendToAllTCP(response);

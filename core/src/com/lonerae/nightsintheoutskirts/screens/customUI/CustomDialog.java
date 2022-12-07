@@ -29,6 +29,13 @@ public class CustomDialog extends Dialog {
         this.getButtonTable().defaults().width(WIDTH / 3).pad(25);
     }
 
+    public CustomDialog(Skin skin, Label.LabelStyle style) {
+        super("", skin);
+        this.getContentTable().defaults().width(DEFAULT_POPUP_SIZE);
+        Label messageLabel = new CustomLabel("", style);
+        this.getContentTable().add(messageLabel).width(DEFAULT_POPUP_SIZE);
+    }
+
     public void isHideable() {
         this.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {

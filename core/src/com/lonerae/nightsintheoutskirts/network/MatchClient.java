@@ -131,7 +131,7 @@ public class MatchClient {
                     }
                 } else if (object instanceof VoteResponse) {
                     VoteResponse response = (VoteResponse) object;
-                    DayScreen.updateVote(response.votedPlayerName, response.vote);
+                    DayScreen.updateVote(response.voterName, response.votedPlayerName, response.vote);
                 } else if (object instanceof MurderResponse) {
                     if (Player.getPlayer().getRole().getName().equals(RoleName.ASSASSIN)) {
                         MurderResponse response = (MurderResponse) object;

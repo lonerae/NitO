@@ -36,7 +36,7 @@ public class BaseScreen implements Screen {
 
     private final Label.LabelStyle titleStyle;
     private final Label.LabelStyle redStyle;
-    private final Label.LabelStyle blackStyle;
+    private static Label.LabelStyle blackStyle;
     private final TextField.TextFieldStyle textFieldStyle;
 
     private boolean isTraceable = false;
@@ -105,7 +105,7 @@ public class BaseScreen implements Screen {
         return redStyle;
     }
 
-    public Label.LabelStyle getBlackStyle() {
+    public static Label.LabelStyle getBlackStyle() {
         return blackStyle;
     }
 
