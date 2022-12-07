@@ -1,7 +1,6 @@
 package com.lonerae.nightsintheoutskirts.screens.visible;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -17,7 +16,7 @@ public class LogoScreen extends BaseScreen {
     }
 
     @Override
-    public void show () {
+    public void show() {
         super.show();
 
         Image logo = new Image(new Texture("data/placeholder.png"));

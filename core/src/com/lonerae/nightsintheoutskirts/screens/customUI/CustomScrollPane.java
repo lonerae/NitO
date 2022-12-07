@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 public class CustomScrollPane extends ScrollPane {
 
     public CustomScrollPane(Actor widget) {
-        this(widget,false);
+        this(widget, false);
     }
 
     public CustomScrollPane(Actor widget, boolean isMain) {

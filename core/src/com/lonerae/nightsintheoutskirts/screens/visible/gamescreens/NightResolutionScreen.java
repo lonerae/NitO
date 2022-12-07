@@ -16,12 +16,11 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
-import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.DeadNightScreen;
 
 import java.util.List;
 
-public class DayResolutionScreen extends BaseScreen {
-    public DayResolutionScreen(Game game) {
+public class NightResolutionScreen extends BaseScreen {
+    public NightResolutionScreen(Game game) {
         super(game);
     }
 
@@ -31,13 +30,13 @@ public class DayResolutionScreen extends BaseScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label description = new CustomLabel(getGameStrings().get("dayResolution"), getBlackStyle());
+        Label description = new CustomLabel(getGameStrings().get("nightResolution"), getBlackStyle());
         mainTable.add(description).width(DEFAULT_ACTOR_WIDTH).padBottom(PAD_VERTICAL_BIG).row();
 
-        Table hangedTable = new Table(getSkin());
-        waitToFillHangedTable(hangedTable);
+        Table murderedTable = new Table(getSkin());
+        waitToFillMurderedTable(murderedTable);
 
-        mainTable.add(hangedTable).padBottom(PAD_VERTICAL_BIG).row();
+        mainTable.add(murderedTable).padBottom(PAD_VERTICAL_BIG).row();
 
         if (Player.getPlayer().isAlive()) {
             addContinueButton(mainTable);
@@ -54,7 +53,7 @@ public class DayResolutionScreen extends BaseScreen {
             while (true) {
                 try {
                     if (MatchClient.isPermitted()) {
-                        Gdx.app.postRunnable(() -> getGame().setScreen(new DeadNightScreen(getGame())));
+                        Gdx.app.postRunnable(() -> getGame().setScreen(new DayScreen(getGame())));
                         MatchClient.setPermitted(false);
                         break;
                     }
@@ -65,36 +64,36 @@ public class DayResolutionScreen extends BaseScreen {
     }
 
     private void addContinueButton(Table mainTable) {
-        TextButton continueButton = new CustomTextButton(getStrings().get("continueToNight"), getSkin(), getBlackStyle());
+        TextButton continueButton = new CustomTextButton(getStrings().get("continueToDay"), getSkin(), getBlackStyle());
         continueButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                continueToNight();
+                continueToDay();
             }
         });
         mainTable.add(continueButton).width(DEFAULT_ACTOR_WIDTH).row();
     }
 
-    private void continueToNight() {
+    private void continueToDay() {
         ProceedRequest request = new ProceedRequest();
-        waitForOtherPlayers(request, Player.getPlayer().getNight(getGame()));
+        waitForOtherPlayers(request, new DayScreen(getGame()));
     }
 
-    private void waitToFillHangedTable(Table hangedTable) {
+    private void waitToFillMurderedTable(Table murderedTable) {
         while (true) {
             try {
-                List<String> hangedList = MatchClient.getHangedList();
-                fillHangedTable(hangedTable, hangedList);
+                List<String> murderedList = MatchClient.getMurderedList();
+                fillMurderedList(murderedTable, murderedList);
                 break;
             } catch (NullPointerException ignored) {
             }
         }
     }
 
-    private void fillHangedTable(Table hangedTable, List<String> hangedList) {
-        for (String player : hangedList) {
-            Label hangedLabel = new CustomLabel(player, getBlackStyle());
-            hangedTable.add(hangedLabel).width(WIDTH / 5).row();
+    private void fillMurderedList(Table murderedTable, List<String> murderedList) {
+        for (String player : murderedList) {
+            Label murderedLabel = new CustomLabel(player, getBlackStyle());
+            murderedTable.add(murderedLabel).width(WIDTH / 5).row();
             if (Player.getPlayer().getName().equals(player)) {
                 Player.getPlayer().setAlive(false);
             }

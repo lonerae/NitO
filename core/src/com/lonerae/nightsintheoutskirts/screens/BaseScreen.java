@@ -24,38 +24,31 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 
 public class BaseScreen implements Screen {
 
-    private final Game game;
-
-    private OrthographicCamera camera;
-    private Viewport viewport;
-    private Stage stage;
-
-    private final Skin skin;
-    private static I18NBundle strings;
-    private static I18NBundle gameStrings;
-
-    private final Label.LabelStyle titleStyle;
-    private final Label.LabelStyle redStyle;
-    private final Label.LabelStyle blackStyle;
-    private final TextField.TextFieldStyle textFieldStyle;
-
-    private boolean isTraceable = false;
-
     //PUBLIC CONSTANTS
     public final static float ASPECT_RATIO = (float) Gdx.graphics.getHeight() / (float) Gdx.graphics.getWidth();
     public final static float WIDTH = (float) Gdx.graphics.getWidth();
     public final static float HEIGHT = (float) Gdx.graphics.getHeight();
-
     public final static float DEFAULT_ACTOR_WIDTH = (WIDTH * 3) / 4;
     public final static float DEFAULT_ACTOR_HEIGHT = HEIGHT / 10;
     public final static float DEFAULT_ICON_SIZE = WIDTH / 5;
     public final static float DEFAULT_POPUP_SIZE = (WIDTH * 4) / 5;
-
     public final static float PAD_VERTICAL_BIG = HEIGHT / 10;
     public final static float PAD_VERTICAL_SMALL = HEIGHT / 20;
     public final static float PAD_HORIZONTAL_BIG = WIDTH / 15;
     public final static float PAD_HORIZONTAL_SMALL = 40;
     public final static float DIALOG_VERTICAL_PAD = 80;
+    private static I18NBundle strings;
+    private static I18NBundle gameStrings;
+    private static Label.LabelStyle blackStyle;
+    private final Game game;
+    private final Skin skin;
+    private final Label.LabelStyle titleStyle;
+    private final Label.LabelStyle redStyle;
+    private final TextField.TextFieldStyle textFieldStyle;
+    private OrthographicCamera camera;
+    private Viewport viewport;
+    private Stage stage;
+    private boolean isTraceable = false;
 
     public BaseScreen(Game game) {
         this.game = game;
@@ -71,6 +64,18 @@ public class BaseScreen implements Screen {
         gameStrings = uiUtilInstance.getGameStrings();
     }
 
+    public static I18NBundle getStrings() {
+        return strings;
+    }
+
+    public static I18NBundle getGameStrings() {
+        return gameStrings;
+    }
+
+    public static Label.LabelStyle getBlackStyle() {
+        return blackStyle;
+    }
+
     public Game getGame() {
         return game;
     }
@@ -81,14 +86,6 @@ public class BaseScreen implements Screen {
 
     public Skin getSkin() {
         return skin;
-    }
-
-    public static I18NBundle getStrings() {
-        return strings;
-    }
-
-    public static I18NBundle getGameStrings() {
-        return gameStrings;
     }
 
     public void setTraceable() {
@@ -103,10 +100,6 @@ public class BaseScreen implements Screen {
 
     public Label.LabelStyle getRedStyle() {
         return redStyle;
-    }
-
-    public Label.LabelStyle getBlackStyle() {
-        return blackStyle;
     }
 
     public TextField.TextFieldStyle getTextFieldStyle() {

@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -59,6 +58,15 @@ public class UIUtil {
         return instance;
     }
 
+    public static void center(Actor actor) {
+        actor.setPosition(WIDTH / 2 - (actor.getWidth() / 2), BaseScreen.HEIGHT / 2 - (actor.getHeight() / 2));
+    }
+
+    public static Label title(Label label) {
+        label.setAlignment(Align.center);
+        return label;
+    }
+
     public Skin getSkin() {
         return skin;
     }
@@ -85,13 +93,5 @@ public class UIUtil {
 
     public TextField.TextFieldStyle getTextFieldStyle() {
         return textFieldStyle;
-    }
-
-    public static void center(Actor actor) {
-        actor.setPosition(WIDTH/2 - (actor.getWidth()/2), BaseScreen.HEIGHT/2 - (actor.getHeight()/2));
-    }
-    public static Label title(Label label) {
-        label.setAlignment(Align.center);
-        return label;
     }
 }

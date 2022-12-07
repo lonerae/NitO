@@ -4,11 +4,12 @@ import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ProceedResponse {
     public boolean permit;
-    public HashMap<String, RoleName> playerMap;
+    public HashMap<String, RoleName> alivePlayerMap;
+    public HashMap<String, RoleName> deadPlayerMap;
 
     public List<String> hangedList;
+    public List<String> murderedList;
 }

@@ -3,6 +3,7 @@ package com.lonerae.nightsintheoutskirts.network;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.lonerae.nightsintheoutskirts.game.Player;
 import com.lonerae.nightsintheoutskirts.game.roles.Role;
 import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
 import com.lonerae.nightsintheoutskirts.network.responses.AssignRoleResponse;
@@ -11,7 +12,10 @@ import com.lonerae.nightsintheoutskirts.network.responses.GreetingResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.LobbyResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.ProceedResponse;
 import com.lonerae.nightsintheoutskirts.network.responses.VoteResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.abilities.AssassinInfoResponse;
+import com.lonerae.nightsintheoutskirts.network.responses.abilities.MurderResponse;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.DayScreen;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.AssassinNightScreen;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,16 +25,18 @@ import java.util.Map;
 
 public class MatchClient {
 
-    private static Client client;
     private static final Map<String, Integer> availableMatches = new HashMap<>();
-
+    private static Client client;
     private static List<RoleName> matchRoleList;
     private static Boolean connectionAccepted = null;
     private static Role assignedRole;
     private static Boolean permitted = null;
+    private static Boolean assassinPermitted = null;
 
     private static HashMap<String, RoleName> alivePlayersMap;
+    private static HashMap<String, RoleName> deadPlayersMap;
     private static List<String> hangedList;
+    private static List<String> murderedList;
 
     public static void terminate() {
         try {
@@ -74,12 +80,28 @@ public class MatchClient {
         MatchClient.permitted = permitted;
     }
 
+    public static Boolean getAssassinPermitted() {
+        return assassinPermitted;
+    }
+
+    public static void setAssassinPermitted(Boolean assassinPermitted) {
+        MatchClient.assassinPermitted = assassinPermitted;
+    }
+
     public static HashMap<String, RoleName> getAlivePlayersMap() {
         return alivePlayersMap;
     }
 
+    public static HashMap<String, RoleName> getDeadPlayersMap() {
+        return deadPlayersMap;
+    }
+
     public static List<String> getHangedList() {
         return hangedList;
+    }
+
+    public static List<String> getMurderedList() {
+        return murderedList;
     }
 
     private static void createListener() {
@@ -100,13 +122,27 @@ public class MatchClient {
                 } else if (object instanceof ProceedResponse) {
                     ProceedResponse response = (ProceedResponse) object;
                     permitted = response.permit;
-                    alivePlayersMap = response.playerMap;
+                    alivePlayersMap = response.alivePlayerMap;
+                    deadPlayersMap = response.deadPlayerMap;
                     if (response.hangedList != null) {
                         hangedList = response.hangedList;
                     }
+                    if (response.murderedList != null) {
+                        murderedList = response.murderedList;
+                    }
                 } else if (object instanceof VoteResponse) {
                     VoteResponse response = (VoteResponse) object;
-                    DayScreen.updateVote(response.votedPlayerName, response.vote);
+                    DayScreen.updateVote(response.voterName, response.votedPlayerName, response.vote);
+                } else if (object instanceof AssassinInfoResponse) {
+                    if (Player.getPlayer().getRole().getName().equals(RoleName.ASSASSIN)) {
+                        AssassinInfoResponse response = (AssassinInfoResponse) object;
+                        AssassinNightScreen.updateOverview(response.killer, response.target, response.skip);
+                    }
+                } else if (object instanceof MurderResponse) {
+                    if (Player.getPlayer().getRole().getName().equals(RoleName.ASSASSIN)) {
+                        MurderResponse response = (MurderResponse) object;
+                        assassinPermitted = response.permit;
+                    }
                 }
             }
         });
