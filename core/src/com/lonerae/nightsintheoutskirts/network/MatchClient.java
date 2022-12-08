@@ -4,6 +4,7 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.lonerae.nightsintheoutskirts.game.Player;
+import com.lonerae.nightsintheoutskirts.game.roles.AllianceName;
 import com.lonerae.nightsintheoutskirts.game.roles.Role;
 import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
 import com.lonerae.nightsintheoutskirts.network.responses.AssignRoleResponse;
@@ -37,6 +38,9 @@ public class MatchClient {
     private static HashMap<String, RoleName> deadPlayersMap;
     private static List<String> hangedList;
     private static List<String> murderedList;
+
+    private static Boolean endGame;
+    private static AllianceName winner;
 
     public static void terminate() {
         try {
@@ -104,6 +108,18 @@ public class MatchClient {
         return murderedList;
     }
 
+    public static void setEndGame(Boolean endGame) {
+        MatchClient.endGame = endGame;
+    }
+
+    public static Boolean isEndGame() {
+        return endGame;
+    }
+
+    public static AllianceName getWinner() {
+        return winner;
+    }
+
     private static void createListener() {
         client.addListener(new Listener() {
             public void received(Connection connection, Object object) {
@@ -129,6 +145,12 @@ public class MatchClient {
                     }
                     if (response.murderedList != null) {
                         murderedList = response.murderedList;
+                    }
+                    if (response.endGame) {
+                        endGame = true;
+                        winner = response.winner;
+                    } else {
+                        endGame = false;
                     }
                 } else if (object instanceof VoteResponse) {
                     VoteResponse response = (VoteResponse) object;

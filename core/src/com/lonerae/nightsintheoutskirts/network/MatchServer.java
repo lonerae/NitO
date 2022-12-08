@@ -245,15 +245,18 @@ public class MatchServer {
         if (checkDraw()) return true;
         if (checkAllianceEndGame()) return true;
         if (checkOrderEndGame()) return true;
-        if (checkFolkHeroEndGame()) return true;
-        return false;
+        return checkDualEndGame();
     }
 
-    private static boolean checkFolkHeroEndGame() {
+    private static boolean checkDualEndGame() {
         Collection<RoleName> aliveRoleNames = alivePlayersMap.values();
         if (aliveRoleNames.size() == 2) {
-            if (aliveRoleNames.contains(RoleName.CIVILIAN) && aliveRoleNames.contains(RoleName.ASSASSIN)) {
-                winner = AllianceName.ORDER;
+            if (aliveRoleNames.contains(RoleName.ASSASSIN)) {
+                if (aliveRoleNames.contains(RoleName.CIVILIAN)) {
+                    winner = AllianceName.ORDER;
+                } else {
+                    winner = AllianceName.CHAOS;
+                }
                 return true;
             }
         }

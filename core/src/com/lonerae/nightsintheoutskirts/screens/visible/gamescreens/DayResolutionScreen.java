@@ -42,26 +42,11 @@ public class DayResolutionScreen extends BaseScreen {
         if (Player.getPlayer().isAlive()) {
             addContinueButton(mainTable);
         } else {
-            waitForAlivePlayers();
+            waitForAlivePlayers(new DeadNightScreen(getGame()));
         }
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
-    }
-
-    private void waitForAlivePlayers() {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    if (MatchClient.isPermitted()) {
-                        Gdx.app.postRunnable(() -> getGame().setScreen(new DeadNightScreen(getGame())));
-                        MatchClient.setPermitted(false);
-                        break;
-                    }
-                } catch (NullPointerException ignored) {
-                }
-            }
-        }).start();
     }
 
     private void addContinueButton(Table mainTable) {

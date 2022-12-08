@@ -35,21 +35,6 @@ public class DeadNightScreen extends BaseScreen {
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
-        waitForAlivePlayers();
-    }
-
-    private void waitForAlivePlayers() {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    if (MatchClient.isPermitted()) {
-                        Gdx.app.postRunnable(() -> getGame().setScreen(new NightResolutionScreen(getGame())));
-                        MatchClient.setPermitted(false);
-                        break;
-                    }
-                } catch (NullPointerException ignored) {
-                }
-            }
-        }).start();
+        waitForAlivePlayers(new NightResolutionScreen(getGame()));
     }
 }

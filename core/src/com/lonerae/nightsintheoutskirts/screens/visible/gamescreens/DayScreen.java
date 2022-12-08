@@ -77,6 +77,7 @@ public class DayScreen extends BaseScreen {
 
     @Override
     public void show() {
+        checkEndGame();
         super.show();
 
         Table mainTable = new CustomTable(true);
@@ -96,11 +97,23 @@ public class DayScreen extends BaseScreen {
         if (Player.getPlayer().isAlive()) {
             addLockButton(mainTable);
         } else {
-            waitForAlivePlayers();
+            waitForAlivePlayers(new DayResolutionScreen(getGame()));
         }
 
         scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
+    }
+
+    private void checkEndGame() {
+        while (true) {
+            try {
+                if (MatchClient.isEndGame()) {
+                    getGame().setScreen(new EndGameScreen(getGame()));
+                }
+                MatchClient.setEndGame(null);
+                break;
+            } catch (NullPointerException ignored) {}
+        }
     }
 
     private void addLockButton(Table mainTable) {
@@ -116,21 +129,6 @@ public class DayScreen extends BaseScreen {
             }
         });
         mainTable.add(lockButton).width(DEFAULT_ACTOR_WIDTH);
-    }
-
-    private void waitForAlivePlayers() {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    if (MatchClient.isPermitted()) {
-                        Gdx.app.postRunnable(() -> getGame().setScreen(new DayResolutionScreen(getGame())));
-                        MatchClient.setPermitted(false);
-                        break;
-                    }
-                } catch (NullPointerException ignored) {
-                }
-            }
-        }).start();
     }
 
     private void continueToResolution() {
