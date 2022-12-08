@@ -268,10 +268,12 @@ public class MatchServer {
         List<String> hangedList = new ArrayList<>();
         try {
             int maxVotes = Collections.max(votingMap.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getValue();
-            for (String playerName : votingMap.keySet()) {
-                if (votingMap.get(playerName) == maxVotes) {
-                    hangedList.add(playerName);
-                    deadPlayersMap.put(playerName, alivePlayersMap.remove(playerName));
+            if (maxVotes > 0) {
+                for (String playerName : votingMap.keySet()) {
+                    if (votingMap.get(playerName) == maxVotes) {
+                        hangedList.add(playerName);
+                        deadPlayersMap.put(playerName, alivePlayersMap.remove(playerName));
+                    }
                 }
             }
         } catch (NoSuchElementException ignored) {
