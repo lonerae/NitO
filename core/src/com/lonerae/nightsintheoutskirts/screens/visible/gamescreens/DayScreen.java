@@ -108,7 +108,7 @@ public class DayScreen extends BaseScreen {
         lockButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-//                if (voteCheckGroup.getAllChecked().size == 1) { FOR TESTING PURPOSE
+//                if (voteCheckGroup.getAllChecked().size == 1) { TODO: FOR TESTING PURPOSE
                 continueToResolution();
 //                } else {
 //                    showErrorDialog(getStrings().get("noVoteError"));
