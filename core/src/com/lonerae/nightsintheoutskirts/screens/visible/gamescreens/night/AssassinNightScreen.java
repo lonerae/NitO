@@ -190,6 +190,9 @@ public class AssassinNightScreen extends NightScreen {
         Gdx.app.postRunnable(() -> {
             ProceedRequest proceedRequest = new ProceedRequest();
             dialog.hide();
+            overviewDialog = null;
+            overviewMessage = null;
+            defaultOverviewMessage = null;
             waitForOtherPlayers(proceedRequest, ProceedType.ABILITY, new NightResolutionScreen(getGame()));
         });
         MatchClient.setAssassinPermitted(null);

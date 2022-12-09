@@ -84,6 +84,32 @@ public class MatchServer {
         return server;
     }
 
+    public static void close() {
+        server.stop();
+        clearServer();
+    }
+
+    private static void clearServer() {
+        server = null;
+        connectedPlayersMap.clear();
+        alivePlayersMap.clear();
+        deadPlayersMap.clear();
+        votingMap.clear();
+        protectedPlayersList.clear();
+        murderedPlayersList.clear();
+        match = null;
+        shuffledDeck = null;
+        connectedPlayersNumber = 0;
+        assignedPlayerNumber = 0;
+        readyPlayerNumber = 0;
+        assassinNumber = 0;
+        assassinSent = 0;
+        assassinPass = 0;
+        assassinTarget = null;
+        assassinsAgree = 0;
+        winner = null;
+    }
+
     private static void shuffleDeck() {
         List<RoleName> deck = new ArrayList<>();
         for (RoleName roleName : match.getMatchRoleList().keySet()) {

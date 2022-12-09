@@ -60,7 +60,7 @@ public class GameJoinScreen extends BaseScreen {
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
-
+        System.out.println(availableMatches.toString());
     }
 
     private void searchForMatches() {
@@ -77,6 +77,7 @@ public class GameJoinScreen extends BaseScreen {
         if (server != null) {
             GreetingRequest request = new GreetingRequest();
             MatchClient.getClient().sendTCP(request);
+            matchTable.clear();
             while (true) {
                 availableMatches = MatchClient.getAvailableMatches();
                 if (!availableMatches.isEmpty()) {
@@ -109,6 +110,7 @@ public class GameJoinScreen extends BaseScreen {
             try {
                 if (MatchClient.isConnectionAccepted()) {
                     getGame().setScreen(new GameLobbyScreen(getGame()));
+                    availableMatches.clear();
                 } else {
                     showErrorDialog(getStrings().get("lobbyFullError"));
                 }

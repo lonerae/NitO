@@ -1,7 +1,6 @@
 package com.lonerae.nightsintheoutskirts.screens.visible.gamescreens;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -113,7 +112,8 @@ public class DayScreen extends BaseScreen {
                 }
                 MatchClient.setEndGame(null);
                 break;
-            } catch (NullPointerException ignored) {}
+            } catch (NullPointerException ignored) {
+            }
         }
     }
 

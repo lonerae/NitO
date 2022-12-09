@@ -18,7 +18,6 @@ import com.lonerae.nightsintheoutskirts.network.responses.abilities.MurderRespon
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.DayScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.AssassinNightScreen;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +51,29 @@ public class MatchClient {
             createListener();
         }
         return client;
+    }
+
+    public static void close() {
+        client.stop();
+        clearClient();
+    }
+
+    private static void clearClient() {
+        client = null;
+        availableMatches.clear();
+        matchRoleList = null;
+        connectionAccepted = null;
+        assignedRole = null;
+        permitted = null;
+        assassinPermitted = null;
+        firstFlag = true;
+        connectedPlayersMap = null;
+        alivePlayersMap = null;
+        deadPlayersMap = null;
+        hangedList = null;
+        murderedList = null;
+        endGame = null;
+        winner = null;
     }
 
     public static Map<String, Integer> getAvailableMatches() {

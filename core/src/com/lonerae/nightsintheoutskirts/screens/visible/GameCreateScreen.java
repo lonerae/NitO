@@ -184,7 +184,6 @@ public class GameCreateScreen extends BaseScreen {
                     GameData match = new GameData(townNameTextField.getText(), getTextFieldNumber(numberOfPlayersTextField), createMatchRoleList());
                     try {
                         MatchServer.createServer(match);
-
                         MatchClient.getClient().connect(5000, InetAddress.getLocalHost().getHostAddress(), 54555, 54777);
                         GreetingRequest request = new GreetingRequest();
                         MatchClient.getClient().sendTCP(request);
