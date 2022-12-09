@@ -77,7 +77,6 @@ public class DayScreen extends BaseScreen {
 
     @Override
     public void show() {
-        checkEndGame();
         super.show();
 
         Table mainTable = new CustomTable(true);
@@ -102,6 +101,8 @@ public class DayScreen extends BaseScreen {
 
         scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
+
+        checkEndGame();
     }
 
     private void checkEndGame() {

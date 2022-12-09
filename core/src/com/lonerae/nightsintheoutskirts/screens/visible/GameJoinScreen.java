@@ -122,7 +122,7 @@ public class GameJoinScreen extends BaseScreen {
     public void dispose() {
         super.dispose();
         try {
-            MatchClient.terminate();
+            MatchClient.getClient().stop();
         } catch (NullPointerException ignored) {
         }
     }

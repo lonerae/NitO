@@ -19,6 +19,7 @@ public class CustomDialog extends Dialog {
         this.getTitleLabel().setStyle(style);
         this.getContentTable().defaults().width(DEFAULT_POPUP_SIZE);
         Label messageLabel = new CustomLabel(message, style);
+        messageLabel.setAlignment(Align.center);
         this.getContentTable().add(messageLabel).width(DEFAULT_POPUP_SIZE);
         this.getButtonTable().defaults().width(WIDTH / 3).pad(25);
     }

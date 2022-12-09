@@ -34,6 +34,8 @@ public class MatchClient {
     private static Boolean permitted = null;
     private static Boolean assassinPermitted = null;
 
+    private static boolean firstFlag = true;
+    private static HashMap<String, RoleName> connectedPlayersMap;
     private static HashMap<String, RoleName> alivePlayersMap;
     private static HashMap<String, RoleName> deadPlayersMap;
     private static List<String> hangedList;
@@ -41,14 +43,6 @@ public class MatchClient {
 
     private static Boolean endGame;
     private static AllianceName winner;
-
-    public static void terminate() {
-        try {
-            client.dispose();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static Client getClient() {
         if (client == null) {
@@ -90,6 +84,10 @@ public class MatchClient {
 
     public static void setAssassinPermitted(Boolean assassinPermitted) {
         MatchClient.assassinPermitted = assassinPermitted;
+    }
+
+    public static HashMap<String, RoleName> getConnectedPlayersMap() {
+        return connectedPlayersMap;
     }
 
     public static HashMap<String, RoleName> getAlivePlayersMap() {
@@ -138,6 +136,10 @@ public class MatchClient {
                 } else if (object instanceof ProceedResponse) {
                     ProceedResponse response = (ProceedResponse) object;
                     permitted = response.permit;
+                    if (firstFlag) {
+                        connectedPlayersMap = response.alivePlayerMap;
+                        firstFlag = false;
+                    }
                     alivePlayersMap = response.alivePlayerMap;
                     deadPlayersMap = response.deadPlayerMap;
                     if (response.hangedList != null) {
