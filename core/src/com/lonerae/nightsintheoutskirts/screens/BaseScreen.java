@@ -207,6 +207,26 @@ public class BaseScreen implements Screen {
         waitForOtherPlayers(request, screen);
     }
 
+    /**
+     * Moves to the next {@code Screen} as soon as all the alive players have finished their actions.
+     *
+     * @param screen the target {@code Screen}
+     */
+    protected void waitForAlivePlayers(Screen screen) {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    if (MatchClient.isPermitted()) {
+                        Gdx.app.postRunnable(() -> getGame().setScreen(screen));
+                        MatchClient.setPermitted(null);
+                        break;
+                    }
+                } catch (NullPointerException ignored) {
+                }
+            }
+        }).start();
+    }
+
     protected void showErrorDialog(String errorMessage) {
         CustomDialog dialog = new CustomDialog(getStrings().get("errorInfo"), errorMessage, getSkin(), getBlackStyle());
         dialog.isHideable();

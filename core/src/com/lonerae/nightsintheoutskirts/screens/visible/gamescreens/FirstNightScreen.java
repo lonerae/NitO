@@ -12,6 +12,7 @@ import com.lonerae.nightsintheoutskirts.game.Player;
 import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
@@ -58,7 +59,7 @@ public class FirstNightScreen extends BaseScreen {
 
     private void continueToDay() {
         ProceedRequest request = new ProceedRequest();
-        waitForOtherPlayers(request, new DayScreen(getGame()));
+        waitForOtherPlayers(request, ProceedType.END, new DayScreen(getGame()));
     }
 
     private void fillPlayerTable(Table playerTable) {

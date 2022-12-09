@@ -1,7 +1,6 @@
 package com.lonerae.nightsintheoutskirts.screens.visible.gamescreens;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -96,11 +95,26 @@ public class DayScreen extends BaseScreen {
         if (Player.getPlayer().isAlive()) {
             addLockButton(mainTable);
         } else {
-            waitForAlivePlayers();
+            waitForAlivePlayers(new DayResolutionScreen(getGame()));
         }
 
         scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
+
+        checkEndGame();
+    }
+
+    private void checkEndGame() {
+        while (true) {
+            try {
+                if (MatchClient.isEndGame()) {
+                    getGame().setScreen(new EndGameScreen(getGame()));
+                }
+                MatchClient.setEndGame(null);
+                break;
+            } catch (NullPointerException ignored) {
+            }
+        }
     }
 
     private void addLockButton(Table mainTable) {
@@ -108,7 +122,7 @@ public class DayScreen extends BaseScreen {
         lockButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-//                if (voteCheckGroup.getAllChecked().size == 1) { FOR TESTING PURPOSE
+//                if (voteCheckGroup.getAllChecked().size == 1) { TODO: FOR TESTING PURPOSE
                 continueToResolution();
 //                } else {
 //                    showErrorDialog(getStrings().get("noVoteError"));
@@ -116,21 +130,6 @@ public class DayScreen extends BaseScreen {
             }
         });
         mainTable.add(lockButton).width(DEFAULT_ACTOR_WIDTH);
-    }
-
-    private void waitForAlivePlayers() {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    if (MatchClient.isPermitted()) {
-                        Gdx.app.postRunnable(() -> getGame().setScreen(new DayResolutionScreen(getGame())));
-                        MatchClient.setPermitted(false);
-                        break;
-                    }
-                } catch (NullPointerException ignored) {
-                }
-            }
-        }).start();
     }
 
     private void continueToResolution() {

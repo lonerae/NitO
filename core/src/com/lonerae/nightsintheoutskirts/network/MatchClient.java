@@ -4,6 +4,7 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.lonerae.nightsintheoutskirts.game.Player;
+import com.lonerae.nightsintheoutskirts.game.roles.AllianceName;
 import com.lonerae.nightsintheoutskirts.game.roles.Role;
 import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
 import com.lonerae.nightsintheoutskirts.network.responses.AssignRoleResponse;
@@ -17,7 +18,6 @@ import com.lonerae.nightsintheoutskirts.network.responses.abilities.MurderRespon
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.DayScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.AssassinNightScreen;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,18 +33,15 @@ public class MatchClient {
     private static Boolean permitted = null;
     private static Boolean assassinPermitted = null;
 
+    private static boolean firstFlag = true;
+    private static HashMap<String, RoleName> connectedPlayersMap;
     private static HashMap<String, RoleName> alivePlayersMap;
     private static HashMap<String, RoleName> deadPlayersMap;
     private static List<String> hangedList;
     private static List<String> murderedList;
 
-    public static void terminate() {
-        try {
-            client.dispose();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    private static Boolean endGame;
+    private static AllianceName winner;
 
     public static Client getClient() {
         if (client == null) {
@@ -54,6 +51,29 @@ public class MatchClient {
             createListener();
         }
         return client;
+    }
+
+    public static void close() {
+        client.stop();
+        clearClient();
+    }
+
+    private static void clearClient() {
+        client = null;
+        availableMatches.clear();
+        matchRoleList = null;
+        connectionAccepted = null;
+        assignedRole = null;
+        permitted = null;
+        assassinPermitted = null;
+        firstFlag = true;
+        connectedPlayersMap = null;
+        alivePlayersMap = null;
+        deadPlayersMap = null;
+        hangedList = null;
+        murderedList = null;
+        endGame = null;
+        winner = null;
     }
 
     public static Map<String, Integer> getAvailableMatches() {
@@ -88,6 +108,10 @@ public class MatchClient {
         MatchClient.assassinPermitted = assassinPermitted;
     }
 
+    public static HashMap<String, RoleName> getConnectedPlayersMap() {
+        return connectedPlayersMap;
+    }
+
     public static HashMap<String, RoleName> getAlivePlayersMap() {
         return alivePlayersMap;
     }
@@ -102,6 +126,18 @@ public class MatchClient {
 
     public static List<String> getMurderedList() {
         return murderedList;
+    }
+
+    public static void setEndGame(Boolean endGame) {
+        MatchClient.endGame = endGame;
+    }
+
+    public static Boolean isEndGame() {
+        return endGame;
+    }
+
+    public static AllianceName getWinner() {
+        return winner;
     }
 
     private static void createListener() {
@@ -122,6 +158,10 @@ public class MatchClient {
                 } else if (object instanceof ProceedResponse) {
                     ProceedResponse response = (ProceedResponse) object;
                     permitted = response.permit;
+                    if (firstFlag) {
+                        connectedPlayersMap = response.alivePlayerMap;
+                        firstFlag = false;
+                    }
                     alivePlayersMap = response.alivePlayerMap;
                     deadPlayersMap = response.deadPlayerMap;
                     if (response.hangedList != null) {
@@ -129,6 +169,12 @@ public class MatchClient {
                     }
                     if (response.murderedList != null) {
                         murderedList = response.murderedList;
+                    }
+                    if (response.endGame) {
+                        endGame = true;
+                        winner = response.winner;
+                    } else {
+                        endGame = false;
                     }
                 } else if (object instanceof VoteResponse) {
                     VoteResponse response = (VoteResponse) object;

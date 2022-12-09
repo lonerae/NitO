@@ -20,6 +20,7 @@ import com.lonerae.nightsintheoutskirts.network.MatchServer;
 import com.lonerae.nightsintheoutskirts.network.requests.AssignRoleRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
+import com.lonerae.nightsintheoutskirts.screens.ScreenStack;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
@@ -70,7 +71,6 @@ public class GameLobbyScreen extends BaseScreen {
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
-
     }
 
     private void assignRoleOrError(TextField playerNameTextField) {
@@ -90,6 +90,7 @@ public class GameLobbyScreen extends BaseScreen {
                 Player.getPlayer().setRole(MatchClient.getAssignedRole());
                 Player.getPlayer().setName(playerNameTextField.getText());
                 getGame().setScreen(new RoleRevealScreen(getGame()));
+                ScreenStack.clearStack();
                 break;
             } catch (NullPointerException ignored) {
             }
@@ -116,6 +117,11 @@ public class GameLobbyScreen extends BaseScreen {
 
     @Override
     public void dispose() {
-        MatchServer.getServer().close();
+        try {
+            MatchClient.getClient().close();
+            MatchServer.getServer().close();
+        } catch (NullPointerException ignored) {
+
+        }
     }
 }

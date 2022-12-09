@@ -1,5 +1,6 @@
 package com.lonerae.nightsintheoutskirts.network.responses;
 
+import com.lonerae.nightsintheoutskirts.game.roles.AllianceName;
 import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
 
 import java.util.HashMap;
@@ -12,4 +13,7 @@ public class ProceedResponse {
 
     public List<String> hangedList;
     public List<String> murderedList;
+
+    public boolean endGame = false;
+    public AllianceName winner;
 }

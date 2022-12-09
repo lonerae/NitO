@@ -13,11 +13,13 @@ public class ScreenStack {
         return screenStack;
     }
 
+    public static void clearStack() {
+        screenStack.clear();
+    }
+
     public static BaseScreen findPrevious() {
         if (!(screenStack.peekLast() instanceof MenuScreen)) {
-            Gdx.app.log("STACK: ", screenStack.toString());
             screenStack.removeLast();
-            Gdx.app.log("RETURN: ", screenStack.peekLast().toString());
             return screenStack.peekLast();
         }
         return null;

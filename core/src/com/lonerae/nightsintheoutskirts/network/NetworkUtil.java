@@ -3,6 +3,7 @@ package com.lonerae.nightsintheoutskirts.network;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Server;
+import com.lonerae.nightsintheoutskirts.game.roles.AllianceName;
 import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
 import com.lonerae.nightsintheoutskirts.network.requests.AssignRoleRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ConnectionRequest;
@@ -50,6 +51,7 @@ public class NetworkUtil {
         kryo.register(ProceedRequest.class);
         kryo.register(ProceedResponse.class);
         kryo.register(ProceedType.class);
+        kryo.register(AllianceName.class);
         kryo.register(VoteRequest.class);
         kryo.register(VoteResponse.class);
         kryo.register(KillRequest.class);

@@ -1,12 +1,10 @@
 package com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.lonerae.nightsintheoutskirts.game.GameData;
-import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
@@ -35,21 +33,6 @@ public class DeadNightScreen extends BaseScreen {
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
-        waitForAlivePlayers();
-    }
-
-    private void waitForAlivePlayers() {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    if (MatchClient.isPermitted()) {
-                        Gdx.app.postRunnable(() -> getGame().setScreen(new NightResolutionScreen(getGame())));
-                        MatchClient.setPermitted(false);
-                        break;
-                    }
-                } catch (NullPointerException ignored) {
-                }
-            }
-        }).start();
+        waitForAlivePlayers(new NightResolutionScreen(getGame()));
     }
 }
