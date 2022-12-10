@@ -178,7 +178,7 @@ public class GameCreateScreen extends BaseScreen {
     }
 
     private Dialog createSuccessDialog(TextField townNameTextField, TextField numberOfPlayersTextField) {
-        Dialog successDialog = new CustomDialog(getStrings().get("gameInfo"), createSuccessMessage(townNameTextField, numberOfPlayersTextField), getSkin(), getBlackStyle()) {
+        Dialog successDialog = new CustomDialog(getStrings().get("gameInfo"), createSuccessMessage(townNameTextField, numberOfPlayersTextField), getSkin(), getBlackStyle(), false) {
             public void result(Object obj) {
                 if ((boolean) obj) {
                     GameData match = new GameData(townNameTextField.getText(), getTextFieldNumber(numberOfPlayersTextField), createMatchRoleList());
@@ -209,7 +209,7 @@ public class GameCreateScreen extends BaseScreen {
         format.format(getStrings().get("createGameMessage"), townNameTextField.getText(), getTextFieldNumber(numberOfPlayersTextField));
         for (Map.Entry<RoleName, TextField> roleCounterMapEntry : roleCounterMap.entrySet()) {
             if (getTextFieldNumber(roleCounterMapEntry.getValue()) > 0) {
-                gameInfo.append("\n").append(roleCounterMapEntry.getKey()).append(": ").append(roleCounterMapEntry.getValue().getText());
+                gameInfo.append("\n").append(roleCounterMapEntry.getKey()).append(" : ").append(roleCounterMapEntry.getValue().getText());
             }
         }
         gameInfo.append("\n");

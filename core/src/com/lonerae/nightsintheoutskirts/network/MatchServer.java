@@ -177,7 +177,7 @@ public class MatchServer {
             }
             if (assassinsAgree == assassinNumber) {
                 response.permit = true;
-                if (!murderedPlayersList.contains(assassinTarget)) {
+                if (!murderedPlayersList.contains(assassinTarget) && !protectedPlayersList.contains(assassinTarget)) {
                     murderedPlayersList.add(assassinTarget);
                 }
             }

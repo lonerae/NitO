@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.lonerae.nightsintheoutskirts.game.Player;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
@@ -61,7 +62,7 @@ public class DayResolutionScreen extends BaseScreen {
 
     private void continueToNight() {
         ProceedRequest request = new ProceedRequest();
-        waitForOtherPlayers(request, Player.getPlayer().getNight(getGame()));
+        waitForOtherPlayers(request, ProceedType.END, Player.getPlayer().getNight(getGame()));
     }
 
     private void waitToFillHangedTable(Table hangedTable) {
