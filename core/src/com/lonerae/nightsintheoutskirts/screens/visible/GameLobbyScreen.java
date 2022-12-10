@@ -74,8 +74,13 @@ public class GameLobbyScreen extends BaseScreen {
     }
 
     private void assignRoleOrError(TextField playerNameTextField) {
-        if (!playerNameTextField.getText().trim().isEmpty()) {
-            assignRole(playerNameTextField);
+        String playerName = playerNameTextField.getText();
+        if (!playerName.trim().isEmpty()) {
+            if (playerName.length() < 6) {
+                assignRole(playerNameTextField);
+            } else {
+                showErrorDialog(getStrings().get("longNameError"));
+            }
         } else {
             showErrorDialog(getStrings().get("emptyNameError"));
         }
