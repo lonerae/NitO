@@ -67,6 +67,52 @@ public class UIUtil {
         return label;
     }
 
+    public static String justifyText(String message) {
+        String[] words = message.split(" ");
+        String separator = " ";
+        StringBuilder row = new StringBuilder();
+        StringBuilder newText = new StringBuilder();
+
+        int i = 0;
+        int rowLength = 27;
+        while (row.length() <= rowLength && i < words.length) {
+            if (words[i].length() <= rowLength - row.length() && (row.length() == 0 || (row.charAt(row.length() - 1) == ' '))) {
+                addWord(words, separator, row, i, rowLength);
+            } else {
+                addSpaces(separator, row, rowLength);
+                newText.append(row).append("\n");
+                row = new StringBuilder();
+                addWord(words, separator, row, i, rowLength);
+            }
+            if (i == words.length - 1 && row.length() != 0) {
+                newText.append(row);
+            }
+            i++;
+        }
+        return newText.toString();
+    }
+
+    private static void addSpaces(String separator, StringBuilder row, int rowLength) {
+        int start = 0;
+        while (row.length() < rowLength) {
+            if (row.indexOf(separator, start) == -1) {
+                start = 0;
+            }
+            String changed = row.insert(row.indexOf(separator, start), separator).substring(0, row.indexOf(separator, start));
+            start = row.indexOf(changed) + changed.length();
+            while (start < row.length() && row.charAt(start) == ' ') {
+                start++;
+            }
+        }
+    }
+
+    private static void addWord(String[] words, String separator, StringBuilder row, int i, int rowLength) {
+        row.append(words[i]);
+        if (i + 1 < words.length && !(1 + words[i + 1].length() > rowLength - row.length())) {
+            row.append(separator);
+        }
+    }
+
     public Skin getSkin() {
         return skin;
     }
