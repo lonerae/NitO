@@ -237,13 +237,13 @@ public class MatchServer {
             case ABILITY: //AFTER NIGHT
                 proceedToNightResolution();
                 break;
-            case END: //AFTER NIGHT RESOLUTION
-                proceedToDay();
+            case END: //AFTER NIGHT & DAY RESOLUTION
+                proceedToNextPhase();
                 break;
         }
     }
 
-    private static void proceedToDay() {
+    private static void proceedToNextPhase() {
         if (readyPlayerNumber == alivePlayersMap.size()) {
             ProceedResponse response = new ProceedResponse();
             updateAssassinNumber();
