@@ -3,7 +3,9 @@ package com.lonerae.nightsintheoutskirts.game.roles;
 import com.badlogic.gdx.Game;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.AssassinNightScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.CivilianNightScreen;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.FourthCivilianNightScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.HermitNightScreen;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.NecromancerNightScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.NightScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.WitchNightScreen;
 
@@ -28,6 +30,12 @@ public abstract class Role {
                 break;
             case HERMIT:
                 role = new Hermit();
+                break;
+            case NECROMANCER:
+                role = new Necromancer();
+                break;
+            case FOURTH_CIVILIAN:
+                role = new FourthCivilian();
                 break;
             default:
                 role = null;
@@ -83,6 +91,12 @@ public abstract class Role {
                 break;
             case HERMIT:
                 night = new HermitNightScreen(game);
+                break;
+            case NECROMANCER:
+                night = new NecromancerNightScreen(game);
+                break;
+            case FOURTH_CIVILIAN:
+                night = new FourthCivilianNightScreen(game);
                 break;
             default:
                 night = null;
