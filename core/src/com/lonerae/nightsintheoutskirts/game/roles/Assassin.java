@@ -9,5 +9,6 @@ public class Assassin extends Role {
         setIconPath("data/roles/assassin.png");
         setName(RoleName.ASSASSIN);
         setAlliance(AllianceName.CHAOS);
+        setPriority(0);
     }
 }

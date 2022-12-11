@@ -9,5 +9,6 @@ public class Hermit extends Role {
         setIconPath("data/roles/hermit.png");
         setName(RoleName.HERMIT);
         setAlliance(AllianceName.ORDER);
+        setPriority(2);
     }
 }

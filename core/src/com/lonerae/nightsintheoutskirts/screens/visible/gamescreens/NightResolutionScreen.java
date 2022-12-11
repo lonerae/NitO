@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.lonerae.nightsintheoutskirts.game.Player;
+import com.lonerae.nightsintheoutskirts.game.roles.Role;
+import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
@@ -20,6 +22,9 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
 import java.util.List;
 
 public class NightResolutionScreen extends BaseScreen {
+
+    private static boolean fourthCheck = true;
+
     public NightResolutionScreen(Game game) {
         super(game);
     }
@@ -38,6 +43,8 @@ public class NightResolutionScreen extends BaseScreen {
 
         mainTable.add(murderedTable).padBottom(PAD_VERTICAL_BIG).row();
 
+        fourthCivilianCheck(mainTable);
+
         if (Player.getPlayer().isAlive()) {
             addContinueButton(mainTable);
         } else {
@@ -46,6 +53,25 @@ public class NightResolutionScreen extends BaseScreen {
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
+    }
+
+    private void fourthCivilianCheck(Table mainTable) {
+        if (fourthCheck && Player.getPlayer().getRole().getName().equals(RoleName.FOURTH_CIVILIAN)
+                && !Player.getPlayer().isAbleToUseAbility()
+                && Player.getPlayer().isAlive()) {
+            RoleName currentRole = MatchClient.getAlivePlayersMap().get(Player.getPlayer().getName());
+            if (!currentRole.equals(RoleName.FOURTH_CIVILIAN)) {
+                Label updatedRole = new CustomLabel(getGameStrings().get("updatedRole") + " " +
+                        currentRole + ".)",
+                        getBlackStyle());
+                mainTable.add(updatedRole).width(DEFAULT_ACTOR_WIDTH).padBottom(PAD_VERTICAL_BIG).row();
+                Player.getPlayer().setRole(Role.getRole(currentRole));
+            } else {
+                Label updatedRole = new CustomLabel(getGameStrings().get("failedToUpdateRole"), getBlackStyle());
+                mainTable.add(updatedRole).width(DEFAULT_ACTOR_WIDTH).padBottom(PAD_VERTICAL_BIG).row();
+            }
+            fourthCheck = false;
+        }
     }
 
     private void addContinueButton(Table mainTable) {

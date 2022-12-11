@@ -3,16 +3,19 @@ package com.lonerae.nightsintheoutskirts.game.roles;
 import com.badlogic.gdx.Game;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.AssassinNightScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.CivilianNightScreen;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.FourthCivilianNightScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.HermitNightScreen;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.NecromancerNightScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.NightScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.WitchNightScreen;
 
-public abstract class Role {
+public abstract class Role implements Comparable {
 
     private String description;
     private String iconPath;
     private RoleName name;
     private AllianceName alliance;
+    private int priority;
 
     public static Role getRole(RoleName roleName) {
         Role role;
@@ -28,6 +31,12 @@ public abstract class Role {
                 break;
             case HERMIT:
                 role = new Hermit();
+                break;
+            case NECROMANCER:
+                role = new Necromancer();
+                break;
+            case FOURTH_CIVILIAN:
+                role = new FourthCivilian();
                 break;
             default:
                 role = null;
@@ -69,6 +78,14 @@ public abstract class Role {
         this.alliance = alliance;
     }
 
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
     public NightScreen getNight(RoleName roleName, Game game) {
         NightScreen night;
         switch (roleName) {
@@ -84,12 +101,23 @@ public abstract class Role {
             case HERMIT:
                 night = new HermitNightScreen(game);
                 break;
+            case NECROMANCER:
+                night = new NecromancerNightScreen(game);
+                break;
+            case FOURTH_CIVILIAN:
+                night = new FourthCivilianNightScreen(game);
+                break;
             default:
                 night = null;
                 break;
         }
 
         return night;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return priority;
     }
 }
 

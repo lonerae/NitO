@@ -29,12 +29,12 @@ import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.NightResolut
 import java.util.HashMap;
 import java.util.Map;
 
-public class HermitNightScreen extends NightScreen {
+public class NecromancerNightScreen extends NightScreen {
 
     private final ButtonGroup<CheckBox> voteCheckGroup = new ButtonGroup<>();
     private final Map<CheckBox, TextField> choiceMap = new HashMap<>();
 
-    public HermitNightScreen(Game game) {
+    public NecromancerNightScreen(Game game) {
         super(game);
         voteCheckGroup.setMinCheckCount(0);
     }
@@ -49,13 +49,13 @@ public class HermitNightScreen extends NightScreen {
         UIUtil.title(title);
         mainTable.add(title).padBottom(PAD_VERTICAL_SMALL).row();
 
-        Label description = new CustomLabel(GameData.getRoleStrings().get("hermitNight"), getBlackStyle());
+        Label description = new CustomLabel(GameData.getRoleStrings().get("necromancerNight"), getBlackStyle());
         mainTable.add(description).width(DEFAULT_ACTOR_WIDTH).padBottom(PAD_VERTICAL_BIG).row();
 
-        Table alivePlayerTable = new Table(getSkin());
-        fillAlivePlayerTable(alivePlayerTable);
+        Table deadPlayerTable = new Table(getSkin());
+        fillDeadPlayerTable(deadPlayerTable);
 
-        mainTable.add(alivePlayerTable).padBottom(PAD_VERTICAL_BIG).row();
+        mainTable.add(deadPlayerTable).padBottom(PAD_VERTICAL_BIG).row();
 
         TextButton activateButton = new CustomTextButton(getStrings().get("abilityUsed"), getSkin(), getBlackStyle());
         activateButton.setTouchable(Touchable.disabled);
@@ -106,9 +106,9 @@ public class HermitNightScreen extends NightScreen {
     private void activateAbility(TextButton activateButton, TextButton continueButton) {
         choiceMap.get(voteCheckGroup.getChecked())
                 .setText(
-                        Role.getRole(MatchClient.getAlivePlayersMap()
+                        Role.getRole(MatchClient.getDeadPlayersMap()
                                         .get(voteCheckGroup.getChecked().getLabel().getText().toString()))
-                                .getAlliance()
+                                .getName()
                                 .toString()
                 );
         activateButton.setTouchable(Touchable.disabled);
@@ -117,9 +117,9 @@ public class HermitNightScreen extends NightScreen {
         Player.getPlayer().setAbleToUseAbility(false);
     }
 
-    private void fillAlivePlayerTable(Table alivePlayerTable) {
-        for (String playerName : MatchClient.getAlivePlayersMap().keySet()) {
-            if (!playerName.equals(Player.getPlayer().getName())) {
+    private void fillDeadPlayerTable(Table deadPlayerTable) {
+        if (MatchClient.getDeadPlayersMap() != null) {
+            for (String playerName : MatchClient.getDeadPlayersMap().keySet()) {
                 CheckBox voteCheck = createCheckBox(playerName);
 
                 TextField allianceTextField = new CustomTextField("", getTextFieldStyle());
@@ -127,8 +127,8 @@ public class HermitNightScreen extends NightScreen {
 
                 choiceMap.put(voteCheck, allianceTextField);
 
-                alivePlayerTable.add(voteCheck).pad(PAD_HORIZONTAL_SMALL);
-                alivePlayerTable.add(allianceTextField).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL).row();
+                deadPlayerTable.add(voteCheck).pad(PAD_HORIZONTAL_SMALL);
+                deadPlayerTable.add(allianceTextField).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL).row();
             }
         }
     }

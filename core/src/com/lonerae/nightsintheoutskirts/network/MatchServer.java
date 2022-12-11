@@ -14,6 +14,7 @@ import com.lonerae.nightsintheoutskirts.network.requests.GreetingRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.VoteRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.abilities.FourthRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.abilities.KillRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.abilities.MurderRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.abilities.SaveRequest;
@@ -46,6 +47,7 @@ public class MatchServer {
     private static final HashMap<String, Integer> votingMap = new HashMap<>();
     private static final List<String> protectedPlayersList = new ArrayList<>();
     private static final List<String> murderedPlayersList = new ArrayList<>();
+    private static final List<String> fourthTransformations = new ArrayList<>();
     private static Server server;
     private static GameData match;
     private static List<RoleName> shuffledDeck;
@@ -97,6 +99,7 @@ public class MatchServer {
         votingMap.clear();
         protectedPlayersList.clear();
         murderedPlayersList.clear();
+        fourthTransformations.clear();
         match = null;
         shuffledDeck = null;
         connectedPlayersNumber = 0;
@@ -142,6 +145,9 @@ public class MatchServer {
                     protect((SaveRequest) object);
                 } else if (object instanceof MurderRequest) {
                     updateAndInformAssassins((MurderRequest) object);
+                } else if (object instanceof FourthRequest) {
+                    FourthRequest request = (FourthRequest) object;
+                    fourthTransformations.add(request.playerName);
                 }
             }
         });
@@ -247,10 +253,10 @@ public class MatchServer {
         if (readyPlayerNumber == alivePlayersMap.size()) {
             ProceedResponse response = new ProceedResponse();
             updateAssassinNumber();
-            if (checkEndGameConditions()) {
-                response.endGame = true;
-                response.winner = winner;
-            }
+//            if (checkEndGameConditions()) {
+//                response.endGame = true;
+//                response.winner = winner;
+//            }
 
             response.permit = true;
             response.alivePlayerMap = alivePlayersMap;
@@ -325,6 +331,8 @@ public class MatchServer {
             for (String player : murderedPlayersList) {
                 deadPlayersMap.put(player, alivePlayersMap.remove(player));
             }
+            fourthCivilianCheck();
+
             ProceedResponse response = new ProceedResponse();
             response.permit = true;
             response.alivePlayerMap = alivePlayersMap;
@@ -334,6 +342,26 @@ public class MatchServer {
             readyPlayerNumber = 0;
             protectedPlayersList.clear();
             murderedPlayersList.clear();
+        }
+    }
+
+    private static void fourthCivilianCheck() {
+        if (!fourthTransformations.isEmpty()) {
+            List<RoleName> availableRoles = deadPlayersMap.values()
+                    .stream()
+                    .sorted()
+                    .collect(Collectors.toList());
+            int count = 0;
+            for (String player : fourthTransformations) {
+                if (count == availableRoles.size()) {
+                    break;
+                }
+                if (!deadPlayersMap.containsKey(player)) {
+                    alivePlayersMap.put(player, availableRoles.get(count));
+                    count++;
+                }
+            }
+            fourthTransformations.clear();
         }
     }
 
