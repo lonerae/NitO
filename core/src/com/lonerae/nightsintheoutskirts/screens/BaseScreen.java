@@ -31,6 +31,7 @@ public class BaseScreen implements Screen {
     public final static float DEFAULT_ACTOR_WIDTH = (WIDTH * 3) / 4;
     public final static float DEFAULT_ACTOR_HEIGHT = HEIGHT / 10;
     public final static float DEFAULT_ICON_SIZE = WIDTH / 5;
+    public final static float LOGO_SIZE = WIDTH / 2;
     public final static float DEFAULT_POPUP_SIZE = (WIDTH * 4) / 5;
     public final static float PAD_VERTICAL_BIG = HEIGHT / 10;
     public final static float PAD_VERTICAL_SMALL = HEIGHT / 20;
