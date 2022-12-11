@@ -60,7 +60,6 @@ public class GameJoinScreen extends BaseScreen {
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
-        System.out.println(availableMatches.toString());
     }
 
     private void searchForMatches() {

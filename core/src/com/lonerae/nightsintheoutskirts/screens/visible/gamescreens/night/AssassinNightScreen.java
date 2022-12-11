@@ -128,10 +128,10 @@ public class AssassinNightScreen extends NightScreen {
     private void createDefaultOverviewMessage() {
         overviewMessage = new StringBuilder();
         for (String player : MatchClient.getAlivePlayersMap().keySet()) {
-            overviewMessage.append(player).append(" by: \n");
+            overviewMessage.append(player).append(": \n");
         }
         overviewMessage.append("\n");
-        overviewMessage.append("skip by: ");
+        overviewMessage.append("skip: ");
         defaultOverviewMessage = new StringBuilder(overviewMessage);
     }
 
