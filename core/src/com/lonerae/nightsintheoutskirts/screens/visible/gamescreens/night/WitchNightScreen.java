@@ -50,7 +50,7 @@ public class WitchNightScreen extends NightScreen {
         Table alivePlayerTable = new Table(getSkin());
         fillAlivePlayerTable(alivePlayerTable);
 
-        mainTable.add(alivePlayerTable).row();
+        mainTable.add(alivePlayerTable).padBottom(PAD_VERTICAL_BIG).row();
 
         TextButton saveButton = new CustomTextButton(getStrings().get("abilityUsed"), getSkin(), getBlackStyle());
         saveButton.setTouchable(Touchable.disabled);
@@ -71,9 +71,9 @@ public class WitchNightScreen extends NightScreen {
         });
 
         Table buttonTable = new Table(getSkin());
-        buttonTable.add(saveButton).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL);
-        buttonTable.add(killButton).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL).row();
-        buttonTable.add(continueButton).width(WIDTH / 3).colspan(2).pad(PAD_HORIZONTAL_SMALL);
+        buttonTable.add(saveButton).width(2 * WIDTH / 5).pad(PAD_HORIZONTAL_SMALL);
+        buttonTable.add(killButton).width(2 * WIDTH / 5).pad(PAD_HORIZONTAL_SMALL).row();
+        buttonTable.add(continueButton).width(DEFAULT_ACTOR_WIDTH).colspan(2).pad(PAD_HORIZONTAL_SMALL);
 
         mainTable.add(buttonTable);
 

@@ -9,5 +9,6 @@ public class Civilian extends Role {
         setIconPath("data/roles/civilian.png");
         setName(RoleName.CIVILIAN);
         setAlliance(AllianceName.ORDER);
+        setPriority(4);
     }
 }

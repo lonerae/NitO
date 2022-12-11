@@ -37,7 +37,6 @@ public class HermitNightScreen extends NightScreen {
     public HermitNightScreen(Game game) {
         super(game);
         voteCheckGroup.setMinCheckCount(0);
-
     }
 
     @Override
@@ -56,7 +55,7 @@ public class HermitNightScreen extends NightScreen {
         Table alivePlayerTable = new Table(getSkin());
         fillAlivePlayerTable(alivePlayerTable);
 
-        mainTable.add(alivePlayerTable).row();
+        mainTable.add(alivePlayerTable).padBottom(PAD_VERTICAL_BIG).row();
 
         TextButton activateButton = new CustomTextButton(getStrings().get("abilityUsed"), getSkin(), getBlackStyle());
         activateButton.setTouchable(Touchable.disabled);
@@ -75,8 +74,8 @@ public class HermitNightScreen extends NightScreen {
         });
 
         Table buttonTable = new Table(getSkin());
-        buttonTable.add(activateButton).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL);
-        buttonTable.add(continueButton).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL);
+        buttonTable.add(activateButton).width(2 * WIDTH / 5).pad(PAD_HORIZONTAL_SMALL);
+        buttonTable.add(continueButton).width(2 * WIDTH / 5).pad(PAD_HORIZONTAL_SMALL);
 
         mainTable.add(buttonTable);
 
@@ -120,15 +119,17 @@ public class HermitNightScreen extends NightScreen {
 
     private void fillAlivePlayerTable(Table alivePlayerTable) {
         for (String playerName : MatchClient.getAlivePlayersMap().keySet()) {
-            CheckBox voteCheck = createCheckBox(playerName);
+            if (!playerName.equals(Player.getPlayer().getName())) {
+                CheckBox voteCheck = createCheckBox(playerName);
 
-            TextField allianceTextField = new CustomTextField("", getTextFieldStyle());
-            allianceTextField.setTouchable(Touchable.disabled);
+                TextField allianceTextField = new CustomTextField("", getTextFieldStyle());
+                allianceTextField.setTouchable(Touchable.disabled);
 
-            choiceMap.put(voteCheck, allianceTextField);
+                choiceMap.put(voteCheck, allianceTextField);
 
-            alivePlayerTable.add(voteCheck).pad(PAD_HORIZONTAL_SMALL);
-            alivePlayerTable.add(allianceTextField).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL).row();
+                alivePlayerTable.add(voteCheck).pad(PAD_HORIZONTAL_SMALL);
+                alivePlayerTable.add(allianceTextField).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL).row();
+            }
         }
     }
 

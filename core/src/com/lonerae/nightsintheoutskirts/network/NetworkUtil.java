@@ -12,6 +12,7 @@ import com.lonerae.nightsintheoutskirts.network.requests.LobbyRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
 import com.lonerae.nightsintheoutskirts.network.requests.VoteRequest;
+import com.lonerae.nightsintheoutskirts.network.requests.abilities.FourthRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.abilities.KillRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.abilities.MurderRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.abilities.SaveRequest;
@@ -59,6 +60,7 @@ public class NetworkUtil {
         kryo.register(MurderRequest.class);
         kryo.register(MurderResponse.class);
         kryo.register(AssassinInfoResponse.class);
+        kryo.register(FourthRequest.class);
         kryo.register(ArrayList.class);
         kryo.register(HashMap.class);
         kryo.register(RoleName.class);

@@ -9,12 +9,13 @@ import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.Necrom
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.NightScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.WitchNightScreen;
 
-public abstract class Role {
+public abstract class Role implements Comparable {
 
     private String description;
     private String iconPath;
     private RoleName name;
     private AllianceName alliance;
+    private int priority;
 
     public static Role getRole(RoleName roleName) {
         Role role;
@@ -77,6 +78,14 @@ public abstract class Role {
         this.alliance = alliance;
     }
 
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
     public NightScreen getNight(RoleName roleName, Game game) {
         NightScreen night;
         switch (roleName) {
@@ -104,6 +113,11 @@ public abstract class Role {
         }
 
         return night;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return priority;
     }
 }
 

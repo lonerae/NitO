@@ -158,24 +158,9 @@ public class MatchClient {
                 } else if (object instanceof ProceedResponse) {
                     ProceedResponse response = (ProceedResponse) object;
                     permitted = response.permit;
-                    if (firstFlag) {
-                        connectedPlayersMap = response.alivePlayerMap;
-                        firstFlag = false;
-                    }
-                    alivePlayersMap = response.alivePlayerMap;
-                    deadPlayersMap = response.deadPlayerMap;
-                    if (response.hangedList != null) {
-                        hangedList = response.hangedList;
-                    }
-                    if (response.murderedList != null) {
-                        murderedList = response.murderedList;
-                    }
-                    if (response.endGame) {
-                        endGame = true;
-                        winner = response.winner;
-                    } else {
-                        endGame = false;
-                    }
+                    firstConnection(response);
+                    updateLists(response);
+                    checkEndGame(response);
                 } else if (object instanceof VoteResponse) {
                     VoteResponse response = (VoteResponse) object;
                     DayScreen.updateVote(response.voterName, response.votedPlayerName, response.vote);
@@ -192,5 +177,32 @@ public class MatchClient {
                 }
             }
         });
+    }
+
+    private static void firstConnection(ProceedResponse response) {
+        if (firstFlag) {
+            connectedPlayersMap = response.alivePlayerMap;
+            firstFlag = false;
+        }
+    }
+
+    private static void checkEndGame(ProceedResponse response) {
+        if (response.endGame) {
+            endGame = true;
+            winner = response.winner;
+        } else {
+            endGame = false;
+        }
+    }
+
+    private static void updateLists(ProceedResponse response) {
+        alivePlayersMap = response.alivePlayerMap;
+        deadPlayersMap = response.deadPlayerMap;
+        if (response.hangedList != null) {
+            hangedList = response.hangedList;
+        }
+        if (response.murderedList != null) {
+            murderedList = response.murderedList;
+        }
     }
 }

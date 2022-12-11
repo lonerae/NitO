@@ -122,11 +122,11 @@ public class DayScreen extends BaseScreen {
         lockButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (voteCheckGroup.getAllChecked().size == 1) {
+//                if (voteCheckGroup.getAllChecked().size == 1) {
                 continueToResolution();
-                } else {
-                    showErrorDialog(getStrings().get("noVoteError"));
-                }
+//                } else {
+//                    showErrorDialog(getStrings().get("noVoteError"));
+//                }
             }
         });
         mainTable.add(lockButton).width(DEFAULT_ACTOR_WIDTH);

@@ -8,5 +8,6 @@ public class FourthCivilian extends Role {
         setIconPath("data/roles/fourth_civilian.png");
         setName(RoleName.FOURTH_CIVILIAN);
         setAlliance(AllianceName.ORDER);
+        setPriority(5);
     }
 }

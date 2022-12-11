@@ -9,5 +9,6 @@ public class Necromancer extends Role {
         setIconPath("data/roles/necromancer.png");
         setName(RoleName.NECROMANCER);
         setAlliance(AllianceName.ORDER);
+        setPriority(3);
     }
 }

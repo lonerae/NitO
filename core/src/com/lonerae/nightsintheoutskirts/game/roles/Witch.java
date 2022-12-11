@@ -9,5 +9,6 @@ public class Witch extends Role {
         setIconPath("data/roles/witch.png");
         setName(RoleName.WITCH);
         setAlliance(AllianceName.ORDER);
+        setPriority(1);
     }
 }

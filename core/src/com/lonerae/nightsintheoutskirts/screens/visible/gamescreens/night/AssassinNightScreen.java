@@ -72,7 +72,7 @@ public class AssassinNightScreen extends NightScreen {
         Table alivePlayerTable = new Table(getSkin());
         fillAlivePlayerTable(alivePlayerTable);
 
-        mainTable.add(alivePlayerTable).row();
+        mainTable.add(alivePlayerTable).padBottom(PAD_VERTICAL_BIG).row();
 
         TextButton activateButton = new CustomTextButton(getStrings().get("abilityReady"), getSkin(), getBlackStyle());
         TextButton continueButton = new CustomTextButton(getStrings().get("skipChoice"), getSkin(), getBlackStyle());
@@ -94,9 +94,9 @@ public class AssassinNightScreen extends NightScreen {
         TextButton overviewButton = addOverviewButton();
 
         Table buttonTable = new Table(getSkin());
-        buttonTable.add(activateButton).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL).row();
-        buttonTable.add(continueButton).width(WIDTH / 3).colspan(2).pad(PAD_HORIZONTAL_SMALL).row();
-        buttonTable.add(overviewButton).width(WIDTH / 3).colspan(2).pad(PAD_HORIZONTAL_SMALL);
+        buttonTable.add(activateButton).width(2 * WIDTH / 5).pad(PAD_HORIZONTAL_SMALL);
+        buttonTable.add(continueButton).width(2 * WIDTH / 5).pad(PAD_HORIZONTAL_SMALL).row();
+        buttonTable.add(overviewButton).width(DEFAULT_ACTOR_WIDTH).colspan(2).pad(PAD_HORIZONTAL_SMALL);
 
         mainTable.add(buttonTable);
 
@@ -128,9 +128,10 @@ public class AssassinNightScreen extends NightScreen {
     private void createDefaultOverviewMessage() {
         overviewMessage = new StringBuilder();
         for (String player : MatchClient.getAlivePlayersMap().keySet()) {
-            overviewMessage.append(player).append(": \n");
+            overviewMessage.append(player).append(" by: \n");
         }
-        overviewMessage.append("skip: ");
+        overviewMessage.append("\n");
+        overviewMessage.append("skip by: ");
         defaultOverviewMessage = new StringBuilder(overviewMessage);
     }
 
