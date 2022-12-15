@@ -9,7 +9,7 @@ import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.Necrom
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.NightScreen;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night.WitchNightScreen;
 
-public abstract class Role implements Comparable {
+public abstract class Role implements Comparable<Role> {
 
     private String description;
     private String iconPath;
@@ -116,8 +116,8 @@ public abstract class Role implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        return priority;
+    public int compareTo(Role otherRole) {
+        return this.priority - otherRole.priority;
     }
 }
 
