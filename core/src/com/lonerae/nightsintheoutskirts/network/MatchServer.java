@@ -347,8 +347,10 @@ public class MatchServer {
 
     private static void fourthCivilianCheck() {
         if (!fourthTransformations.isEmpty()) {
-            List<RoleName> availableRoles = deadPlayersMap.values()
+            List<RoleName> availableRoles = deadPlayersMap.keySet()
                     .stream()
+                    .filter(murderedPlayersList::contains)
+                    .map(deadPlayersMap::get)
                     .sorted()
                     .collect(Collectors.toList());
             int count = 0;
