@@ -196,8 +196,12 @@ public class MatchClient {
     }
 
     private static void updateLists(ProceedResponse response) {
-        alivePlayersMap = response.alivePlayerMap;
-        deadPlayersMap = response.deadPlayerMap;
+        if (response.alivePlayerMap != null) {
+            alivePlayersMap = response.alivePlayerMap;
+        }
+        if (response.deadPlayerMap != null) {
+            deadPlayersMap = response.deadPlayerMap;
+        }
         if (response.hangedList != null) {
             hangedList = response.hangedList;
         }

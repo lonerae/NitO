@@ -1,5 +1,6 @@
 package com.lonerae.nightsintheoutskirts.network;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -79,6 +80,7 @@ public class MatchServer {
             createListener();
             match = data;
             shuffleDeck();
+            deadPlayersMap.put("Minas", RoleName.ASSASSIN);
         }
     }
 
