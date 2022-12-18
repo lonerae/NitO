@@ -36,7 +36,7 @@ public class RoleRevealScreen extends BaseScreen {
         UIUtil.title(roleName);
         Image roleIcon = new Image(new Texture(Player.getPlayer().getRole().getIconPath()));
         Label roleDescription = new CustomLabel(Player.getPlayer().getRole().getDescription(), getBlackStyle());
-        Button startButton = new CustomTextButton(getStrings().get("startGameButton"), getSkin(), getBlackStyle());
+        Button startButton = new CustomTextButton(getStrings().get("startGameButton"), getButtonStyle());
         startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

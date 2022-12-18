@@ -32,7 +32,7 @@ public class FirstNightScreen extends BaseScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label title = new CustomLabel("Night", getTitleStyle());
+        Label title = new CustomLabel("First Night", getTitleStyle());
         UIUtil.title(title);
 
         Label description = new CustomLabel(getGameStrings().get("firstNight"), getBlackStyle());
@@ -40,7 +40,7 @@ public class FirstNightScreen extends BaseScreen {
         Table playerTable = new Table();
         fillPlayerTable(playerTable);
 
-        TextButton startButton = new CustomTextButton(getStrings().get("startFirstDay"), getSkin(), getBlackStyle());
+        TextButton startButton = new CustomTextButton(getStrings().get("startFirstDay"), getButtonStyle());
         startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

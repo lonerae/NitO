@@ -30,9 +30,8 @@ public class EndGameScreen extends BaseScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label title = new CustomLabel(getStrings().get("endGameTitle"), getBlackStyle());
+        Label title = new CustomLabel(getStrings().get("endGameTitle"), getTitleStyle());
         UIUtil.title(title);
-
 
         Label description = new CustomLabel(getGameStrings().get("endgame"), getBlackStyle());
 
@@ -45,7 +44,7 @@ public class EndGameScreen extends BaseScreen {
         }
         CustomDialog truthDialog = new CustomDialog("the Truth", truthString.toString(), getSkin(), getBlackStyle());
 
-        TextButton revealButton = new CustomTextButton(getStrings().get("revealButtonText"), getSkin(), getBlackStyle());
+        TextButton revealButton = new CustomTextButton(getStrings().get("revealButtonText"), getButtonStyle());
         truthDialog.isHideable();
         revealButton.addListener(new ClickListener() {
             @Override
@@ -54,7 +53,7 @@ public class EndGameScreen extends BaseScreen {
             }
         });
 
-        TextButton endMatchButton = new CustomTextButton(getStrings().get("endMatchButtonText"), getSkin(), getBlackStyle());
+        TextButton endMatchButton = new CustomTextButton(getStrings().get("endMatchButtonText"), getButtonStyle());
         endMatchButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

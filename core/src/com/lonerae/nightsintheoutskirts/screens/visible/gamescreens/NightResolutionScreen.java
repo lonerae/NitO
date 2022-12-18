@@ -18,6 +18,7 @@ import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
+import com.lonerae.nightsintheoutskirts.screens.UIUtil;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
@@ -38,6 +39,10 @@ public class NightResolutionScreen extends BaseScreen {
         super.show();
 
         Table mainTable = new CustomTable(true);
+
+        Label title = new CustomLabel("Night Resolution", getTitleStyle());
+        UIUtil.title(title);
+        mainTable.add(title).padBottom(PAD_VERTICAL_SMALL).row();
 
         Label description = new CustomLabel(getGameStrings().get("nightResolution"), getBlackStyle());
         mainTable.add(description).width(DEFAULT_ACTOR_WIDTH).padBottom(PAD_VERTICAL_BIG).row();
@@ -91,7 +96,7 @@ public class NightResolutionScreen extends BaseScreen {
     }
 
     private void addContinueButton(Table mainTable) {
-        TextButton continueButton = new CustomTextButton(getStrings().get("continueToDay"), getSkin(), getBlackStyle());
+        TextButton continueButton = new CustomTextButton(getStrings().get("continueToDay"), getButtonStyle());
         continueButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

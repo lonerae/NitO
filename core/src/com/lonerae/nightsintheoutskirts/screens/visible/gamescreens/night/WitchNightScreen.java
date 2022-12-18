@@ -40,7 +40,7 @@ public class WitchNightScreen extends NightScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label title = new CustomLabel("Night", getBlackStyle());
+        Label title = new CustomLabel("Night", getTitleStyle());
         UIUtil.title(title);
         mainTable.add(title).padBottom(PAD_VERTICAL_SMALL).row();
 
@@ -52,11 +52,11 @@ public class WitchNightScreen extends NightScreen {
 
         mainTable.add(alivePlayerTable).padBottom(PAD_VERTICAL_BIG).row();
 
-        TextButton saveButton = new CustomTextButton(getStrings().get("abilityUsed"), getSkin(), getBlackStyle());
+        TextButton saveButton = new CustomTextButton(getStrings().get("abilityUsed"), getButtonStyle());
         saveButton.setTouchable(Touchable.disabled);
-        TextButton killButton = new CustomTextButton(getStrings().get("abilityUsed"), getSkin(), getBlackStyle());
+        TextButton killButton = new CustomTextButton(getStrings().get("abilityUsed"), getButtonStyle());
         killButton.setTouchable(Touchable.disabled);
-        TextButton continueButton = new CustomTextButton(getStrings().get("endNight"), getSkin(), getBlackStyle());
+        TextButton continueButton = new CustomTextButton(getStrings().get("endNight"), getButtonStyle());
 
         if (Player.getPlayer().isAbleToUseAbility()) {
             updateButtons(saveButton, killButton, continueButton);

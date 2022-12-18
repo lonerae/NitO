@@ -3,6 +3,7 @@ package com.lonerae.nightsintheoutskirts.screens.customUI;
 import static com.lonerae.nightsintheoutskirts.screens.BaseScreen.DEFAULT_POPUP_SIZE;
 import static com.lonerae.nightsintheoutskirts.screens.BaseScreen.WIDTH;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -18,6 +19,7 @@ public class CustomDialog extends Dialog {
 
     public CustomDialog(String title, String message, Skin skin, Label.LabelStyle style, boolean justified) {
         super(title, skin);
+        this.setColor(0.98f, 0.9f, 0.68f, 1);
         this.pad(150, 25, 25, 25);
         this.getTitleLabel().setAlignment(Align.center);
         this.getTitleLabel().setStyle(style);
@@ -35,6 +37,7 @@ public class CustomDialog extends Dialog {
 
     public CustomDialog(Skin skin, Label.LabelStyle style) {
         super("", skin);
+        this.setColor(0.98f, 0.9f, 0.72f, 1);
         this.getContentTable().defaults().width(DEFAULT_POPUP_SIZE);
         Label messageLabel = new CustomLabel("", style);
         this.getContentTable().add(messageLabel).width(DEFAULT_POPUP_SIZE);

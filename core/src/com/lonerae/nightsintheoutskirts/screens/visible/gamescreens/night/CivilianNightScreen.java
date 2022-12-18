@@ -29,14 +29,14 @@ public class CivilianNightScreen extends NightScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label title = new CustomLabel("Day", getBlackStyle());
+        Label title = new CustomLabel("Day", getTitleStyle());
         UIUtil.title(title);
         mainTable.add(title).padBottom(PAD_VERTICAL_SMALL).row();
 
         Label description = new CustomLabel(GameData.getRoleStrings().get("civilianNight"), getBlackStyle());
         mainTable.add(description).width(DEFAULT_ACTOR_WIDTH).padBottom(PAD_VERTICAL_BIG).row();
 
-        TextButton continueButton = new CustomTextButton(getStrings().get("endNight"), getSkin(), getBlackStyle());
+        TextButton continueButton = new CustomTextButton(getStrings().get("endNight"), getButtonStyle());
         continueButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

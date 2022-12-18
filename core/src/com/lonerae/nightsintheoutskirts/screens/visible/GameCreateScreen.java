@@ -83,7 +83,7 @@ public class GameCreateScreen extends BaseScreen {
 
         mainTable.add(rolesTable).padBottom(PAD_VERTICAL_SMALL).row();
 
-        TextButton createButton = new CustomTextButton(getStrings().get("create"), getSkin(), getBlackStyle());
+        TextButton createButton = new CustomTextButton(getStrings().get("create"), getButtonStyle());
         createButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -198,8 +198,8 @@ public class GameCreateScreen extends BaseScreen {
                 }
             }
         };
-        successDialog.button(new CustomTextButton("CANCEL", getSkin(), getBlackStyle()), false);
-        successDialog.button(new CustomTextButton("OKAY", getSkin(), getBlackStyle()), true);
+        successDialog.button(new CustomTextButton("CANCEL", getButtonStyle()), false);
+        successDialog.button(new CustomTextButton("OKAY", getButtonStyle()), true);
         return successDialog;
     }
 

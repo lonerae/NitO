@@ -41,7 +41,7 @@ public class GameJoinScreen extends BaseScreen {
 
         Label title = new CustomLabel(getStrings().get("join"), getTitleStyle());
         UIUtil.title(title);
-        TextButton searchGamesButton = new CustomTextButton(getStrings().get("searchGames"), getSkin(), getBlackStyle());
+        TextButton searchGamesButton = new CustomTextButton(getStrings().get("searchGames"), getButtonStyle());
         searchGamesButton.getLabel().setWrap(true);
 
         mainTable.add(title).padBottom(PAD_VERTICAL_SMALL).row();
@@ -92,7 +92,7 @@ public class GameJoinScreen extends BaseScreen {
 
     private TextButton createMatchButton(String matchTitle) {
         TextButton matchButton = new CustomTextButton(matchTitle + "\n\n" +
-                availableMatches.get(matchTitle), getSkin(), getBlackStyle());
+                availableMatches.get(matchTitle), getButtonStyle());
         matchButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

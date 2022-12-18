@@ -55,7 +55,7 @@ public class GameLobbyScreen extends BaseScreen {
         Table rolesTable = new Table();
         fill(rolesTable);
 
-        TextButton assignRoleButton = new CustomTextButton(getStrings().get("assignRoleButton"), getSkin(), getBlackStyle());
+        TextButton assignRoleButton = new CustomTextButton(getStrings().get("assignRoleButton"), getButtonStyle());
         assignRoleButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

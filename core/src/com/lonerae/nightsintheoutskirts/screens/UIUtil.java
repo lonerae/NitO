@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.I18NBundle;
@@ -23,6 +24,7 @@ public class UIUtil {
     private final Label.LabelStyle redStyle;
     private final Label.LabelStyle blackStyle;
     private final TextField.TextFieldStyle textFieldStyle;
+    private final TextButton.TextButtonStyle textButtonStyle;
 
     public UIUtil() {
         FreeTypeFontGenerator generatorTitle = new FreeTypeFontGenerator(Gdx.files.internal("skin/arial.ttf"));
@@ -30,14 +32,14 @@ public class UIUtil {
         parameterTitle.size = (int) (0.08 * WIDTH);
         BitmapFont fontTitle = generatorTitle.generateFont(parameterTitle);
 
-        titleStyle = new Label.LabelStyle();
-        titleStyle.font = fontTitle;
-        titleStyle.fontColor = Color.BLACK;
-
         FreeTypeFontGenerator generatorNormal = new FreeTypeFontGenerator(Gdx.files.internal("skin/arial.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameterNormal = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameterNormal.size = (int) (0.06 * WIDTH);
         BitmapFont fontNormal = generatorNormal.generateFont(parameterNormal);
+
+        titleStyle = new Label.LabelStyle();
+        titleStyle.font = fontTitle;
+        titleStyle.fontColor = Color.BLACK;
 
         redStyle = new Label.LabelStyle();
         redStyle.font = fontNormal;
@@ -47,8 +49,12 @@ public class UIUtil {
         blackStyle.font = fontNormal;
         blackStyle.fontColor = Color.BLACK;
 
-        textFieldStyle = new TextField.TextFieldStyle(fontNormal, Color.BLACK, skin.getDrawable("cursor"),
+        textFieldStyle = new TextField.TextFieldStyle(fontNormal, Color.BLACK, null,
                 skin.getDrawable("selection"), skin.getDrawable("textfield"));
+
+        textButtonStyle = new TextButton.TextButtonStyle(skin.getDrawable("round-gray"),
+                skin.getDrawable("round-dark-gray"), skin.getDrawable("round-dark-gray"),
+                fontNormal);
     }
 
     public static UIUtil getInstance() {
@@ -139,5 +145,9 @@ public class UIUtil {
 
     public TextField.TextFieldStyle getTextFieldStyle() {
         return textFieldStyle;
+    }
+
+    public TextButton.TextButtonStyle getTextButtonStyle() {
+        return textButtonStyle;
     }
 }
