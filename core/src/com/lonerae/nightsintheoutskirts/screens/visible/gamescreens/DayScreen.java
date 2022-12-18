@@ -80,7 +80,7 @@ public class DayScreen extends BaseScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label title = new CustomLabel("Day", getBlackStyle());
+        Label title = new CustomLabel("Day", getTitleStyle());
         UIUtil.title(title);
         mainTable.add(title).padBottom(PAD_VERTICAL_SMALL).row();
 
@@ -118,7 +118,7 @@ public class DayScreen extends BaseScreen {
     }
 
     private void addLockButton(Table mainTable) {
-        TextButton lockButton = new CustomTextButton(getStrings().get("lockChoice"), getSkin(), getBlackStyle());
+        TextButton lockButton = new CustomTextButton(getStrings().get("lockChoice"), getButtonStyle());
         lockButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -191,7 +191,7 @@ public class DayScreen extends BaseScreen {
 
     private TextButton addVotedByButton(String player, Table voteTable) {
         voteTable.row();
-        TextButton votedByButton = new CustomTextButton(getStrings().get("votersButtonTitle"), getSkin(), getBlackStyle());
+        TextButton votedByButton = new CustomTextButton(getStrings().get("votersButtonTitle"), getButtonStyle());
         Dialog votedByDialog = new CustomDialog(getSkin(), getBlackStyle());
         votersMap.put(player, votedByDialog);
         votedByMessageMap.put(player, new StringBuilder());

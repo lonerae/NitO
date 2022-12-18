@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -44,6 +45,7 @@ public class BaseScreen implements Screen {
     private final Game game;
     private final Skin skin;
     private final Label.LabelStyle titleStyle;
+    private final TextButton.TextButtonStyle buttonStyle;
     private final Label.LabelStyle redStyle;
     private final TextField.TextFieldStyle textFieldStyle;
     private OrthographicCamera camera;
@@ -58,9 +60,11 @@ public class BaseScreen implements Screen {
         skin = uiUtilInstance.getSkin();
 
         titleStyle = uiUtilInstance.getTitleStyle();
+        buttonStyle = uiUtilInstance.getTextButtonStyle();
         redStyle = uiUtilInstance.getRedStyle();
         blackStyle = uiUtilInstance.getBlackStyle();
         textFieldStyle = uiUtilInstance.getTextFieldStyle();
+
         strings = uiUtilInstance.getStrings();
         gameStrings = uiUtilInstance.getGameStrings();
     }
@@ -99,6 +103,10 @@ public class BaseScreen implements Screen {
         return titleStyle;
     }
 
+    public TextButton.TextButtonStyle getButtonStyle() {
+        return buttonStyle;
+    }
+
     public Label.LabelStyle getRedStyle() {
         return redStyle;
     }
@@ -133,7 +141,7 @@ public class BaseScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(1, 1, 1, 1);
+        ScreenUtils.clear(0.98f, 0.9f, 0.72f, 1);
 
         stage.act();
         stage.draw();

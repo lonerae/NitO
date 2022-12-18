@@ -62,7 +62,7 @@ public class AssassinNightScreen extends NightScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label title = new CustomLabel("Night", getBlackStyle());
+        Label title = new CustomLabel("Night", getTitleStyle());
         UIUtil.title(title);
         mainTable.add(title).padBottom(PAD_VERTICAL_SMALL).row();
 
@@ -74,8 +74,8 @@ public class AssassinNightScreen extends NightScreen {
 
         mainTable.add(alivePlayerTable).padBottom(PAD_VERTICAL_BIG).row();
 
-        TextButton activateButton = new CustomTextButton(getStrings().get("abilityReady"), getSkin(), getBlackStyle());
-        TextButton continueButton = new CustomTextButton(getStrings().get("skipChoice"), getSkin(), getBlackStyle());
+        TextButton activateButton = new CustomTextButton(getStrings().get("abilityReady"), getButtonStyle());
+        TextButton continueButton = new CustomTextButton(getStrings().get("skipChoice"), getButtonStyle());
 
         activateButton.addListener(new ClickListener() {
             @Override
@@ -105,7 +105,7 @@ public class AssassinNightScreen extends NightScreen {
     }
 
     private TextButton addOverviewButton() {
-        TextButton overviewButton = new CustomTextButton(getStrings().get("assassinOverview"), getSkin(), getBlackStyle());
+        TextButton overviewButton = new CustomTextButton(getStrings().get("assassinOverview"), getButtonStyle());
         createDefaultOverviewMessage();
         overviewDialog = new CustomDialog("KILL LIST", overviewMessage.toString(), getSkin(), getBlackStyle());
         overviewButton.addListener(new InputListener() {

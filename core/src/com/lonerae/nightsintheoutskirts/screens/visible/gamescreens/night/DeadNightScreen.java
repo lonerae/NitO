@@ -24,7 +24,7 @@ public class DeadNightScreen extends BaseScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label title = new CustomLabel("Night", getBlackStyle());
+        Label title = new CustomLabel("Night", getTitleStyle());
         UIUtil.title(title);
         mainTable.add(title).padBottom(PAD_VERTICAL_SMALL).row();
 

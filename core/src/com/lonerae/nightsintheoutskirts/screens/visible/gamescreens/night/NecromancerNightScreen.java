@@ -45,7 +45,7 @@ public class NecromancerNightScreen extends NightScreen {
 
         Table mainTable = new CustomTable(true);
 
-        Label title = new CustomLabel("Night", getBlackStyle());
+        Label title = new CustomLabel("Night", getTitleStyle());
         UIUtil.title(title);
         mainTable.add(title).padBottom(PAD_VERTICAL_SMALL).row();
 
@@ -57,9 +57,9 @@ public class NecromancerNightScreen extends NightScreen {
 
         mainTable.add(deadPlayerTable).padBottom(PAD_VERTICAL_BIG).row();
 
-        TextButton activateButton = new CustomTextButton(getStrings().get("abilityUsed"), getSkin(), getBlackStyle());
+        TextButton activateButton = new CustomTextButton(getStrings().get("abilityUsed"), getButtonStyle());
         activateButton.setTouchable(Touchable.disabled);
-        TextButton continueButton = new CustomTextButton(getStrings().get("endNight"), getSkin(), getBlackStyle());
+        TextButton continueButton = new CustomTextButton(getStrings().get("endNight"), getButtonStyle());
 
         if (Player.getPlayer().isAbleToUseAbility()) {
             updateButtons(activateButton, continueButton);

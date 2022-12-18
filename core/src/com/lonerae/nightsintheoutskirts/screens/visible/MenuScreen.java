@@ -1,7 +1,10 @@
 package com.lonerae.nightsintheoutskirts.screens.visible;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -25,12 +28,12 @@ public class MenuScreen extends BaseScreen {
         super.show();
 
         Table mainTable = new Table();
-        mainTable.defaults().width(DEFAULT_ACTOR_WIDTH).height(DEFAULT_ACTOR_HEIGHT);
-        mainTable.center();
+        mainTable.top().padTop(PAD_VERTICAL_SMALL).defaults().width(DEFAULT_POPUP_SIZE).height(DEFAULT_ACTOR_HEIGHT);
 
-        Label title = UIUtil.title(new CustomLabel(getStrings().get("gameTitle"), getTitleStyle()));
+        Label title = new CustomLabel(getStrings().get("gameTitle"), getTitleStyle());
+        UIUtil.title(title);
 
-        TextButton createButton = new CustomTextButton(getStrings().get("create"), getSkin(), getBlackStyle());
+        TextButton createButton = new CustomTextButton(getStrings().get("create"), getButtonStyle());
         createButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -38,7 +41,7 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
-        TextButton joinButton = new CustomTextButton(getStrings().get("join"), getSkin(), getBlackStyle());
+        TextButton joinButton = new CustomTextButton(getStrings().get("join"), getButtonStyle());
         joinButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -46,10 +49,10 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
-        TextButton settingsButton = new CustomTextButton(getStrings().get("settings"), getSkin(), getBlackStyle());
-        TextButton rulesButton = new CustomTextButton(getStrings().get("rules"), getSkin(), getBlackStyle());
+        TextButton settingsButton = new CustomTextButton(getStrings().get("settings"), getButtonStyle());
+        TextButton rulesButton = new CustomTextButton(getStrings().get("rules"), getButtonStyle());
 
-        mainTable.add(title).padBottom(PAD_VERTICAL_BIG).row();
+        mainTable.add(title).padBottom(PAD_VERTICAL_BIG).padRight(10).row();
         mainTable.add(createButton).padBottom(PAD_VERTICAL_SMALL).row();
         mainTable.add(joinButton).padBottom(PAD_VERTICAL_BIG).row();
         mainTable.add(settingsButton).padBottom(PAD_VERTICAL_SMALL).row();
