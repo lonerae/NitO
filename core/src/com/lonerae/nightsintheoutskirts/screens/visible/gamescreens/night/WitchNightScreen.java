@@ -144,9 +144,14 @@ public class WitchNightScreen extends NightScreen {
     }
 
     private void fillAlivePlayerTable(Table alivePlayerTable) {
+        int count = 0;
         for (String playerName : MatchClient.getAlivePlayersMap().keySet()) {
             CheckBox voteCheck = createCheckBox(playerName);
             alivePlayerTable.add(voteCheck).pad(PAD_HORIZONTAL_SMALL);
+            count++;
+            if (count % 3 == 0) {
+                alivePlayerTable.row();
+            }
         }
     }
 

@@ -122,7 +122,6 @@ public class NecromancerNightScreen extends NightScreen {
         while (true) {
             try {
                 if (!MatchClient.getDeadPlayersMap().isEmpty()) {
-                    Gdx.app.log("HERE2", "OK");
                     for (String playerName : MatchClient.getDeadPlayersMap().keySet()) {
                         CheckBox voteCheck = createCheckBox(playerName);
 
