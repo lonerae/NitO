@@ -38,7 +38,7 @@ public class GameLobbyScreen extends BaseScreen {
 
     @Override
     public void show() {
-        client = MatchClient.getClient();
+        client = MatchClient.getMatchClientInstance().getClient();
         client.sendTCP(new LobbyRequest());
 
         super.show();
@@ -92,7 +92,7 @@ public class GameLobbyScreen extends BaseScreen {
         client.sendTCP(assignRoleRequest);
         while (true) {
             try {
-                Player.getPlayer().setRole(MatchClient.getAssignedRole());
+                Player.getPlayer().setRole(MatchClient.getMatchClientInstance().getAssignedRole());
                 Player.getPlayer().setName(playerNameTextField.getText());
                 getGame().setScreen(new RoleRevealScreen(getGame()));
                 ScreenStack.clearStack();
@@ -106,7 +106,7 @@ public class GameLobbyScreen extends BaseScreen {
         int counter = 0;
         while (true) {
             try {
-                for (RoleName roleName : MatchClient.getMatchRoleList()) {
+                for (RoleName roleName : MatchClient.getMatchClientInstance().getMatchRoleList()) {
                     counter++;
                     Image lobbyIcon = new Image(new Texture(Role.getRole(roleName).getIconPath()));
                     rolesTable.add(lobbyIcon).width(DEFAULT_ICON_SIZE).height(DEFAULT_ICON_SIZE).pad(PAD_HORIZONTAL_SMALL);
@@ -123,8 +123,8 @@ public class GameLobbyScreen extends BaseScreen {
     @Override
     public void dispose() {
         try {
-            MatchClient.getClient().close();
-            MatchServer.getServer().close();
+            MatchClient.getMatchClientInstance().getClient().close();
+            MatchServer.getMatchServerInstance().getServer().close();
         } catch (NullPointerException ignored) {
 
         }

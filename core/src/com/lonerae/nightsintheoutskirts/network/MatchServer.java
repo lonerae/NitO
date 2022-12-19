@@ -1,10 +1,8 @@
 package com.lonerae.nightsintheoutskirts.network;
 
-import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-import com.esotericsoftware.minlog.Log;
 import com.lonerae.nightsintheoutskirts.game.GameData;
 import com.lonerae.nightsintheoutskirts.game.roles.AllianceName;
 import com.lonerae.nightsintheoutskirts.game.roles.Role;
@@ -38,37 +36,52 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class MatchServer {
 
-    private static final HashMap<String, RoleName> connectedPlayersMap = new HashMap<>();
-    private static final HashMap<String, RoleName> alivePlayersMap = new HashMap<>();
-    private static final HashMap<String, RoleName> deadPlayersMap = new HashMap<>();
-    private static final HashMap<String, Integer> votingMap = new HashMap<>();
-    private static final List<String> protectedPlayersList = new ArrayList<>();
-    private static final List<String> murderedPlayersList = new ArrayList<>();
-    private static final List<String> fourthTransformations = new ArrayList<>();
-    private static Server server;
-    private static GameData match;
-    private static List<RoleName> shuffledDeck;
+    private static MatchServer matchServerInstance;
 
-    private static int connectedPlayersNumber = 0;
-    private static int assignedPlayerNumber = 0;
-    private static int readyPlayerNumber = 0;
+    private final HashMap<String, RoleName> connectedPlayersMap = new HashMap<>();
+    private final HashMap<String, RoleName> alivePlayersMap = new HashMap<>();
+    private final HashMap<String, RoleName> deadPlayersMap = new HashMap<>();
+    private final HashMap<String, Integer> votingMap = new HashMap<>();
+    private final List<String> protectedPlayersList = new ArrayList<>();
+    private final List<String> murderedPlayersList = new ArrayList<>();
+    private final List<String> fourthTransformations = new ArrayList<>();
+    private Server server;
+    private GameData match;
+    private List<RoleName> shuffledDeck;
 
-    private static int assassinNumber;
-    private static int assassinSent = 0;
-    private static int assassinPass = 0;
-    private static String assassinTarget = null;
-    private static int assassinsAgree = 0;
+    private AtomicInteger connectedPlayersNumber = new AtomicInteger(0);
+    private AtomicInteger assignedPlayerNumber = new AtomicInteger(0);
+    private AtomicInteger readyPlayerNumber = new AtomicInteger(0);
 
-    private static AllianceName winner;
+    private AtomicInteger assassinNumber;
+    private AtomicInteger assassinSent = new AtomicInteger(0);
+    private AtomicInteger assassinPass = new AtomicInteger(0);
+    private String assassinTarget = null;
+    private AtomicInteger assassinsAgree = new AtomicInteger(0);
 
-    public static void createServer(GameData data) throws UnknownHostException {
+    private AllianceName winner;
+
+    private static final Object lock = new Object();
+
+    private MatchServer(){}
+
+    /**
+     * Lazy Initialisation Singleton
+     */
+    public static MatchServer getMatchServerInstance() {
+        if (matchServerInstance == null) {
+            matchServerInstance = new MatchServer();
+        }
+        return matchServerInstance;
+    }
+
+    public void createServer(GameData data) throws UnknownHostException {
         if (server == null) {
-
-            Log.set(Log.LEVEL_TRACE);
             server = new Server();
             server.start();
             try {
@@ -80,20 +93,19 @@ public class MatchServer {
             createListener();
             match = data;
             shuffleDeck();
-            deadPlayersMap.put("Minas", RoleName.ASSASSIN);
         }
     }
 
-    public static Server getServer() {
+    public Server getServer() {
         return server;
     }
 
-    public static void close() {
+    public void close() {
         server.stop();
         clearServer();
     }
 
-    private static void clearServer() {
+    private void clearServer() {
         server = null;
         connectedPlayersMap.clear();
         alivePlayersMap.clear();
@@ -104,18 +116,18 @@ public class MatchServer {
         fourthTransformations.clear();
         match = null;
         shuffledDeck = null;
-        connectedPlayersNumber = 0;
-        assignedPlayerNumber = 0;
-        readyPlayerNumber = 0;
-        assassinNumber = 0;
-        assassinSent = 0;
-        assassinPass = 0;
+        connectedPlayersNumber = new AtomicInteger(0);
+        assignedPlayerNumber = new AtomicInteger(0);
+        readyPlayerNumber = new AtomicInteger(0);
+        assassinNumber = new AtomicInteger(0);
+        assassinSent = new AtomicInteger(0);
+        assassinPass = new AtomicInteger(0);
         assassinTarget = null;
-        assassinsAgree = 0;
+        assassinsAgree = new AtomicInteger(0);
         winner = null;
     }
 
-    private static void shuffleDeck() {
+    private void shuffleDeck() {
         List<RoleName> deck = new ArrayList<>();
         for (RoleName roleName : match.getMatchRoleList().keySet()) {
             for (int i = 0; i < match.getMatchRoleList().get(roleName); i++) {
@@ -126,7 +138,7 @@ public class MatchServer {
         shuffledDeck = deck;
     }
 
-    private static void createListener() {
+    private void createListener() {
         server.addListener(new Listener() {
             public void received(Connection connection, Object object) {
                 if (object instanceof GreetingRequest) {
@@ -155,83 +167,107 @@ public class MatchServer {
         });
     }
 
-    private static void updateAndInformAssassins(MurderRequest object) {
+    private void revealMatchInfo(Connection connection) {
+        GreetingResponse response = new GreetingResponse();
+        response.townName = match.getTownName();
+        response.numberOfPlayers = match.getNumberOfPlayers();
+        connection.sendTCP(response);
+    }
+
+    private void checkAndAcceptConnection(Connection connection) {
+        ConnectionResponse response = new ConnectionResponse();
+        if (connectedPlayersNumber.get() < match.getNumberOfPlayers()) {
+                connectedPlayersNumber.incrementAndGet();
+        }
+        response.connectionAccepted = connectedPlayersNumber.get() < match.getNumberOfPlayers();
+        connection.sendTCP(response);
+    }
+
+    private void updateAndInformAssassins(MurderRequest object) {
         AssassinInfoResponse info = new AssassinInfoResponse();
 
-        if (object.willKill) {
-            info.skip = false;
-            info.killer = object.killer;
-            info.target = object.target;
-            if (assassinTarget == null || object.target.equals(assassinTarget)) {
-                assassinsAgree++;
-                assassinTarget = object.target;
-            }
-        } else {
-            info.skip = true;
-            info.killer = object.killer;
-            assassinPass++;
-        }
-
-        server.sendToAllTCP(info);
-        assassinSent++;
-        if (assassinSent == assassinNumber) {
-            MurderResponse response = new MurderResponse();
-
-            if (assassinPass < assassinNumber || assassinsAgree < assassinNumber) {
-                response.permit = false;
-            }
-            if (assassinPass == assassinNumber) {
-                response.permit = true;
-            }
-            if (assassinsAgree == assassinNumber) {
-                response.permit = true;
-                if (!murderedPlayersList.contains(assassinTarget) && !protectedPlayersList.contains(assassinTarget)) {
-                    murderedPlayersList.add(assassinTarget);
+        synchronized (lock) {
+            if (object.willKill) {
+                info.skip = false;
+                info.killer = object.killer;
+                info.target = object.target;
+                if (assassinTarget == null || object.target.equals(assassinTarget)) {
+                    assassinsAgree.incrementAndGet();
+                    assassinTarget = object.target;
                 }
+            } else {
+                info.skip = true;
+                info.killer = object.killer;
+                assassinPass.incrementAndGet();
             }
 
-            server.sendToAllTCP(response);
-            assassinSent = 0;
-            assassinTarget = null;
-            assassinsAgree = 0;
-            assassinPass = 0;
+            server.sendToAllTCP(info);
+            assassinSent.incrementAndGet();
+            if (assassinSent.equals(assassinNumber)) {
+                MurderResponse response = new MurderResponse();
+
+                if (assassinPass.get() < assassinNumber.get() || assassinsAgree.get() < assassinNumber.get()) {
+                    response.permit = false;
+                }
+                if (assassinPass.equals(assassinNumber)) {
+                    response.permit = true;
+                }
+                if (assassinsAgree.equals(assassinNumber)) {
+                    response.permit = true;
+                    if (!murderedPlayersList.contains(assassinTarget) && !protectedPlayersList.contains(assassinTarget)) {
+                        murderedPlayersList.add(assassinTarget);
+                    }
+                }
+
+                server.sendToAllTCP(response);
+                assassinSent = new AtomicInteger(0);
+                assassinTarget = null;
+                assassinsAgree = new AtomicInteger(0);
+                assassinPass = new AtomicInteger(0);
+            }
         }
     }
 
-    private static void protect(SaveRequest object) {
+    private void protect(SaveRequest object) {
         String protectedPlayer = object.playerName;
-        if (!protectedPlayersList.contains(protectedPlayer)) {
-            protectedPlayersList.add(protectedPlayer);
+        synchronized (lock) {
+            if (!protectedPlayersList.contains(protectedPlayer)) {
+                protectedPlayersList.add(protectedPlayer);
+            }
+            murderedPlayersList.remove(protectedPlayer);
         }
-        murderedPlayersList.remove(protectedPlayer);
     }
 
-    private static void kill(KillRequest object) {
+    private void kill(KillRequest object) {
         String deadPlayer = object.playerName;
-        if (!protectedPlayersList.contains(deadPlayer) && !murderedPlayersList.contains(deadPlayer)) {
-            murderedPlayersList.add(deadPlayer);
+        synchronized (lock) {
+            if (!protectedPlayersList.contains(deadPlayer) && !murderedPlayersList.contains(deadPlayer)) {
+                murderedPlayersList.add(deadPlayer);
+            }
         }
     }
 
-    private static void updateVotesAndSend(VoteRequest object) {
+    private void updateVotesAndSend(VoteRequest object) {
         String voterName = object.voterName;
         String votedPlayerName = object.votedPlayerName;
         int newVote = object.vote;
-        if (!votingMap.containsKey(votedPlayerName)) {
-            votingMap.put(votedPlayerName, newVote);
-        } else {
-            int oldVote = votingMap.get(votedPlayerName);
-            votingMap.put(votedPlayerName, oldVote + newVote);
+        synchronized (lock) {
+            if (!votingMap.containsKey(votedPlayerName)) {
+                votingMap.put(votedPlayerName, newVote);
+            } else {
+                int oldVote = votingMap.get(votedPlayerName);
+                votingMap.put(votedPlayerName, oldVote + newVote);
+            }
+            VoteResponse response = new VoteResponse();
+            response.voterName = voterName;
+            response.votedPlayerName = votedPlayerName;
+            response.vote = votingMap.get(votedPlayerName);
+            server.sendToAllTCP(response);
         }
-        VoteResponse response = new VoteResponse();
-        response.voterName = voterName;
-        response.votedPlayerName = votedPlayerName;
-        response.vote = votingMap.get(votedPlayerName);
-        server.sendToAllTCP(response);
     }
 
-    private static void checkAndProceed(ProceedRequest object) {
-        readyPlayerNumber++;
+    private void checkAndProceed(ProceedRequest object) {
+        readyPlayerNumber.incrementAndGet();
         switch (object.type) {
             case FIRST: //AFTER FIRST NIGHT
                 proceedToFirstNight();
@@ -251,8 +287,8 @@ public class MatchServer {
         }
     }
 
-    private static void proceedToNextPhase() {
-        if (readyPlayerNumber == alivePlayersMap.size()) {
+    private void proceedToNextPhase() {
+        if (readyPlayerNumber.get() == alivePlayersMap.size()) {
             ProceedResponse response = new ProceedResponse();
             updateAssassinNumber();
 //            if (checkEndGameConditions()) {
@@ -263,18 +299,18 @@ public class MatchServer {
             response.permit = true;
             response.alivePlayerMap = alivePlayersMap;
             server.sendToAllTCP(response);
-            readyPlayerNumber = 0;
+            readyPlayerNumber = new AtomicInteger(0);
         }
     }
 
-    private static boolean checkEndGameConditions() {
+    private boolean checkEndGameConditions() {
         if (checkDraw()) return true;
         if (checkAllianceEndGame()) return true;
         if (checkOrderEndGame()) return true;
         return checkDualEndGame();
     }
 
-    private static boolean checkDualEndGame() {
+    private boolean checkDualEndGame() {
         Collection<RoleName> aliveRoleNames = alivePlayersMap.values();
         if (aliveRoleNames.size() == 2) {
             if (aliveRoleNames.contains(RoleName.ASSASSIN)) {
@@ -289,15 +325,15 @@ public class MatchServer {
         return false;
     }
 
-    private static boolean checkOrderEndGame() {
-        if (assassinNumber == 0) {
+    private boolean checkOrderEndGame() {
+        if (assassinNumber.get() == 0) {
             winner = AllianceName.ORDER;
             return true;
         }
         return false;
     }
 
-    private static boolean checkAllianceEndGame() {
+    private boolean checkAllianceEndGame() {
         List<AllianceName> allianceList = alivePlayersMap.values()
                 .stream()
                 .map(Role::getRole)
@@ -311,7 +347,7 @@ public class MatchServer {
         return false;
     }
 
-    private static boolean checkDraw() {
+    private boolean checkDraw() {
         if (alivePlayersMap.keySet().size() == 0) {
             winner = null;
             return true;
@@ -319,17 +355,17 @@ public class MatchServer {
         return false;
     }
 
-    private static void updateAssassinNumber() {
-        assassinNumber = 0;
+    private void updateAssassinNumber() {
+        assassinNumber = new AtomicInteger(0);
         for (String player : alivePlayersMap.keySet()) {
             if (alivePlayersMap.get(player).equals(RoleName.ASSASSIN)) {
-                assassinNumber++;
+                assassinNumber.incrementAndGet();
             }
         }
     }
 
-    private static void proceedToNightResolution() {
-        if (readyPlayerNumber == alivePlayersMap.size()) {
+    private void proceedToNightResolution() {
+        if (readyPlayerNumber.get() == alivePlayersMap.size()) {
             for (String player : murderedPlayersList) {
                 deadPlayersMap.put(player, alivePlayersMap.remove(player));
             }
@@ -341,13 +377,13 @@ public class MatchServer {
             response.deadPlayerMap = deadPlayersMap;
             response.murderedList = murderedPlayersList;
             server.sendToAllTCP(response);
-            readyPlayerNumber = 0;
+            readyPlayerNumber = new AtomicInteger(0);
             protectedPlayersList.clear();
             murderedPlayersList.clear();
         }
     }
 
-    private static void fourthCivilianCheck() {
+    private void fourthCivilianCheck() {
         if (!fourthTransformations.isEmpty()) {
             List<RoleName> availableRoles = deadPlayersMap.keySet()
                     .stream()
@@ -369,73 +405,58 @@ public class MatchServer {
         }
     }
 
-    private static void proceedToDayResolution() {
-        if (readyPlayerNumber == alivePlayersMap.size()) {
+    private void proceedToDayResolution() {
+        if (readyPlayerNumber.get() == alivePlayersMap.size()) {
             ProceedResponse response = new ProceedResponse();
             response.permit = true;
             response.alivePlayerMap = alivePlayersMap;
             response.deadPlayerMap = deadPlayersMap;
             response.hangedList = getHanged();
             server.sendToAllTCP(response);
-            readyPlayerNumber = 0;
+            readyPlayerNumber = new AtomicInteger(0);
             protectedPlayersList.clear();
+            votingMap.clear();
         }
     }
 
-    private static void proceed() {
-        if (readyPlayerNumber == alivePlayersMap.size()) {
+    private void proceed() {
+        if (readyPlayerNumber.get() == alivePlayersMap.size()) {
             ProceedResponse response = new ProceedResponse();
             response.permit = true;
             response.alivePlayerMap = alivePlayersMap;
             server.sendToAllTCP(response);
-            readyPlayerNumber = 0;
+            readyPlayerNumber = new AtomicInteger(0);
         }
     }
 
-    private static void proceedToFirstNight() {
-        if (readyPlayerNumber == match.getNumberOfPlayers()) {
+    private void proceedToFirstNight() {
+        if (readyPlayerNumber.get() == match.getNumberOfPlayers()) {
             ProceedResponse response = new ProceedResponse();
             response.permit = true;
             response.alivePlayerMap = alivePlayersMap;
             server.sendToAllTCP(response);
-            readyPlayerNumber = 0;
+            readyPlayerNumber = new AtomicInteger(0);
         }
     }
 
-    private static void assignRole(Connection connection, AssignRoleRequest object) {
+    private void assignRole(Connection connection, AssignRoleRequest object) {
         if (!connectedPlayersMap.containsKey(object.playerName)) {
             AssignRoleResponse response = new AssignRoleResponse();
-            response.assignedRole = shuffledDeck.get(assignedPlayerNumber);
+            response.assignedRole = shuffledDeck.get(assignedPlayerNumber.get());
             connection.sendTCP(response);
             connectedPlayersMap.put(object.playerName, response.assignedRole);
             alivePlayersMap.put(object.playerName, response.assignedRole);
-            assignedPlayerNumber++;
+            assignedPlayerNumber.incrementAndGet();
         }
     }
 
-    private static void sendMatchRoleList(Connection connection) {
+    private void sendMatchRoleList(Connection connection) {
         LobbyResponse response = new LobbyResponse();
         response.matchRoleList = new ArrayList<>(match.getMatchRoleList().keySet());
         connection.sendTCP(response);
     }
 
-    private static void checkAndAcceptConnection(Connection connection) {
-        ConnectionResponse response = new ConnectionResponse();
-        if (connectedPlayersNumber < match.getNumberOfPlayers()) {
-            connectedPlayersNumber++;
-        }
-        response.connectionAccepted = connectedPlayersNumber < match.getNumberOfPlayers();
-        connection.sendTCP(response);
-    }
-
-    private static void revealMatchInfo(Connection connection) {
-        GreetingResponse response = new GreetingResponse();
-        response.townName = match.getTownName();
-        response.numberOfPlayers = match.getNumberOfPlayers();
-        connection.sendTCP(response);
-    }
-
-    private static List<String> getHanged() {
+    private List<String> getHanged() {
         List<String> hangedList = new ArrayList<>();
         try {
             int maxVotes = Collections.max(votingMap.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getValue();

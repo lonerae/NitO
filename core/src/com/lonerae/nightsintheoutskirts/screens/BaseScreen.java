@@ -185,16 +185,16 @@ public class BaseScreen implements Screen {
     protected void waitForOtherPlayers(ProceedRequest request, Screen screen) {
         Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("waitMessage"), getSkin(), getBlackStyle());
         dialog.show(getStage());
-        MatchClient.getClient().sendTCP(request);
+        MatchClient.getMatchClientInstance().getClient().sendTCP(request);
         new Thread(() -> {
             while (true) {
                 try {
-                    if (MatchClient.isPermitted()) {
+                    if (MatchClient.getMatchClientInstance().isPermitted()) {
                         Gdx.app.postRunnable(() -> {
                             dialog.hide();
                             getGame().setScreen(screen);
                         });
-                        MatchClient.setPermitted(false);
+                        MatchClient.getMatchClientInstance().setPermitted(false);
                         break;
                     }
                 } catch (NullPointerException ignored) {
@@ -225,9 +225,9 @@ public class BaseScreen implements Screen {
         new Thread(() -> {
             while (true) {
                 try {
-                    if (MatchClient.isPermitted()) {
+                    if (MatchClient.getMatchClientInstance().isPermitted()) {
                         Gdx.app.postRunnable(() -> getGame().setScreen(screen));
-                        MatchClient.setPermitted(null);
+                        MatchClient.getMatchClientInstance().setPermitted(null);
                         break;
                     }
                 } catch (NullPointerException ignored) {

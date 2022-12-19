@@ -63,10 +63,10 @@ public class GameJoinScreen extends BaseScreen {
     }
 
     private void searchForMatches() {
-        InetAddress server = MatchClient.getClient().discoverHost(54777, 1000);
+        InetAddress server = MatchClient.getMatchClientInstance().getClient().discoverHost(54777, 1000);
 
         try {
-            MatchClient.getClient().connect(1000, server, 54555, 54777);
+            MatchClient.getMatchClientInstance().getClient().connect(1000, server, 54555, 54777);
         } catch (IOException e) {
             Gdx.app.log("CONNECTION ERROR: ", e.getMessage() + " " + e.getCause());
         } catch (IllegalArgumentException e) {
@@ -75,10 +75,10 @@ public class GameJoinScreen extends BaseScreen {
 
         if (server != null) {
             GreetingRequest request = new GreetingRequest();
-            MatchClient.getClient().sendTCP(request);
+            MatchClient.getMatchClientInstance().getClient().sendTCP(request);
             matchTable.clear();
             while (true) {
-                availableMatches = MatchClient.getAvailableMatches();
+                availableMatches = MatchClient.getMatchClientInstance().getAvailableMatches();
                 if (!availableMatches.isEmpty()) {
                     for (String matchTitle : availableMatches.keySet()) {
                         TextButton matchButton = createMatchButton(matchTitle);
@@ -104,10 +104,10 @@ public class GameJoinScreen extends BaseScreen {
 
     private void connectToMatch() {
         ConnectionRequest connectionRequest = new ConnectionRequest();
-        MatchClient.getClient().sendTCP(connectionRequest);
+        MatchClient.getMatchClientInstance().getClient().sendTCP(connectionRequest);
         while (true) {
             try {
-                if (MatchClient.isConnectionAccepted()) {
+                if (MatchClient.getMatchClientInstance().isConnectionAccepted()) {
                     getGame().setScreen(new GameLobbyScreen(getGame()));
                     availableMatches.clear();
                 } else {
@@ -123,7 +123,7 @@ public class GameJoinScreen extends BaseScreen {
     public void dispose() {
         super.dispose();
         try {
-            MatchClient.getClient().stop();
+            MatchClient.getMatchClientInstance().getClient().stop();
         } catch (NullPointerException ignored) {
         }
     }

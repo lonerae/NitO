@@ -127,7 +127,7 @@ public class AssassinNightScreen extends NightScreen {
 
     private void createDefaultOverviewMessage() {
         overviewMessage = new StringBuilder();
-        for (String player : MatchClient.getAlivePlayersMap().keySet()) {
+        for (String player : MatchClient.getMatchClientInstance().getAlivePlayersMap().keySet()) {
             overviewMessage.append(player).append(": \n");
         }
         overviewMessage.append("\n");
@@ -156,11 +156,11 @@ public class AssassinNightScreen extends NightScreen {
         MurderRequest request = new MurderRequest();
         request.willKill = false;
         request.killer = Player.getPlayer().getName();
-        MatchClient.getClient().sendTCP(request);
+        MatchClient.getMatchClientInstance().getClient().sendTCP(request);
         new Thread(() -> {
             while (true) {
                 try {
-                    if (MatchClient.getAssassinPermitted()) {
+                    if (MatchClient.getMatchClientInstance().getAssassinPermitted()) {
                         proceed(dialog);
                     } else {
                         showNoDecision(dialog);
@@ -182,7 +182,7 @@ public class AssassinNightScreen extends NightScreen {
     private void showNoDecision(Dialog dialog) {
         Gdx.app.postRunnable(() -> {
             dialog.hide();
-            MatchClient.setAssassinPermitted(null);
+            MatchClient.getMatchClientInstance().setAssassinPermitted(null);
             showErrorDialog(getStrings().get("noDecisionError"));
         });
     }
@@ -196,7 +196,7 @@ public class AssassinNightScreen extends NightScreen {
             defaultOverviewMessage = null;
             waitForOtherPlayers(proceedRequest, ProceedType.ABILITY, new NightResolutionScreen(getGame()));
         });
-        MatchClient.setAssassinPermitted(null);
+        MatchClient.getMatchClientInstance().setAssassinPermitted(null);
     }
 
     private void waitForOtherAssassinsToKill(Dialog dialog) {
@@ -204,11 +204,11 @@ public class AssassinNightScreen extends NightScreen {
         request.willKill = true;
         request.killer = Player.getPlayer().getName();
         request.target = voteCheckGroup.getChecked().getLabel().getText().toString();
-        MatchClient.getClient().sendTCP(request);
+        MatchClient.getMatchClientInstance().getClient().sendTCP(request);
         new Thread(() -> {
             while (true) {
                 try {
-                    if (MatchClient.getAssassinPermitted()) {
+                    if (MatchClient.getMatchClientInstance().getAssassinPermitted()) {
                         proceed(dialog);
                     } else {
                         showNoDecision(dialog);
@@ -224,7 +224,7 @@ public class AssassinNightScreen extends NightScreen {
 
     private void fillAlivePlayerTable(Table alivePlayerTable) {
         int count = 0;
-        for (String playerName : MatchClient.getAlivePlayersMap().keySet()) {
+        for (String playerName : MatchClient.getMatchClientInstance().getAlivePlayersMap().keySet()) {
             CheckBox voteCheck = createCheckBox(playerName);
             alivePlayerTable.add(voteCheck).pad(PAD_HORIZONTAL_SMALL);
             count++;

@@ -73,7 +73,7 @@ public class DayResolutionScreen extends BaseScreen {
     private void waitToFillHangedTable(Table hangedTable) {
         while (true) {
             try {
-                List<String> hangedList = MatchClient.getHangedList();
+                List<String> hangedList = MatchClient.getMatchClientInstance().getHangedList();
                 fillHangedTable(hangedTable, hangedList);
                 break;
             } catch (NullPointerException ignored) {

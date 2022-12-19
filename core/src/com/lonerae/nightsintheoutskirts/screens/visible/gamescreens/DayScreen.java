@@ -107,10 +107,10 @@ public class DayScreen extends BaseScreen {
     private void checkEndGame() {
         while (true) {
             try {
-                if (MatchClient.isEndGame()) {
+                if (MatchClient.getMatchClientInstance().isEndGame()) {
                     getGame().setScreen(new EndGameScreen(getGame()));
                 }
-                MatchClient.setEndGame(null);
+                MatchClient.getMatchClientInstance().setEndGame(null);
                 break;
             } catch (NullPointerException ignored) {
             }
@@ -141,7 +141,7 @@ public class DayScreen extends BaseScreen {
         int i = 0;
         Table voteTable;
 
-        if (!MatchClient.getAlivePlayersMap().containsKey(Player.getPlayer().getName())) {
+        if (!MatchClient.getMatchClientInstance().getAlivePlayersMap().containsKey(Player.getPlayer().getName())) {
             Player.getPlayer().setAlive(false);
         }
 
@@ -151,7 +151,7 @@ public class DayScreen extends BaseScreen {
             votingTable.add(voteTable).width(WIDTH / 5).pad(PAD_HORIZONTAL_BIG);
         }
 
-        for (String player : MatchClient.getAlivePlayersMap().keySet()) {
+        for (String player : MatchClient.getMatchClientInstance().getAlivePlayersMap().keySet()) {
             if (!player.equals(Player.getPlayer().getName())) {
                 i++;
                 voteTable = getTable(player);
@@ -236,6 +236,6 @@ public class DayScreen extends BaseScreen {
         request.voterName = Player.getPlayer().getName();
         request.votedPlayerName = player;
         request.vote = vote;
-        MatchClient.getClient().sendTCP(request);
+        MatchClient.getMatchClientInstance().getClient().sendTCP(request);
     }
 }

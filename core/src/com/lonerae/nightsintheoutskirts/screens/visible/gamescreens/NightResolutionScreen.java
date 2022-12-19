@@ -81,7 +81,7 @@ public class NightResolutionScreen extends BaseScreen {
         if (fourthCheck && Player.getPlayer().getRole().getName().equals(RoleName.FOURTH_CIVILIAN)
                 && !Player.getPlayer().isAbleToUseAbility()
                 && Player.getPlayer().isAlive()) {
-            RoleName currentRole = MatchClient.getAlivePlayersMap().get(Player.getPlayer().getName());
+            RoleName currentRole = MatchClient.getMatchClientInstance().getAlivePlayersMap().get(Player.getPlayer().getName());
             if (!currentRole.equals(RoleName.FOURTH_CIVILIAN)) {
                 Label updatedRole = new CustomLabel(getGameStrings().get("updatedRole") + " " +
                         currentRole + ".)", getBlackStyle());
@@ -136,7 +136,7 @@ public class NightResolutionScreen extends BaseScreen {
         CustomLabel resolutionLabel;
         while (true) {
             try {
-                List<String> murderedList = MatchClient.getMurderedList();
+                List<String> murderedList = MatchClient.getMatchClientInstance().getMurderedList();
                 if (murderedList.contains(Player.getPlayer().getName())) {
                     resolutionLabel = new CustomLabel(getGameStrings().get("deadResolution"), getBlackStyle());
                     Player.getPlayer().setAlive(false);

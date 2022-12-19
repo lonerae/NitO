@@ -107,7 +107,7 @@ public class NecromancerNightScreen extends NightScreen {
     private void activateAbility(TextButton activateButton, TextButton continueButton) {
         choiceMap.get(voteCheckGroup.getChecked())
                 .setText(
-                        Role.getRole(MatchClient.getDeadPlayersMap()
+                        Role.getRole(MatchClient.getMatchClientInstance().getDeadPlayersMap()
                                         .get(voteCheckGroup.getChecked().getLabel().getText().toString()))
                                 .getName()
                                 .toString()
@@ -121,8 +121,8 @@ public class NecromancerNightScreen extends NightScreen {
     private void fillDeadPlayerTable(Table deadPlayerTable) {
         while (true) {
             try {
-                if (!MatchClient.getDeadPlayersMap().isEmpty()) {
-                    for (String playerName : MatchClient.getDeadPlayersMap().keySet()) {
+                if (!MatchClient.getMatchClientInstance().getDeadPlayersMap().isEmpty()) {
+                    for (String playerName : MatchClient.getMatchClientInstance().getDeadPlayersMap().keySet()) {
                         CheckBox voteCheck = createCheckBox(playerName);
 
                         TextField allianceTextField = new CustomTextField("", getTextFieldStyle());

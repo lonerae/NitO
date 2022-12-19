@@ -82,7 +82,7 @@ public class FourthCivilianNightScreen extends NightScreen {
     private void activateAbility(TextButton activateButton, TextButton continueButton) {
         FourthRequest request = new FourthRequest();
         request.playerName = Player.getPlayer().getName();
-        MatchClient.getClient().sendTCP(request);
+        MatchClient.getMatchClientInstance().getClient().sendTCP(request);
 
         activateButton.setTouchable(Touchable.disabled);
         activateButton.setText(getStrings().get("abilityUsed"));

@@ -25,25 +25,39 @@ import java.util.Map;
 
 public class MatchClient {
 
-    private static final Map<String, Integer> availableMatches = new HashMap<>();
-    private static Client client;
-    private static List<RoleName> matchRoleList;
-    private static Boolean connectionAccepted = null;
-    private static Role assignedRole;
-    private static Boolean permitted = null;
-    private static Boolean assassinPermitted = null;
+    private static MatchClient matchClientInstance;
 
-    private static boolean firstFlag = true;
-    private static HashMap<String, RoleName> connectedPlayersMap;
-    private static HashMap<String, RoleName> alivePlayersMap;
-    private static HashMap<String, RoleName> deadPlayersMap;
-    private static List<String> hangedList;
-    private static List<String> murderedList;
+    private final Map<String, Integer> availableMatches = new HashMap<>();
+    private Client client;
+    private List<RoleName> matchRoleList;
+    private Boolean connectionAccepted = null;
+    private Role assignedRole;
+    private Boolean permitted = null;
+    private Boolean assassinPermitted = null;
 
-    private static Boolean endGame;
-    private static AllianceName winner;
+    private boolean firstFlag = true;
+    private HashMap<String, RoleName> connectedPlayersMap;
+    private HashMap<String, RoleName> alivePlayersMap;
+    private HashMap<String, RoleName> deadPlayersMap;
+    private List<String> hangedList;
+    private List<String> murderedList;
 
-    public static Client getClient() {
+    private Boolean endGame;
+    private AllianceName winner;
+
+    private MatchClient(){}
+
+    /**
+     * Lazy Initialisation Singleton
+     */
+    public static MatchClient getMatchClientInstance() {
+        if (matchClientInstance == null) {
+            matchClientInstance = new MatchClient();
+        }
+        return matchClientInstance;
+    }
+
+    public Client getClient() {
         if (client == null) {
             client = new Client();
             client.start();
@@ -53,12 +67,12 @@ public class MatchClient {
         return client;
     }
 
-    public static void close() {
+    public void close() {
         client.stop();
         clearClient();
     }
 
-    private static void clearClient() {
+    private void clearClient() {
         client = null;
         availableMatches.clear();
         matchRoleList = null;
@@ -76,71 +90,71 @@ public class MatchClient {
         winner = null;
     }
 
-    public static Map<String, Integer> getAvailableMatches() {
+    public Map<String, Integer> getAvailableMatches() {
         return availableMatches;
     }
 
-    public static List<RoleName> getMatchRoleList() {
+    public List<RoleName> getMatchRoleList() {
         return matchRoleList;
     }
 
-    public static Boolean isConnectionAccepted() {
+    public Boolean isConnectionAccepted() {
         return connectionAccepted;
     }
 
-    public static Role getAssignedRole() {
+    public Role getAssignedRole() {
         return assignedRole;
     }
 
-    public static Boolean isPermitted() {
+    public Boolean isPermitted() {
         return permitted;
     }
 
-    public static void setPermitted(Boolean permitted) {
-        MatchClient.permitted = permitted;
+    public void setPermitted(Boolean permitted) {
+        this.permitted = permitted;
     }
 
-    public static Boolean getAssassinPermitted() {
+    public Boolean getAssassinPermitted() {
         return assassinPermitted;
     }
 
-    public static void setAssassinPermitted(Boolean assassinPermitted) {
-        MatchClient.assassinPermitted = assassinPermitted;
+    public void setAssassinPermitted(Boolean assassinPermitted) {
+        this.assassinPermitted = assassinPermitted;
     }
 
-    public static HashMap<String, RoleName> getConnectedPlayersMap() {
+    public HashMap<String, RoleName> getConnectedPlayersMap() {
         return connectedPlayersMap;
     }
 
-    public static HashMap<String, RoleName> getAlivePlayersMap() {
+    public HashMap<String, RoleName> getAlivePlayersMap() {
         return alivePlayersMap;
     }
 
-    public static HashMap<String, RoleName> getDeadPlayersMap() {
+    public HashMap<String, RoleName> getDeadPlayersMap() {
         return deadPlayersMap;
     }
 
-    public static List<String> getHangedList() {
+    public List<String> getHangedList() {
         return hangedList;
     }
 
-    public static List<String> getMurderedList() {
+    public List<String> getMurderedList() {
         return murderedList;
     }
 
-    public static void setEndGame(Boolean endGame) {
-        MatchClient.endGame = endGame;
+    public void setEndGame(Boolean endGame) {
+        this.endGame = endGame;
     }
 
-    public static Boolean isEndGame() {
+    public Boolean isEndGame() {
         return endGame;
     }
 
-    public static AllianceName getWinner() {
+    public AllianceName getWinner() {
         return winner;
     }
 
-    private static void createListener() {
+    private void createListener() {
         client.addListener(new Listener() {
             public void received(Connection connection, Object object) {
                 if (object instanceof GreetingResponse) {
@@ -179,14 +193,14 @@ public class MatchClient {
         });
     }
 
-    private static void firstConnection(ProceedResponse response) {
+    private void firstConnection(ProceedResponse response) {
         if (firstFlag) {
             connectedPlayersMap = response.alivePlayerMap;
             firstFlag = false;
         }
     }
 
-    private static void checkEndGame(ProceedResponse response) {
+    private void checkEndGame(ProceedResponse response) {
         if (response.endGame) {
             endGame = true;
             winner = response.winner;
@@ -195,7 +209,7 @@ public class MatchClient {
         }
     }
 
-    private static void updateLists(ProceedResponse response) {
+    private void updateLists(ProceedResponse response) {
         if (response.alivePlayerMap != null) {
             alivePlayersMap = response.alivePlayerMap;
         }

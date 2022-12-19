@@ -35,12 +35,12 @@ public class EndGameScreen extends BaseScreen {
 
         Label description = new CustomLabel(getGameStrings().get("endgame"), getBlackStyle());
 
-        Label winner = new CustomLabel(MatchClient.getWinner().toString(), getBlackStyle());
+        Label winner = new CustomLabel(MatchClient.getMatchClientInstance().getWinner().toString(), getBlackStyle());
         winner.setAlignment(Align.center);
 
         StringBuilder truthString = new StringBuilder();
-        for (String player : MatchClient.getConnectedPlayersMap().keySet()) {
-            truthString.append(player).append(" : ").append(MatchClient.getConnectedPlayersMap().get(player)).append("\n");
+        for (String player : MatchClient.getMatchClientInstance().getConnectedPlayersMap().keySet()) {
+            truthString.append(player).append(" : ").append(MatchClient.getMatchClientInstance().getConnectedPlayersMap().get(player)).append("\n");
         }
         CustomDialog truthDialog = new CustomDialog("the Truth", truthString.toString(), getSkin(), getBlackStyle());
 
@@ -57,9 +57,9 @@ public class EndGameScreen extends BaseScreen {
         endMatchButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                MatchClient.close();
-                if (MatchServer.getServer() != null) {
-                    MatchServer.close();
+                MatchClient.getMatchClientInstance().close();
+                if (MatchServer.getMatchServerInstance().getServer() != null) {
+                    MatchServer.getMatchServerInstance().close();
                 }
                 getGame().setScreen(new MenuScreen(getGame()));
             }
