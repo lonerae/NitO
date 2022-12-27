@@ -42,7 +42,7 @@ public class EndGameScreen extends BaseScreen {
         for (String player : MatchClient.getMatchClientInstance().getConnectedPlayersMap().keySet()) {
             truthString.append(player).append(" : ").append(MatchClient.getMatchClientInstance().getConnectedPlayersMap().get(player)).append("\n");
         }
-        CustomDialog truthDialog = new CustomDialog("the Truth", truthString.toString(), getSkin(), getBlackStyle());
+        CustomDialog truthDialog = new CustomDialog("the Truth", truthString.toString(), getSkin(), getBlackStyle(), false);
 
         TextButton revealButton = new CustomTextButton(getStrings().get("revealButtonText"), getButtonStyle());
         truthDialog.isHideable();
