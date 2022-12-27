@@ -29,6 +29,7 @@ import java.util.List;
 public class NightResolutionScreen extends BaseScreen {
 
     private static boolean fourthCheck = true;
+    private boolean alive = true;
 
     public NightResolutionScreen(Game game) {
         super(game);
@@ -47,19 +48,28 @@ public class NightResolutionScreen extends BaseScreen {
         Label description = new CustomLabel(getGameStrings().get("nightResolution"), getBlackStyle());
         mainTable.add(description).width(DEFAULT_ACTOR_WIDTH).padBottom(PAD_VERTICAL_BIG).row();
 
-        CustomLabel resolutionLabel = waitForResolutionLabel();
+        CustomLabel resolutionLabel;
         Label countdownLabel = new CustomLabel("3", getBlackStyle());
+        if (Player.getPlayer().isAlive()) {
+            resolutionLabel = waitForResolutionLabel();
+        } else {
+            resolutionLabel = new CustomLabel(getGameStrings().get("deadResolution"), getBlackStyle());
+            resolutionLabel.setAlignment(Align.center);
+            alive = false;
+        }
 
         new Thread(() -> {
             try {
-                mainTable.add(countdownLabel).row();
-                countdownLabel.setAlignment(Align.center);
-                sleep(1500);
-                countdownLabel.setText("2");
-                sleep(1500);
-                countdownLabel.setText("1");
-                sleep(1500);
-                mainTable.removeActor(countdownLabel);
+                if (alive) {
+                    mainTable.add(countdownLabel).row();
+                    countdownLabel.setAlignment(Align.center);
+                    sleep(1500);
+                    countdownLabel.setText("2");
+                    sleep(1500);
+                    countdownLabel.setText("1");
+                    sleep(1500);
+                    mainTable.removeActor(countdownLabel);
+                }
             } catch (InterruptedException ignored) {
             }
             Gdx.app.postRunnable(() -> {
@@ -110,27 +120,6 @@ public class NightResolutionScreen extends BaseScreen {
         ProceedRequest request = new ProceedRequest();
         waitForOtherPlayers(request, ProceedType.END, new DayScreen(getGame()));
     }
-
-//    private void waitToFillMurderedTable(Table murderedTable) {
-//        while (true) {
-//            try {
-//                List<String> murderedList = MatchClient.getMurderedList();
-//                fillMurderedList(murderedTable, murderedList);
-//                break;
-//            } catch (NullPointerException ignored) {
-//            }
-//        }
-//    }
-//
-//    private void fillMurderedList(Table murderedTable, List<String> murderedList) {
-//        for (String player : murderedList) {
-//            Label murderedLabel = new CustomLabel(player, getBlackStyle());
-//            murderedTable.add(murderedLabel).width(WIDTH / 5).row();
-//            if (Player.getPlayer().getName().equals(player)) {
-//                Player.getPlayer().setAlive(false);
-//            }
-//        }
-//    }
 
     private CustomLabel waitForResolutionLabel() {
         CustomLabel resolutionLabel;

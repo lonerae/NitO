@@ -94,8 +94,8 @@ public class GameLobbyScreen extends BaseScreen {
             try {
                 Player.getPlayer().setRole(MatchClient.getMatchClientInstance().getAssignedRole());
                 Player.getPlayer().setName(playerNameTextField.getText());
-                getGame().setScreen(new RoleRevealScreen(getGame()));
                 ScreenStack.clearStack();
+                getGame().setScreen(new RoleRevealScreen(getGame()));
                 break;
             } catch (NullPointerException ignored) {
             }
@@ -122,11 +122,11 @@ public class GameLobbyScreen extends BaseScreen {
 
     @Override
     public void dispose() {
-        try {
-            MatchClient.getMatchClientInstance().getClient().close();
-            MatchServer.getMatchServerInstance().getServer().close();
-        } catch (NullPointerException ignored) {
-
-        }
+//        try {
+//            MatchClient.getMatchClientInstance().close();
+//            MatchServer.getMatchServerInstance().close();
+//        } catch (NullPointerException ignored) {
+//
+//        }
     }
 }

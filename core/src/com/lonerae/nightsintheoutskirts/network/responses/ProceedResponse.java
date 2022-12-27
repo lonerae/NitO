@@ -7,13 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ProceedResponse {
-    public boolean permit;
-    public HashMap<String, RoleName> alivePlayerMap;
-    public HashMap<String, RoleName> deadPlayerMap;
+    public boolean permit = false;
+    public HashMap<String, RoleName> alivePlayerMap = null;
+    public HashMap<String, RoleName> deadPlayerMap = null;
 
-    public List<String> hangedList;
-    public List<String> murderedList;
+    public List<String> hangedList = null;
+    public List<String> murderedList = null;
 
     public boolean endGame = false;
-    public AllianceName winner;
+    public AllianceName winner = null;
 }

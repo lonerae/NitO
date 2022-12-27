@@ -25,27 +25,32 @@ import java.util.Map;
 
 public class MatchClient {
 
-    private static MatchClient matchClientInstance;
+    private static MatchClient matchClientInstance = null;
 
     private final Map<String, Integer> availableMatches = new HashMap<>();
     private Client client;
-    private List<RoleName> matchRoleList;
+    private List<RoleName> matchRoleList = null;
     private Boolean connectionAccepted = null;
-    private Role assignedRole;
+    private Role assignedRole = null;
     private Boolean permitted = null;
     private Boolean assassinPermitted = null;
 
     private boolean firstFlag = true;
-    private HashMap<String, RoleName> connectedPlayersMap;
-    private HashMap<String, RoleName> alivePlayersMap;
-    private HashMap<String, RoleName> deadPlayersMap;
-    private List<String> hangedList;
-    private List<String> murderedList;
+    private HashMap<String, RoleName> connectedPlayersMap = null;
+    private HashMap<String, RoleName> alivePlayersMap = null;
+    private HashMap<String, RoleName> deadPlayersMap = null;
+    private List<String> hangedList = null;
+    private List<String> murderedList = null;
 
-    private Boolean endGame;
-    private AllianceName winner;
+    private Boolean endGame = null;
+    private AllianceName winner = null;
 
-    private MatchClient(){}
+    private MatchClient(){
+        client = new Client();
+        client.start();
+        NetworkUtil.register(client);
+        createListener();
+    }
 
     /**
      * Lazy Initialisation Singleton
@@ -58,12 +63,6 @@ public class MatchClient {
     }
 
     public Client getClient() {
-        if (client == null) {
-            client = new Client();
-            client.start();
-            NetworkUtil.register(client);
-            createListener();
-        }
         return client;
     }
 
@@ -73,6 +72,7 @@ public class MatchClient {
     }
 
     private void clearClient() {
+        matchClientInstance = null;
         client = null;
         availableMatches.clear();
         matchRoleList = null;

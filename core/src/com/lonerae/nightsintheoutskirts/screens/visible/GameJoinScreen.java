@@ -63,17 +63,17 @@ public class GameJoinScreen extends BaseScreen {
     }
 
     private void searchForMatches() {
-        InetAddress server = MatchClient.getMatchClientInstance().getClient().discoverHost(54777, 1000);
+        InetAddress serverAddress = MatchClient.getMatchClientInstance().getClient().discoverHost(54777, 1000);
 
         try {
-            MatchClient.getMatchClientInstance().getClient().connect(1000, server, 54555, 54777);
+            MatchClient.getMatchClientInstance().getClient().connect(1000, serverAddress, 54555, 54777);
         } catch (IOException e) {
             Gdx.app.log("CONNECTION ERROR: ", e.getMessage() + " " + e.getCause());
         } catch (IllegalArgumentException e) {
             Gdx.app.log("CONNECTION DROPPED: ", "No matches found.");
         }
 
-        if (server != null) {
+        if (serverAddress != null) {
             GreetingRequest request = new GreetingRequest();
             MatchClient.getMatchClientInstance().getClient().sendTCP(request);
             matchTable.clear();
@@ -121,10 +121,10 @@ public class GameJoinScreen extends BaseScreen {
 
     @Override
     public void dispose() {
-        super.dispose();
-        try {
-            MatchClient.getMatchClientInstance().getClient().stop();
-        } catch (NullPointerException ignored) {
-        }
+//        super.dispose();
+//        try {
+//            MatchClient.getMatchClientInstance().close();
+//        } catch (NullPointerException ignored) {
+//        }
     }
 }

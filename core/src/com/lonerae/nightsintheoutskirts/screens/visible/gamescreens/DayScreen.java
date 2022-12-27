@@ -1,6 +1,7 @@
 package com.lonerae.nightsintheoutskirts.screens.visible.gamescreens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -76,6 +77,7 @@ public class DayScreen extends BaseScreen {
 
     @Override
     public void show() {
+        (new Thread(this::checkEndGame)).start();
         super.show();
 
         Table mainTable = new CustomTable(true);
@@ -100,22 +102,9 @@ public class DayScreen extends BaseScreen {
 
         scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
-
-        checkEndGame();
     }
 
-    private void checkEndGame() {
-        while (true) {
-            try {
-                if (MatchClient.getMatchClientInstance().isEndGame()) {
-                    getGame().setScreen(new EndGameScreen(getGame()));
-                }
-                MatchClient.getMatchClientInstance().setEndGame(null);
-                break;
-            } catch (NullPointerException ignored) {
-            }
-        }
-    }
+
 
     private void addLockButton(Table mainTable) {
         TextButton lockButton = new CustomTextButton(getStrings().get("lockChoice"), getButtonStyle());

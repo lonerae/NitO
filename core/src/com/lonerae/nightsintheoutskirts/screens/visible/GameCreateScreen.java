@@ -218,11 +218,11 @@ public class GameCreateScreen extends BaseScreen {
 
     @Override
     public void dispose() {
-        super.dispose();
-        try {
-            MatchClient.getMatchClientInstance().getClient().stop();
-            MatchServer.getMatchServerInstance().getServer().stop();
-        } catch (NullPointerException ignored) {
-        }
+//        super.dispose();
+//        try {
+//            MatchClient.getMatchClientInstance().close();
+//            MatchServer.getMatchServerInstance().close();
+//        } catch (NullPointerException ignored) {
+//        }
     }
 }

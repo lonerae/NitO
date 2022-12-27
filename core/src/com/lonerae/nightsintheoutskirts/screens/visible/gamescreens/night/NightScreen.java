@@ -7,4 +7,10 @@ public class NightScreen extends BaseScreen {
     public NightScreen(Game game) {
         super(game);
     }
+
+    @Override
+    public void show() {
+        super.show();
+        (new Thread(this::checkEndGame)).start();
+    }
 }
