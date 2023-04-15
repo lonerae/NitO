@@ -67,7 +67,7 @@ public class DayResolutionScreen extends BaseScreen {
 
     private void continueToNight() {
         ProceedRequest request = new ProceedRequest();
-        waitForOtherPlayers(request, ProceedType.END, Player.getPlayer().getNight(getGame()));
+        waitForOtherPlayers(request, ProceedType.END_DAY, Player.getPlayer().getNight(getGame()));
     }
 
     private void waitToFillHangedTable(Table hangedTable) {

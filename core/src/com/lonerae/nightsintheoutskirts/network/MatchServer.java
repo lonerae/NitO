@@ -215,8 +215,11 @@ public class MatchServer {
             case ABILITY: //AFTER NIGHT
                 proceedToNightResolution();
                 break;
-            case END: //AFTER NIGHT & DAY RESOLUTION
-                proceedToNextPhase();
+            case END_DAY: //AFTER NIGHT & DAY RESOLUTION
+                proceedToNextPhase("DAY");
+                break;
+            case END_NIGHT:
+                proceedToNextPhase("NIGHT");
                 break;
         }
     }
@@ -227,7 +230,7 @@ public class MatchServer {
             updateAssassinNumber();
             response.permit = true;
             response.alivePlayerMap = alivePlayersMap;
-            if (checkEndGameConditions()) {
+            if (checkEndGameConditions("NIGHT")) {
                 response.endGame = true;
                 response.winner = winner;
             }
@@ -322,10 +325,10 @@ public class MatchServer {
         }
     }
 
-    private void proceedToNextPhase() {
+    private void proceedToNextPhase(String time) {
         if (readyPlayerNumber.get() == alivePlayersMap.size()) {
             ProceedResponse response = new ProceedResponse();
-            if (checkEndGameConditions()) {
+            if (checkEndGameConditions(time)) {
                 response.endGame = true;
                 response.winner = winner;
             }
@@ -433,11 +436,12 @@ public class MatchServer {
         }
     }
 
-    private boolean checkEndGameConditions() {
+    private boolean checkEndGameConditions(String time) {
         if (checkDraw()) return true;
         if (checkAllianceEndGame()) return true;
         if (checkOrderEndGame()) return true;
-        return checkDualEndGame();
+        if (time.equals("NIGHT")) return checkDualEndGame();
+        else return false;
     }
 
     private boolean checkDualEndGame() {

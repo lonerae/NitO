@@ -118,7 +118,7 @@ public class NightResolutionScreen extends BaseScreen {
 
     private void continueToDay() {
         ProceedRequest request = new ProceedRequest();
-        waitForOtherPlayers(request, ProceedType.END, new DayScreen(getGame()));
+        waitForOtherPlayers(request, ProceedType.END_NIGHT, new DayScreen(getGame()));
     }
 
     private CustomLabel waitForResolutionLabel() {

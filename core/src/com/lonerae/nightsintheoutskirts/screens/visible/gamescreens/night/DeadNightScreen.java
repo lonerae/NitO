@@ -12,7 +12,7 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
 import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.NightResolutionScreen;
 
-public class DeadNightScreen extends BaseScreen {
+public class DeadNightScreen extends NightScreen {
 
     public DeadNightScreen(Game game) {
         super(game);
