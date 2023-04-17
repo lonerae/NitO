@@ -106,7 +106,7 @@ public class HermitNightScreen extends NightScreen {
     private void activateAbility(TextButton activateButton, TextButton continueButton) {
         choiceMap.get(voteCheckGroup.getChecked())
                 .setText(
-                        Role.getRole(MatchClient.getAlivePlayersMap()
+                        Role.getRole(MatchClient.getMatchClientInstance().getAlivePlayersMap()
                                         .get(voteCheckGroup.getChecked().getLabel().getText().toString()))
                                 .getAlliance()
                                 .toString()
@@ -118,7 +118,7 @@ public class HermitNightScreen extends NightScreen {
     }
 
     private void fillAlivePlayerTable(Table alivePlayerTable) {
-        for (String playerName : MatchClient.getAlivePlayersMap().keySet()) {
+        for (String playerName : MatchClient.getMatchClientInstance().getAlivePlayersMap().keySet()) {
             if (!playerName.equals(Player.getPlayer().getName())) {
                 CheckBox voteCheck = createCheckBox(playerName);
 

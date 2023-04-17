@@ -67,13 +67,13 @@ public class DayResolutionScreen extends BaseScreen {
 
     private void continueToNight() {
         ProceedRequest request = new ProceedRequest();
-        waitForOtherPlayers(request, ProceedType.END, Player.getPlayer().getNight(getGame()));
+        waitForOtherPlayers(request, ProceedType.END_DAY, Player.getPlayer().getNight(getGame()));
     }
 
     private void waitToFillHangedTable(Table hangedTable) {
         while (true) {
             try {
-                List<String> hangedList = MatchClient.getHangedList();
+                List<String> hangedList = MatchClient.getMatchClientInstance().getHangedList();
                 fillHangedTable(hangedTable, hangedList);
                 break;
             } catch (NullPointerException ignored) {

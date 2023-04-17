@@ -59,12 +59,12 @@ public class FirstNightScreen extends BaseScreen {
 
     private void continueToDay() {
         ProceedRequest request = new ProceedRequest();
-        waitForOtherPlayers(request, ProceedType.END, new DayScreen(getGame()));
+        waitForOtherPlayers(request, ProceedType.END_NIGHT, new DayScreen(getGame()));
     }
 
     private void fillPlayerTable(Table playerTable) {
         int counter = 0;
-        for (String player : MatchClient.getAlivePlayersMap().keySet()) {
+        for (String player : MatchClient.getMatchClientInstance().getAlivePlayersMap().keySet()) {
             Label playerLabel = makePlayerLabel(player);
             playerTable.add(playerLabel).width(WIDTH / 3);
             counter++;
@@ -76,7 +76,7 @@ public class FirstNightScreen extends BaseScreen {
 
     private Label makePlayerLabel(String player) {
         Label playerLabel = new CustomLabel(player, getBlackStyle());
-        if (MatchClient.getAlivePlayersMap().get(player).equals(RoleName.ASSASSIN) &&
+        if (MatchClient.getMatchClientInstance().getAlivePlayersMap().get(player).equals(RoleName.ASSASSIN) &&
                 Player.getPlayer().getRole().getName().equals(RoleName.ASSASSIN)) {
             playerLabel = new CustomLabel(player, getRedStyle());
         }

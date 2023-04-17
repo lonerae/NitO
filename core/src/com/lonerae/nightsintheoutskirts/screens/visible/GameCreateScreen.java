@@ -183,10 +183,10 @@ public class GameCreateScreen extends BaseScreen {
                 if ((boolean) obj) {
                     GameData match = new GameData(townNameTextField.getText(), getTextFieldNumber(numberOfPlayersTextField), createMatchRoleList());
                     try {
-                        MatchServer.createServer(match);
-                        MatchClient.getClient().connect(5000, InetAddress.getLocalHost().getHostAddress(), 54555, 54777);
+                        MatchServer.getMatchServerInstance().createServer(match);
+                        MatchClient.getMatchClientInstance().getClient().connect(5000, InetAddress.getLocalHost().getHostAddress(), 54555, 54777);
                         GreetingRequest request = new GreetingRequest();
-                        MatchClient.getClient().sendTCP(request);
+                        MatchClient.getMatchClientInstance().getClient().sendTCP(request);
                     } catch (UnknownHostException e) {
                         Gdx.app.log("SERVER CREATION ERROR: ", e.getMessage());
                     } catch (IOException e) {
@@ -218,11 +218,11 @@ public class GameCreateScreen extends BaseScreen {
 
     @Override
     public void dispose() {
-        super.dispose();
-        try {
-            MatchClient.getClient().stop();
-            MatchServer.getServer().stop();
-        } catch (NullPointerException ignored) {
-        }
+//        super.dispose();
+//        try {
+//            MatchClient.getMatchClientInstance().close();
+//            MatchServer.getMatchServerInstance().close();
+//        } catch (NullPointerException ignored) {
+//        }
     }
 }

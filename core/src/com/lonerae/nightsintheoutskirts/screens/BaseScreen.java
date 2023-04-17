@@ -22,6 +22,7 @@ import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedRequest;
 import com.lonerae.nightsintheoutskirts.network.requests.ProceedType;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
+import com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.EndGameScreen;
 
 public class BaseScreen implements Screen {
 
@@ -185,16 +186,16 @@ public class BaseScreen implements Screen {
     protected void waitForOtherPlayers(ProceedRequest request, Screen screen) {
         Dialog dialog = new CustomDialog(getStrings().get("messageInfo"), getStrings().get("waitMessage"), getSkin(), getBlackStyle());
         dialog.show(getStage());
-        MatchClient.getClient().sendTCP(request);
+        MatchClient.getMatchClientInstance().getClient().sendTCP(request);
         new Thread(() -> {
             while (true) {
                 try {
-                    if (MatchClient.isPermitted()) {
+                    if (MatchClient.getMatchClientInstance().isPermitted()) {
                         Gdx.app.postRunnable(() -> {
                             dialog.hide();
                             getGame().setScreen(screen);
                         });
-                        MatchClient.setPermitted(false);
+                        MatchClient.getMatchClientInstance().setPermitted(false);
                         break;
                     }
                 } catch (NullPointerException ignored) {
@@ -225,9 +226,11 @@ public class BaseScreen implements Screen {
         new Thread(() -> {
             while (true) {
                 try {
-                    if (MatchClient.isPermitted()) {
-                        Gdx.app.postRunnable(() -> getGame().setScreen(screen));
-                        MatchClient.setPermitted(null);
+                    if (MatchClient.getMatchClientInstance().isPermitted()) {
+                        Gdx.app.postRunnable(() -> {
+                            getGame().setScreen(screen);
+                        });
+                        MatchClient.getMatchClientInstance().setPermitted(false);
                         break;
                     }
                 } catch (NullPointerException ignored) {
@@ -240,5 +243,20 @@ public class BaseScreen implements Screen {
         CustomDialog dialog = new CustomDialog(getStrings().get("errorInfo"), errorMessage, getSkin(), getBlackStyle());
         dialog.isHideable();
         dialog.show(getStage());
+    }
+
+    protected void checkEndGame() {
+        while (true) {
+            try {
+                if (MatchClient.getMatchClientInstance().isEndGame()) {
+                    Gdx.app.postRunnable(
+                            () -> getGame().setScreen(new EndGameScreen(getGame()))
+                    );
+                }
+                MatchClient.getMatchClientInstance().setEndGame(null);
+                break;
+            } catch (NullPointerException ignored) {
+            }
+        }
     }
 }

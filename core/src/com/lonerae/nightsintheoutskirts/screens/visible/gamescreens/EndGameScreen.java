@@ -8,9 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.lonerae.nightsintheoutskirts.game.Player;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.MatchServer;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
+import com.lonerae.nightsintheoutskirts.screens.ScreenStack;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
@@ -18,6 +20,8 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
 import com.lonerae.nightsintheoutskirts.screens.visible.MenuScreen;
+
+import java.util.function.DoubleToIntFunction;
 
 public class EndGameScreen extends BaseScreen {
     public EndGameScreen(Game game) {
@@ -35,14 +39,14 @@ public class EndGameScreen extends BaseScreen {
 
         Label description = new CustomLabel(getGameStrings().get("endgame"), getBlackStyle());
 
-        Label winner = new CustomLabel(MatchClient.getWinner().toString(), getBlackStyle());
+        Label winner = new CustomLabel(MatchClient.getMatchClientInstance().getWinner().toString(), getBlackStyle());
         winner.setAlignment(Align.center);
 
         StringBuilder truthString = new StringBuilder();
-        for (String player : MatchClient.getConnectedPlayersMap().keySet()) {
-            truthString.append(player).append(" : ").append(MatchClient.getConnectedPlayersMap().get(player)).append("\n");
+        for (String player : MatchClient.getMatchClientInstance().getConnectedPlayersMap().keySet()) {
+            truthString.append(player).append(" : ").append(MatchClient.getMatchClientInstance().getConnectedPlayersMap().get(player)).append("\n");
         }
-        CustomDialog truthDialog = new CustomDialog("the Truth", truthString.toString(), getSkin(), getBlackStyle());
+        CustomDialog truthDialog = new CustomDialog("the Truth", truthString.toString(), getSkin(), getBlackStyle(), false);
 
         TextButton revealButton = new CustomTextButton(getStrings().get("revealButtonText"), getButtonStyle());
         truthDialog.isHideable();
@@ -57,10 +61,12 @@ public class EndGameScreen extends BaseScreen {
         endMatchButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                MatchClient.close();
-                if (MatchServer.getServer() != null) {
-                    MatchServer.close();
+                Player.getPlayer().clear();
+                MatchClient.getMatchClientInstance().close();
+                if (MatchServer.getMatchServerInstance().getServer() != null) {
+                    MatchServer.getMatchServerInstance().close();
                 }
+                ScreenStack.clearStack();
                 getGame().setScreen(new MenuScreen(getGame()));
             }
         });

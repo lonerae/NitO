@@ -1,6 +1,7 @@
 package com.lonerae.nightsintheoutskirts.screens.visible.gamescreens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -76,6 +77,7 @@ public class DayScreen extends BaseScreen {
 
     @Override
     public void show() {
+        (new Thread(this::checkEndGame)).start();
         super.show();
 
         Table mainTable = new CustomTable(true);
@@ -92,41 +94,28 @@ public class DayScreen extends BaseScreen {
 
         mainTable.add(votingTable).padBottom(PAD_VERTICAL_BIG).row();
 
-        if (Player.getPlayer().isAlive()) {
-            addLockButton(mainTable);
-        } else {
-            waitForAlivePlayers(new DayResolutionScreen(getGame()));
+        if (Player.getPlayer().isAlive()) addLockButton(mainTable);
+        else {
+            if (MatchClient.getMatchClientInstance().isEndGame() != null &&
+                    !MatchClient.getMatchClientInstance().isEndGame()) waitForAlivePlayers(new DayResolutionScreen(getGame()));
         }
 
         scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
-
-        checkEndGame();
     }
 
-    private void checkEndGame() {
-        while (true) {
-            try {
-                if (MatchClient.isEndGame()) {
-                    getGame().setScreen(new EndGameScreen(getGame()));
-                }
-                MatchClient.setEndGame(null);
-                break;
-            } catch (NullPointerException ignored) {
-            }
-        }
-    }
+
 
     private void addLockButton(Table mainTable) {
         TextButton lockButton = new CustomTextButton(getStrings().get("lockChoice"), getButtonStyle());
         lockButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-//                if (voteCheckGroup.getAllChecked().size == 1) {
+                if (voteCheckGroup.getAllChecked().size == 1) {
                 continueToResolution();
-//                } else {
-//                    showErrorDialog(getStrings().get("noVoteError"));
-//                }
+                } else {
+                    showErrorDialog(getStrings().get("noVoteError"));
+                }
             }
         });
         mainTable.add(lockButton).width(DEFAULT_ACTOR_WIDTH);
@@ -141,7 +130,7 @@ public class DayScreen extends BaseScreen {
         int i = 0;
         Table voteTable;
 
-        if (!MatchClient.getAlivePlayersMap().containsKey(Player.getPlayer().getName())) {
+        if (!MatchClient.getMatchClientInstance().getAlivePlayersMap().containsKey(Player.getPlayer().getName())) {
             Player.getPlayer().setAlive(false);
         }
 
@@ -151,7 +140,7 @@ public class DayScreen extends BaseScreen {
             votingTable.add(voteTable).width(WIDTH / 5).pad(PAD_HORIZONTAL_BIG);
         }
 
-        for (String player : MatchClient.getAlivePlayersMap().keySet()) {
+        for (String player : MatchClient.getMatchClientInstance().getAlivePlayersMap().keySet()) {
             if (!player.equals(Player.getPlayer().getName())) {
                 i++;
                 voteTable = getTable(player);
@@ -236,6 +225,6 @@ public class DayScreen extends BaseScreen {
         request.voterName = Player.getPlayer().getName();
         request.votedPlayerName = player;
         request.vote = vote;
-        MatchClient.getClient().sendTCP(request);
+        MatchClient.getMatchClientInstance().getClient().sendTCP(request);
     }
 }

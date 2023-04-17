@@ -53,7 +53,7 @@ public class UIUtil {
                 skin.getDrawable("selection"), skin.getDrawable("textfield"));
 
         textButtonStyle = new TextButton.TextButtonStyle(skin.getDrawable("round-gray"),
-                skin.getDrawable("round-dark-gray"), skin.getDrawable("round-dark-gray"),
+                skin.getDrawable("round-dark-gray"), skin.getDrawable("round-gray"),
                 fontNormal);
     }
 

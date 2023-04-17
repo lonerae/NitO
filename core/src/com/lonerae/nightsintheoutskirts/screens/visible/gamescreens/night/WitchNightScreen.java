@@ -112,7 +112,7 @@ public class WitchNightScreen extends NightScreen {
     private void save(TextButton saveButton, TextButton killButton, TextButton continueButton) {
         SaveRequest request = new SaveRequest();
         request.playerName = voteCheckGroup.getChecked().getLabel().getText().toString();
-        MatchClient.getClient().sendTCP(request);
+        MatchClient.getMatchClientInstance().getClient().sendTCP(request);
 
         saveButton.setTouchable(Touchable.disabled);
         saveButton.setText(getStrings().get("abilityUsed"));
@@ -133,7 +133,7 @@ public class WitchNightScreen extends NightScreen {
     private void kill(TextButton saveButton, TextButton killButton, TextButton continueButton) {
         KillRequest request = new KillRequest();
         request.playerName = voteCheckGroup.getChecked().getLabel().getText().toString();
-        MatchClient.getClient().sendTCP(request);
+        MatchClient.getMatchClientInstance().getClient().sendTCP(request);
 
         killButton.setTouchable(Touchable.disabled);
         killButton.setText(getStrings().get("abilityUsed"));
@@ -144,9 +144,14 @@ public class WitchNightScreen extends NightScreen {
     }
 
     private void fillAlivePlayerTable(Table alivePlayerTable) {
-        for (String playerName : MatchClient.getAlivePlayersMap().keySet()) {
+        int count = 0;
+        for (String playerName : MatchClient.getMatchClientInstance().getAlivePlayersMap().keySet()) {
             CheckBox voteCheck = createCheckBox(playerName);
             alivePlayerTable.add(voteCheck).pad(PAD_HORIZONTAL_SMALL);
+            count++;
+            if (count % 3 == 0) {
+                alivePlayerTable.row();
+            }
         }
     }
 

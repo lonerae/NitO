@@ -1,6 +1,7 @@
 package com.lonerae.nightsintheoutskirts.screens.visible.gamescreens.night;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
@@ -106,7 +107,7 @@ public class NecromancerNightScreen extends NightScreen {
     private void activateAbility(TextButton activateButton, TextButton continueButton) {
         choiceMap.get(voteCheckGroup.getChecked())
                 .setText(
-                        Role.getRole(MatchClient.getDeadPlayersMap()
+                        Role.getRole(MatchClient.getMatchClientInstance().getDeadPlayersMap()
                                         .get(voteCheckGroup.getChecked().getLabel().getText().toString()))
                                 .getName()
                                 .toString()
@@ -118,18 +119,23 @@ public class NecromancerNightScreen extends NightScreen {
     }
 
     private void fillDeadPlayerTable(Table deadPlayerTable) {
-        if (MatchClient.getDeadPlayersMap() != null) {
-            for (String playerName : MatchClient.getDeadPlayersMap().keySet()) {
-                CheckBox voteCheck = createCheckBox(playerName);
+        while (true) {
+            try {
+                if (!MatchClient.getMatchClientInstance().getDeadPlayersMap().isEmpty()) {
+                    for (String playerName : MatchClient.getMatchClientInstance().getDeadPlayersMap().keySet()) {
+                        CheckBox voteCheck = createCheckBox(playerName);
 
-                TextField allianceTextField = new CustomTextField("", getTextFieldStyle());
-                allianceTextField.setTouchable(Touchable.disabled);
+                        TextField allianceTextField = new CustomTextField("", getTextFieldStyle());
+                        allianceTextField.setTouchable(Touchable.disabled);
 
-                choiceMap.put(voteCheck, allianceTextField);
+                        choiceMap.put(voteCheck, allianceTextField);
 
-                deadPlayerTable.add(voteCheck).pad(PAD_HORIZONTAL_SMALL);
-                deadPlayerTable.add(allianceTextField).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL).row();
-            }
+                        deadPlayerTable.add(voteCheck).pad(PAD_HORIZONTAL_SMALL);
+                        deadPlayerTable.add(allianceTextField).width(WIDTH / 3).pad(PAD_HORIZONTAL_SMALL).row();
+                    }
+                }
+                break;
+            } catch (NullPointerException ignored) {}
         }
     }
 
