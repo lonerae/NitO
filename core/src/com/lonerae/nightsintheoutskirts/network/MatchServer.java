@@ -101,6 +101,7 @@ public class MatchServer {
     }
 
     public void close() {
+        server.close();
         server.stop();
         clearServer();
     }
@@ -125,6 +126,7 @@ public class MatchServer {
         assassinTarget = null;
         assassinsAgree = new AtomicInteger(0);
         winner = null;
+        matchServerInstance = null;
     }
 
     private void shuffleDeck() {

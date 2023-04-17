@@ -52,6 +52,14 @@ public class Player {
         this.isAbleToUseAbility = ableToUseAbility;
     }
 
+    public void clear() {
+        name = null;
+        role = null;
+        isAlive = true;
+        isAbleToUseAbility = true;
+        player = null;
+    }
+
     public NightScreen getNight(Game game) {
         return role.getNight(role.getName(), game);
     }

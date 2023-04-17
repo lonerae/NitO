@@ -227,8 +227,10 @@ public class BaseScreen implements Screen {
             while (true) {
                 try {
                     if (MatchClient.getMatchClientInstance().isPermitted()) {
-                        Gdx.app.postRunnable(() -> getGame().setScreen(screen));
-                        MatchClient.getMatchClientInstance().setPermitted(null);
+                        Gdx.app.postRunnable(() -> {
+                            getGame().setScreen(screen);
+                        });
+                        MatchClient.getMatchClientInstance().setPermitted(false);
                         break;
                     }
                 } catch (NullPointerException ignored) {

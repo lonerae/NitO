@@ -72,7 +72,6 @@ public class MatchClient {
     }
 
     private void clearClient() {
-        matchClientInstance = null;
         client = null;
         availableMatches.clear();
         matchRoleList = null;
@@ -88,6 +87,7 @@ public class MatchClient {
         murderedList = null;
         endGame = null;
         winner = null;
+        matchClientInstance = null;
     }
 
     public Map<String, Integer> getAvailableMatches() {

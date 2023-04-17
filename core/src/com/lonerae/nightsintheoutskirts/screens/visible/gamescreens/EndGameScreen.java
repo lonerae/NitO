@@ -8,9 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.lonerae.nightsintheoutskirts.game.Player;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.MatchServer;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
+import com.lonerae.nightsintheoutskirts.screens.ScreenStack;
 import com.lonerae.nightsintheoutskirts.screens.UIUtil;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomDialog;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomLabel;
@@ -18,6 +20,8 @@ import com.lonerae.nightsintheoutskirts.screens.customUI.CustomScrollPane;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTable;
 import com.lonerae.nightsintheoutskirts.screens.customUI.CustomTextButton;
 import com.lonerae.nightsintheoutskirts.screens.visible.MenuScreen;
+
+import java.util.function.DoubleToIntFunction;
 
 public class EndGameScreen extends BaseScreen {
     public EndGameScreen(Game game) {
@@ -57,10 +61,12 @@ public class EndGameScreen extends BaseScreen {
         endMatchButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                Player.getPlayer().clear();
                 MatchClient.getMatchClientInstance().close();
                 if (MatchServer.getMatchServerInstance().getServer() != null) {
                     MatchServer.getMatchServerInstance().close();
                 }
+                ScreenStack.clearStack();
                 getGame().setScreen(new MenuScreen(getGame()));
             }
         });

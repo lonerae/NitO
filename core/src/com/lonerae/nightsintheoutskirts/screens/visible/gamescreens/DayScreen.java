@@ -94,10 +94,10 @@ public class DayScreen extends BaseScreen {
 
         mainTable.add(votingTable).padBottom(PAD_VERTICAL_BIG).row();
 
-        if (Player.getPlayer().isAlive()) {
-            addLockButton(mainTable);
-        } else {
-            waitForAlivePlayers(new DayResolutionScreen(getGame()));
+        if (Player.getPlayer().isAlive()) addLockButton(mainTable);
+        else {
+            if (MatchClient.getMatchClientInstance().isEndGame() != null &&
+                    !MatchClient.getMatchClientInstance().isEndGame()) waitForAlivePlayers(new DayResolutionScreen(getGame()));
         }
 
         scroll = new CustomScrollPane(mainTable, true);
@@ -111,11 +111,11 @@ public class DayScreen extends BaseScreen {
         lockButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-//                if (voteCheckGroup.getAllChecked().size == 1) {
+                if (voteCheckGroup.getAllChecked().size == 1) {
                 continueToResolution();
-//                } else {
-//                    showErrorDialog(getStrings().get("noVoteError"));
-//                }
+                } else {
+                    showErrorDialog(getStrings().get("noVoteError"));
+                }
             }
         });
         mainTable.add(lockButton).width(DEFAULT_ACTOR_WIDTH);
