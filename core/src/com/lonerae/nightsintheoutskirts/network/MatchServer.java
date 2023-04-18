@@ -307,20 +307,18 @@ public class MatchServer {
 
     private void fourthCivilianCheck() {
         if (!fourthTransformations.isEmpty()) {
-            List<RoleName> availableRoles = deadPlayersMap.keySet()
+            RoleName givenRole = deadPlayersMap.keySet()
                     .stream()
                     .filter(murderedPlayersList::contains)
                     .map(deadPlayersMap::get)
                     .sorted()
-                    .collect(Collectors.toList());
-            int count = 0;
-            for (String player : fourthTransformations) {
-                if (count == availableRoles.size()) {
-                    break;
-                }
-                if (!deadPlayersMap.containsKey(player)) {
-                    alivePlayersMap.put(player, availableRoles.get(count));
-                    count++;
+                    .findFirst()
+                    .orElse(null);
+            if (givenRole != null) {
+                for (String player : fourthTransformations) {
+                    if (!deadPlayersMap.containsKey(player)) {
+                        alivePlayersMap.put(player, givenRole);
+                    }
                 }
             }
             fourthTransformations.clear();

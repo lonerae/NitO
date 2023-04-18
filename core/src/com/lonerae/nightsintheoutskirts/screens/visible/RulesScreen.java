@@ -23,9 +23,9 @@ public class RulesScreen extends BaseScreen {
         super.show();
 
         Table mainTable = new Table();
-        mainTable.top().padTop(PAD_VERTICAL_SMALL).defaults().width(DEFAULT_POPUP_SIZE).height(DEFAULT_ACTOR_HEIGHT);
+        mainTable.top().defaults().width(DEFAULT_POPUP_SIZE).height(DEFAULT_ACTOR_HEIGHT);
 
-        Label title = new CustomLabel(getStrings().get("rules"), getBlackStyle());
+        Label title = new CustomLabel(getStrings().get("rules"), getTitleStyle());
         UIUtil.title(title);
 
         mainTable.add(title).padBottom(10).padRight(10).row();

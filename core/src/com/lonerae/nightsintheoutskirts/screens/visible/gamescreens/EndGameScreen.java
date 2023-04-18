@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.lonerae.nightsintheoutskirts.game.Player;
+import com.lonerae.nightsintheoutskirts.game.roles.RoleName;
 import com.lonerae.nightsintheoutskirts.network.MatchClient;
 import com.lonerae.nightsintheoutskirts.network.MatchServer;
 import com.lonerae.nightsintheoutskirts.screens.BaseScreen;
@@ -44,7 +45,10 @@ public class EndGameScreen extends BaseScreen {
 
         StringBuilder truthString = new StringBuilder();
         for (String player : MatchClient.getMatchClientInstance().getConnectedPlayersMap().keySet()) {
-            truthString.append(player).append(" : ").append(MatchClient.getMatchClientInstance().getConnectedPlayersMap().get(player)).append("\n");
+            truthString.append(player).append(" : ").append(MatchClient.getMatchClientInstance().getConnectedPlayersMap().get(player));
+            if (MatchClient.getMatchClientInstance().getConnectedPlayersMap().get(player).equals(RoleName.FOURTH_CIVILIAN) &&
+                !MatchClient.getMatchClientInstance().getAlivePlayersMap().get(player).equals(RoleName.FOURTH_CIVILIAN)) truthString.append("(").append(MatchClient.getMatchClientInstance().getAlivePlayersMap().get(player)).append(")");
+            truthString.append("\n");
         }
         CustomDialog truthDialog = new CustomDialog("the Truth", truthString.toString(), getSkin(), getBlackStyle(), false);
 

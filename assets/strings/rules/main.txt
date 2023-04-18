@@ -34,7 +34,7 @@ i) the only remaining Players belong to the same Alliance (that Alliance wins).
 
 ii) all Assassins get eliminated (Order wins).
 
-iii) a Day begins and only two Players are alive (i.e. an Assassin and an Agent of Order). If the Agent of Order is a Civilian, Order wins. In any other case, Chaos wins.
+iii) a Day begins and only two Players are alive (i.e. an Agent of Chaos and an Agent of Order). If the Agent of Order is a Civilian, Order wins. In any other case, Chaos wins.
 
 iv) a Day begins and no Player is alive (draw).
 
@@ -42,7 +42,7 @@ iv) a Day begins and no Player is alive (draw).
 
 CIVILIAN
 
-Folk Hero: If a Day begins with only an Assassin and a Civilian, Order wins.
+Folk Hero: If a Day begins with only an Agent of Chaos and a Civilian, Order wins.
 
 ASSASSIN
 
@@ -50,7 +50,7 @@ Back Stab: Once every Night, the Assassins may choose to eliminate a single Play
 
 HERMIT
 
-Revelation: Only once in the game, during the Night, you can see the Alliance of an alive Player.
+Revelation: Only once in the game, during the Night, you can see whether a Player is an Agent of Chaos or not.
 
 WITCH
 
