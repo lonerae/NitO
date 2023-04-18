@@ -49,13 +49,26 @@ public class MenuScreen extends BaseScreen {
             }
         });
 
-        TextButton settingsButton = new CustomTextButton(getStrings().get("settings"), getButtonStyle());
+//        TextButton settingsButton = new CustomTextButton(getStrings().get("settings"), getButtonStyle());
+//        settingsButton.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                getGame().setScreen(new SettingsScreen(getGame()));
+//            }
+//        });
+
         TextButton rulesButton = new CustomTextButton(getStrings().get("rules"), getButtonStyle());
+        rulesButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                getGame().setScreen(new RulesScreen(getGame()));
+            }
+        });
 
         mainTable.add(title).padBottom(PAD_VERTICAL_BIG).padRight(10).row();
         mainTable.add(createButton).padBottom(PAD_VERTICAL_SMALL).row();
         mainTable.add(joinButton).padBottom(PAD_VERTICAL_BIG).row();
-        mainTable.add(settingsButton).padBottom(PAD_VERTICAL_SMALL).row();
+//        mainTable.add(settingsButton).padBottom(PAD_VERTICAL_SMALL).row();
         mainTable.add(rulesButton).row();
 
         ScrollPane scroll = new CustomScrollPane(mainTable, true);

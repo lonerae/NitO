@@ -1,0 +1,67 @@
+1. GENERAL
+
+A group of people is gathered and randomly assigned a Role. The goal of the game is to eliminate the opposing Alliance, using your skills of deduction and deception, as well as your Role's Ability.
+
+Each game consists of:
+
+i) the First Night: all the Player names appear on screen. Only the Assassins see their names, as well as the names of their partners, in red.
+
+ii) the Days: the group votes who they want to eliminate from the game. In case of ties, all Players with the same number of votes get eliminated.
+
+iii) the Day Resolutions: the names of all the eliminated by vote Players are displayed.
+
+iv) the Nights: the alive Players may choose to use their abilities if possible.
+
+v) the Night Resolutions: the names of all the murdered Players are displayed.
+
+vi) the Endgame: the winning Alliance is announced along with a list of all the Players and their respective Roles.
+
+For your first times playing, the suggested Role set for a balanced game is two Civilians, two Assassins, one Hermit and one Witch.
+
+2. ALLIANCES
+
+As of now the two opposing Alliances are:
+
+i) the Agents of Order: Civilian, Hermit, Witch, Necromancer, 4th Civilian
+
+ii) the Agents of Chaos: Assassin
+
+3. ENDGAME
+
+The game is considered finished when one of the following scenarios is fulfilled:
+
+i) the only remaining Players belong to the same Alliance (that Alliance wins).
+
+ii) all Assassins get eliminated (Order wins).
+
+iii) a Day begins and only two Players are alive (i.e. an Assassin and an Agent of Order). If the Agent of Order is a Civilian, Order wins. In any other case, Chaos wins.
+
+iv) a Day begins and no Player is alive (draw).
+
+4. ROLES
+
+CIVILIAN
+
+Folk Hero: If a Day begins with only an Assassin and a Civilian, Order wins.
+
+ASSASSIN
+
+Back Stab: Once every Night, the Assassins may choose to eliminate a single Player.
+
+HERMIT
+
+Revelation: Only once in the game, during the Night, you can see the Alliance of an alive Player.
+
+WITCH
+
+Potion Frenzy: Only once in the game, during the Night, you can choose to either kill a Player or protect them from death (for that Night only).
+
+NECROMANCER
+
+Call of the Void: Only once in the game, during the Night, you can see the Role of a dead Player.
+
+4TH CIVILIAN
+
+Promotion: Only once in the game, during the Night, you can get the Role of a Player who died during that Night (priority is given to Chaos Roles). In case no deaths happen, your Role remains the same.
+
+[...constantly updated...]

@@ -43,6 +43,7 @@ public class BaseScreen implements Screen {
     private static I18NBundle strings;
     private static I18NBundle gameStrings;
     private static Label.LabelStyle blackStyle;
+    private static Label.LabelStyle txtStyle;
     private final Game game;
     private final Skin skin;
     private final Label.LabelStyle titleStyle;
@@ -64,6 +65,7 @@ public class BaseScreen implements Screen {
         buttonStyle = uiUtilInstance.getTextButtonStyle();
         redStyle = uiUtilInstance.getRedStyle();
         blackStyle = uiUtilInstance.getBlackStyle();
+        txtStyle = uiUtilInstance.getTxtStyle();
         textFieldStyle = uiUtilInstance.getTextFieldStyle();
 
         strings = uiUtilInstance.getStrings();
@@ -80,6 +82,10 @@ public class BaseScreen implements Screen {
 
     public static Label.LabelStyle getBlackStyle() {
         return blackStyle;
+    }
+
+    public static Label.LabelStyle getTxtStyle() {
+        return txtStyle;
     }
 
     public Game getGame() {

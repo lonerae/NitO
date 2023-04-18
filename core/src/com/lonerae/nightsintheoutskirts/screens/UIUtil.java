@@ -23,6 +23,7 @@ public class UIUtil {
     private final Label.LabelStyle titleStyle;
     private final Label.LabelStyle redStyle;
     private final Label.LabelStyle blackStyle;
+    private final Label.LabelStyle txtStyle;
     private final TextField.TextFieldStyle textFieldStyle;
     private final TextButton.TextButtonStyle textButtonStyle;
 
@@ -37,6 +38,11 @@ public class UIUtil {
         parameterNormal.size = (int) (0.06 * WIDTH);
         BitmapFont fontNormal = generatorNormal.generateFont(parameterNormal);
 
+        FreeTypeFontGenerator generatorTxt = new FreeTypeFontGenerator(Gdx.files.internal("skin/arial.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameterTxt = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameterTxt.size = (int) (0.03 * WIDTH);
+        BitmapFont fontTxt = generatorTxt.generateFont(parameterTxt);
+
         titleStyle = new Label.LabelStyle();
         titleStyle.font = fontTitle;
         titleStyle.fontColor = Color.BLACK;
@@ -48,6 +54,10 @@ public class UIUtil {
         blackStyle = new Label.LabelStyle();
         blackStyle.font = fontNormal;
         blackStyle.fontColor = Color.BLACK;
+
+        txtStyle = new Label.LabelStyle();
+        txtStyle.font = fontTxt;
+        txtStyle.fontColor = Color.BLACK;
 
         textFieldStyle = new TextField.TextFieldStyle(fontNormal, Color.BLACK, null,
                 skin.getDrawable("selection"), skin.getDrawable("textfield"));
@@ -141,6 +151,10 @@ public class UIUtil {
 
     public Label.LabelStyle getBlackStyle() {
         return blackStyle;
+    }
+
+    public Label.LabelStyle getTxtStyle() {
+        return txtStyle;
     }
 
     public TextField.TextFieldStyle getTextFieldStyle() {
