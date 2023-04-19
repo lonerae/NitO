@@ -245,6 +245,12 @@ public class BaseScreen implements Screen {
         }).start();
     }
 
+    protected void showDialog(String message) {
+        CustomDialog dialog = new CustomDialog(getStrings().get("remindInfo"), message, getSkin(), getBlackStyle());
+        dialog.isHideable();
+        dialog.show(getStage());
+    }
+
     protected void showErrorDialog(String errorMessage) {
         CustomDialog dialog = new CustomDialog(getStrings().get("errorInfo"), errorMessage, getSkin(), getBlackStyle());
         dialog.isHideable();

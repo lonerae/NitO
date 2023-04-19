@@ -94,19 +94,24 @@ public class DayScreen extends BaseScreen {
 
         mainTable.add(votingTable).padBottom(PAD_VERTICAL_BIG).row();
 
-        if (Player.getPlayer().isAlive()) addLockButton(mainTable);
+        Table uiTable = new Table();
+        if (Player.getPlayer().isAlive()) addUI(uiTable);
         else {
             if (MatchClient.getMatchClientInstance().isEndGame() != null &&
                     !MatchClient.getMatchClientInstance().isEndGame()) waitForAlivePlayers(new DayResolutionScreen(getGame()));
         }
+        mainTable.add(uiTable);
 
         scroll = new CustomScrollPane(mainTable, true);
         getStage().addActor(scroll);
     }
 
+    private void addUI(Table uiTable) {
+        addLockButton(uiTable);
+        addRemindButton(uiTable);
+    }
 
-
-    private void addLockButton(Table mainTable) {
+    private void addLockButton(Table uiTable) {
         TextButton lockButton = new CustomTextButton(getStrings().get("lockChoice"), getButtonStyle());
         lockButton.addListener(new ClickListener() {
             @Override
@@ -118,7 +123,18 @@ public class DayScreen extends BaseScreen {
                 }
             }
         });
-        mainTable.add(lockButton).width(DEFAULT_ACTOR_WIDTH);
+        uiTable.add(lockButton).width(DEFAULT_ACTOR_WIDTH - (WIDTH / 8)).padRight(WIDTH / 8);
+    }
+
+    private void addRemindButton(Table uiTable) {
+        TextButton remindButton = new CustomTextButton(getStrings().get("remindChoice"), getButtonStyle());
+        remindButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showDialog(Player.getPlayer().getRole().getName().toString());
+            }
+        });
+        uiTable.add(remindButton).width((WIDTH - DEFAULT_ACTOR_WIDTH) / 2);
     }
 
     private void continueToResolution() {

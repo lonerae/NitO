@@ -65,7 +65,7 @@ public class NightResolutionScreen extends BaseScreen {
             }
             Gdx.app.postRunnable(() -> {
                 mainTable.add(murderedTable).padBottom(PAD_VERTICAL_BIG).row();
-                fourthCivilianCheck(mainTable);
+                fourthCivilianCheck();
                 if (Player.getPlayer().isAlive()) {
                     addContinueButton(mainTable);
                 } else {
@@ -78,20 +78,13 @@ public class NightResolutionScreen extends BaseScreen {
         getStage().addActor(scroll);
     }
 
-    private void fourthCivilianCheck(Table mainTable) {
-        if (fourthCheck && Player.getPlayer().getRole().getName().equals(RoleName.FOURTH_CIVILIAN)
-                && !Player.getPlayer().isAbleToUseAbility()
-                && Player.getPlayer().isAlive()) {
+    private void fourthCivilianCheck() {
+        if (Player.getPlayer().getRole().getName().equals(RoleName.FOURTH_CIVILIAN) &&
+            !Player.getPlayer().isAbleToUseAbility() &&
+            Player.getPlayer().isAlive() &&
+            fourthCheck) {
             RoleName currentRole = MatchClient.getMatchClientInstance().getAlivePlayersMap().get(Player.getPlayer().getName());
-            if (!currentRole.equals(RoleName.FOURTH_CIVILIAN)) {
-                Label updatedRole = new CustomLabel(getGameStrings().get("updatedRole") + " " +
-                        currentRole + ".)", getBlackStyle());
-                mainTable.add(updatedRole).width(DEFAULT_ACTOR_WIDTH).padBottom(PAD_VERTICAL_BIG).row();
-                Player.getPlayer().setRole(Role.getRole(currentRole));
-            } else {
-                Label updatedRole = new CustomLabel(getGameStrings().get("failedToUpdateRole"), getBlackStyle());
-                mainTable.add(updatedRole).width(DEFAULT_ACTOR_WIDTH).padBottom(PAD_VERTICAL_BIG).row();
-            }
+            if (!currentRole.equals(RoleName.FOURTH_CIVILIAN)) Player.getPlayer().setRole(Role.getRole(currentRole));
             fourthCheck = false;
         }
     }
@@ -111,25 +104,6 @@ public class NightResolutionScreen extends BaseScreen {
         ProceedRequest request = new ProceedRequest();
         waitForOtherPlayers(request, ProceedType.END_NIGHT, new DayScreen(getGame()));
     }
-
-//    private CustomLabel waitForResolutionLabel() {
-//        CustomLabel resolutionLabel;
-//        while (true) {
-//            try {
-//                List<String> murderedList = MatchClient.getMatchClientInstance().getMurderedList();
-//                if (murderedList.contains(Player.getPlayer().getName())) {
-//                    resolutionLabel = new CustomLabel(getGameStrings().get("deadResolution"), getBlackStyle());
-//                    Player.getPlayer().setAlive(false);
-//                } else {
-//                    resolutionLabel = new CustomLabel(getGameStrings().get("safeResolution"), getBlackStyle());
-//                }
-//                break;
-//            } catch (NullPointerException ignored) {
-//            }
-//        }
-//        resolutionLabel.setAlignment(Align.center);
-//        return resolutionLabel;
-//    }
 
     private void waitToFillMurderedTable(Table murderedTable) {
         while (true) {
