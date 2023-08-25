@@ -231,11 +231,12 @@ public class MatchServer {
             ProceedResponse response = new ProceedResponse();
             updateAssassinNumber();
             response.permit = true;
+            // UI-OVERHAUL
             response.alivePlayerMap = alivePlayersMap;
-            if (checkEndGameConditions("NIGHT")) {
+            /*if (checkEndGameConditions("NIGHT")) {
                 response.endGame = true;
                 response.winner = winner;
-            }
+            }*/
             server.sendToAllTCP(response);
             readyPlayerNumber = new AtomicInteger(0);
 
@@ -328,10 +329,11 @@ public class MatchServer {
     private void proceedToNextPhase(String time) {
         if (readyPlayerNumber.get() == alivePlayersMap.size()) {
             ProceedResponse response = new ProceedResponse();
-            if (checkEndGameConditions(time)) {
+            // UI-OVERHAUL
+            /*if (checkEndGameConditions(time)) {
                 response.endGame = true;
                 response.winner = winner;
-            }
+            }*/
             updateAssassinNumber();
             response.permit = true;
             response.alivePlayerMap = alivePlayersMap;

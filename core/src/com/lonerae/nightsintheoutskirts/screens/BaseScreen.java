@@ -5,11 +5,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -54,7 +56,7 @@ public class BaseScreen implements Screen {
     private Viewport viewport;
     private Stage stage;
     private boolean isTraceable = false;
-
+    SpriteBatch batch;
     public BaseScreen(Game game) {
         this.game = game;
 
@@ -124,7 +126,7 @@ public class BaseScreen implements Screen {
 
     @Override
     public void show() {
-        SpriteBatch batch = new SpriteBatch();
+        batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new StretchViewport(WIDTH, WIDTH * ASPECT_RATIO, camera);
         viewport.apply();
@@ -149,6 +151,14 @@ public class BaseScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0.98f, 0.9f, 0.72f, 1);
+        // UI-OVERHAUL
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+
+        batch.draw(new Texture(Gdx.files.internal("data/roles/assassin.png")), 0, 0, WIDTH, HEIGHT);
+
+        batch.end();
 
         stage.act();
         stage.draw();
